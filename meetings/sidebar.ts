@@ -9,7 +9,7 @@ type MeetingMinutesParsed = {
 	link: string
 }
 
-const stripFileExtension = (filename: string) => {
+export const stripFileExtension = (filename: string) => {
 	return filename.split(".").slice(0, -1).join(".")
 }
 

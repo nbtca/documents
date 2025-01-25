@@ -10,7 +10,7 @@ export const scanDir = (dirname: string) => {
   return markdownFileNames.map(v => {
     return {
       filename: v,
-      link: path.join(dirpath, v)
+      link: path.join(dirname, v)
     }
   })
 }
