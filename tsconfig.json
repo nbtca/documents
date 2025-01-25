@@ -1,0 +1,15 @@
+{
+  "include": [
+    "**/*.ts",
+    "**/*.vue",
+    "**/*.md",
+  ],
+  "compilerOptions": {
+    "esModuleInterop": true
+  },
+  "vueCompilerOptions": {
+    "vitePressExtensions": [
+      ".md"
+    ],
+  },
+}
