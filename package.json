@@ -1,0 +1,23 @@
+{
+  "name": "documents",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest",
+    "docs:dev": "vitepress dev",
+    "docs:build": "vitepress build",
+    "docs:preview": "vitepress preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "vitepress": "^1.6.3",
+    "vitest": "^3.0.4"
+  },
+  "dependencies": {
+    "@types/node": "^22.10.10",
+    "dayjs": "^1.11.13"
+  }
+}
