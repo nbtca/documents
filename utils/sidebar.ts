@@ -1,8 +1,8 @@
 import { readdirSync } from "fs"
-import { resolve } from "path"
+import path from "path"
 
 export const scanDir = (dirname: string) => {
-  const dirpath = resolve(__dirname, `../${dirname}`)
+  const dirpath = path.resolve(__dirname, `../${dirname}`)
   const res = readdirSync(dirpath)
 
   const markdownFileNames = res.filter((name) => name.endsWith('.md'))
@@ -10,7 +10,7 @@ export const scanDir = (dirname: string) => {
   return markdownFileNames.map(v => {
     return {
       filename: v,
-      link: resolve(dirpath, v)
+      link: path.join(dirpath, v)
     }
   })
 }

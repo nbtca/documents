@@ -27,7 +27,9 @@ const parseFileName = (fileName: string, link: string): MeetingMinutesParsed => 
 
 export const getMeetingMinutesSidebar = () => {
 
-	const items = scanDir("meetings")
+	const items = scanDir("meetings").filter(v => {
+		return v.filename != "index.md"
+	})
 
 	const groupedItems = items.reduce((acc, item) => {
 		const parsed = parseFileName(item.filename, item.link)

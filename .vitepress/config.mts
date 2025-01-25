@@ -14,6 +14,10 @@ export default defineConfig({
     ],
 
     sidebar: [
+      {
+        text: 'Meeting Minutes',
+        link: '/meetings'
+      },
       ...getMeetingMinutesSidebar()
     ],
 
