@@ -9,7 +9,7 @@ export default withMermaid({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: '流程', link: '/process/borrow-classroom' },
-      { text: '维修', link: '/repair/tools' },
+      { text: '维修', link: '/repair/guide' },
       { text: '存档', link: '/archived' }
     ],
     search: {
@@ -17,20 +17,11 @@ export default withMermaid({
     },
     sidebar: {
       '/process/': [
-        {
-          text: '流程',
-          items: [
-            { text: '借教室', link: '/process/borrow-classroom' }
-          ]
-        }
+        { text: '借教室', link: '/process/borrow-classroom' }
       ],
       '/repair/': [
-        {
-          text: '维修',
-          items: [
-            { text: 'Tools', link: '/repair/tools' },
-          ]
-        }
+        { text: '维修操作指南', link: '/repair/guide' },
+        { text: 'Tools', link: '/repair/tools' },
       ],
       '/archived': sidebarArchived
     },
