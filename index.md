@@ -3,9 +3,9 @@
 layout: home
 
 hero:
-  name: "Documents"
-  text: ""
-  tagline: 计算机协会文档
+  name: "NBTCA Documents"
+  text: "计算机协会文档"
+  tagline: To be at the intersection of technology and liberal arts.
   image:
     src: https://oss.nbtca.space/CA-logo.svg
     alt: VitePress
@@ -13,18 +13,13 @@ hero:
     - theme: brand
       text: 会议记录
       link: /meetings/index
-    # - theme: alt
-    #   text: API Examples
-    #   link: /api-examples
+    - theme: alt
+      text: 流程
+      link: /process/borrow-classroom
+    - theme: alt
+      text: 维修
+      link: /repair/tools
 
-features:
-  - title: Feature A
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature C
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-    
 ---
 
 <style>
