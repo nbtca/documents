@@ -4,11 +4,14 @@ layout: home
 
 hero:
   name: "Documents"
-  text: "Documents for nbtca"
-  tagline: My great project tagline
+  text: ""
+  tagline: 计算机协会文档
+  image:
+    src: /assets/CA-logo.png
+    alt: VitePress
   actions:
     - theme: brand
-      text: Meeting minutes
+      text: 会议记录
       link: /meetings/index
     # - theme: alt
     #   text: API Examples
@@ -22,4 +25,11 @@ features:
   - title: Feature C
     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
 ---
-
+<!-- 
+<style>
+  --vp-home-hero-name-color: blue;
+  --vp-home-hero-image-filter: blur(68px);
+  --vp-home-hero-image-background-image: linear-gradient( -45deg, #bd34fe 50%, #47caff 50% );
+  --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #bd34fe, #41d1ff);
+}
+</style> -->
