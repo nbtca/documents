@@ -17,8 +17,8 @@ hero:
       text: 维修
       link: /repair/tools
     - theme: alt
-      text: 会议记录
-      link: /meetings/index
+      text: 存档
+      link: /archived/index
 
 ---
 

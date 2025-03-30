@@ -29,7 +29,7 @@ export const sidebar = [
   },
   {
     text: '2024',
-    collapsed: false,
+    collapsed: true,
     items: [
       {
         text: '计算机协会纲要',
@@ -80,7 +80,7 @@ export const sidebar = [
   },
   {
     text: '2023',
-    collapsed: false,
+    collapsed: true,
     items: [
       {
         text: '2023-2024第一学期计划',
@@ -176,7 +176,7 @@ export const sidebar = [
   },
   {
     text: '2022',
-    collapsed: false,
+    collapsed: true,
     items: [
       {
         text: '会议纪要',
@@ -216,7 +216,7 @@ export const sidebar = [
   },
   {
     text: '2019',
-    collapsed: false,
+    collapsed: true,
     items: [
       {
         text: '2019-2020工作计划大纲',
@@ -226,7 +226,7 @@ export const sidebar = [
   },
   {
     text: '2018',
-    collapsed: false,
+    collapsed: true,
     items: [
       {
         text: '计算机协会组织架构改革方案',
@@ -236,7 +236,7 @@ export const sidebar = [
   },
   {
     text: '2017',
-    collapsed: false,
+    collapsed: true,
     items: [
       {
         text: '致计算机协会全体成员-朱柯权',
@@ -246,7 +246,7 @@ export const sidebar = [
   },
   {
     text: '2014',
-    collapsed: false,
+    collapsed: true,
     items: [
       {
 
