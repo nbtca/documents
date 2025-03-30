@@ -7,7 +7,7 @@ hero:
   text: ""
   tagline: 计算机协会文档
   image:
-    src: /assets/CA-logo.png
+    src: https://oss.nbtca.space/CA-logo.svg
     alt: VitePress
   actions:
     - theme: brand
@@ -24,12 +24,13 @@ features:
     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
   - title: Feature C
     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+    
 ---
-<!-- 
+
 <style>
-  --vp-home-hero-name-color: blue;
-  --vp-home-hero-image-filter: blur(68px);
-  --vp-home-hero-image-background-image: linear-gradient( -45deg, #bd34fe 50%, #47caff 50% );
-  --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #bd34fe, #41d1ff);
-}
-</style> -->
+  .VPHero{
+    .VPImage{
+      padding: 16px;
+    }
+  }
+</style>
