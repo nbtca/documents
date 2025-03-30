@@ -4,11 +4,14 @@ layout: home
 
 hero:
   name: "Documents"
-  text: "Documents for nbtca"
-  tagline: My great project tagline
+  text: ""
+  tagline: 计算机协会文档
+  image:
+    src: https://oss.nbtca.space/CA-logo.svg
+    alt: VitePress
   actions:
     - theme: brand
-      text: Meeting minutes
+      text: 会议记录
       link: /meetings/index
     # - theme: alt
     #   text: API Examples
@@ -21,5 +24,13 @@ features:
     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
   - title: Feature C
     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+    
 ---
 
+<style>
+  .VPHero{
+    .VPImage{
+      padding: 16px;
+    }
+  }
+</style>

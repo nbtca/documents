@@ -14,10 +14,16 @@ importers:
       dayjs:
         specifier: ^1.11.13
         version: 1.11.13
+      pinyin:
+        specifier: 4.0.0-alpha.2
+        version: 4.0.0-alpha.2
       vue:
         specifier: ^3.5.13
         version: 3.5.13
     devDependencies:
+      '@types/pinyin':
+        specifier: ^2.10.2
+        version: 2.10.2
       vitepress:
         specifier: ^1.6.3
         version: 1.6.3(@algolia/client-search@5.20.0)(@types/node@22.10.10)(postcss@8.5.1)(search-insights@2.17.3)
@@ -426,6 +432,9 @@ packages:
   '@types/node@22.10.10':
     resolution: {integrity: sha512-X47y/mPNzxviAGY5TcYPtYL8JsY3kAq2n8fMmKoRCxq/c4v4pyGNCzM2R6+M5/umG4ZfHuT+sgqDYqWc9rJ6ww==}
 
+  '@types/pinyin@2.10.2':
+    resolution: {integrity: sha512-jLzlRkaLRLg+lgYPjOuP3HX2cozUkhXls5GTXopsKuKJ9lDGlIAb88OoIztH6TbNUsoJnl/7e/kjaumA5IKKJg==}
+
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
 
@@ -594,6 +603,10 @@ packages:
   comma-separated-tokens@2.0.3:
     resolution: {integrity: sha512-Fu4hJdvzeylCfQPp9SGWidpzrMs7tTrlu6Vb8XGaRGck8QSNZJJp538Wrb60Lax4fPwR64ViY468OIUTbRlGZg==}
 
+  commander@1.1.1:
+    resolution: {integrity: sha512-71Rod2AhcH3JhkBikVpNd0pA+fWsmAaVoti6OR38T76chA7vE3pSerS0Jor4wDw+tOueD2zLVvFOw5H0Rcj7rA==}
+    engines: {node: '>= 0.6.x'}
+
   copy-anything@3.0.5:
     resolution: {integrity: sha512-yCEafptTtb4bk7GLEQoM8KVJpxAfdBJYaXyzQEgQQQgYrZiDp8SJmGKlYza6CYjEDNstAdNdKA3UuoULlEbS6w==}
     engines: {node: '>=12.13'}
@@ -673,6 +686,9 @@ packages:
     resolution: {integrity: sha512-ZhMwEosbFJkA0YhFnNDgTM4ZxDRsS6HqTo7qsZM08fehyRYIYa0yHu5R6mgo1n/8MgaPBXiPimPD77baVFYg+A==}
     engines: {node: '>=12.13'}
 
+  keypress@0.1.0:
+    resolution: {integrity: sha512-x0yf9PL/nx9Nw9oLL8ZVErFAk85/lslwEP7Vz7s5SI1ODXZIgit3C5qyWjw4DxOuO/3Hb4866SQh28a1V1d+WA==}
+
   loupe@3.1.2:
     resolution: {integrity: sha512-23I4pFZHmAemUnz8WZXbYRSKYj801VDaNv9ETuMh7IrMc7VuVVSo+Z9iLE3ni30+U48iDWfi30d3twAXBYmnCg==}
 
@@ -729,6 +745,22 @@ packages:
 
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
+
+  pinyin@4.0.0-alpha.2:
+    resolution: {integrity: sha512-SED2wWr1X0QwH6rXIDgg20zS1mAk0AVMO8eM3KomUlOYzC8mNMWZnspZWhhI0M8MBIbF2xwa+5r30jTSjAqNsg==}
+    engines: {install-node: ^18.0.0}
+    hasBin: true
+    peerDependencies:
+      '@node-rs/jieba': ^1.6.0
+      nodejieba: 2.5.2
+      segmentit: ^2.0.3
+    peerDependenciesMeta:
+      '@node-rs/jieba':
+        optional: true
+      nodejieba:
+        optional: true
+      segmentit:
+        optional: true
 
   postcss@8.5.1:
     resolution: {integrity: sha512-6oz2beyjc5VMn/KV1pPw8fliQkhBXrVn1Z3TVyqZxU8kZpzEKhBdmCFqI6ZbmGtamQvQGuU1sgPTk8ZrXDD7jQ==}
@@ -1271,6 +1303,8 @@ snapshots:
     dependencies:
       undici-types: 6.20.0
 
+  '@types/pinyin@2.10.2': {}
+
   '@types/unist@3.0.3': {}
 
   '@types/web-bluetooth@0.0.20': {}
@@ -1461,6 +1495,10 @@ snapshots:
 
   comma-separated-tokens@2.0.3: {}
 
+  commander@1.1.1:
+    dependencies:
+      keypress: 0.1.0
+
   copy-anything@3.0.5:
     dependencies:
       is-what: 4.1.16
@@ -1552,6 +1590,8 @@ snapshots:
 
   is-what@4.1.16: {}
 
+  keypress@0.1.0: {}
+
   loupe@3.1.2: {}
 
   magic-string@0.30.17:
@@ -1610,6 +1650,10 @@ snapshots:
   perfect-debounce@1.0.0: {}
 
   picocolors@1.1.1: {}
+
+  pinyin@4.0.0-alpha.2:
+    dependencies:
+      commander: 1.1.1
 
   postcss@8.5.1:
     dependencies:

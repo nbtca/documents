@@ -10,19 +10,22 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Home', link: '/' },
-      { text: 'Meeting Minutes', link: '/meetings' }
+      { text: '会议记录', link: '/meetings' }
     ],
-
+    search: {
+      provider: "local"
+    },
     sidebar: [
       {
-        text: 'Meeting Minutes',
+        text: '会议记录',
         link: '/meetings'
       },
       ...getMeetingMinutesSidebar()
     ],
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/vuejs/vitepress' }
+      { icon: 'github', link: 'https://github.com/nbtca/documents' }
     ]
-  }
+  },
+  ignoreDeadLinks: true
 })
