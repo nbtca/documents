@@ -1,5 +1,5 @@
-import { getMeetingMinutesSidebar } from '../meetings/sidebar'
 import { withMermaid } from "vitepress-plugin-mermaid"
+import { sidebar as sidebarArchived } from "../archived/sidebar"
 
 // https://vitepress.dev/reference/site-config
 export default withMermaid({
@@ -8,21 +8,14 @@ export default withMermaid({
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
-      { text: '会议记录', link: '/meetings' },
       { text: '流程', link: '/process/borrow-classroom' },
-      { text: '维修', link: '/repair/tools' }
+      { text: '维修', link: '/repair/tools' },
+      { text: '存档', link: '/archived' }
     ],
     search: {
       provider: "local"
     },
     sidebar: {
-      '/meetings/': [
-        {
-          text: '会议记录',
-          link: '/meetings'
-        },
-        ...getMeetingMinutesSidebar(),
-      ],
       '/process/': [
         {
           text: '流程',
@@ -38,7 +31,8 @@ export default withMermaid({
             { text: 'Tools', link: '/repair/tools' },
           ]
         }
-      ]
+      ],
+      '/archived': sidebarArchived
     },
     editLink: {
       pattern: 'https://github.com/nbtca/documents/edit/main/:path',

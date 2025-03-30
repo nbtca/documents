@@ -11,14 +11,14 @@ hero:
     alt: VitePress
   actions:
     - theme: brand
-      text: 会议记录
-      link: /meetings/index
-    - theme: alt
       text: 流程
       link: /process/borrow-classroom
     - theme: alt
       text: 维修
       link: /repair/tools
+    - theme: alt
+      text: 会议记录
+      link: /meetings/index
 
 ---
 
