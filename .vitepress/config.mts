@@ -22,10 +22,14 @@ export default defineConfig({
       },
       ...getMeetingMinutesSidebar()
     ],
-
+    editLink: {
+      pattern: 'https://github.com/nbtca/documents/edit/main/:path',
+      text: 'Edit this page on GitHub'
+    },
     socialLinks: [
       { icon: 'github', link: 'https://github.com/nbtca/documents' }
     ]
   },
-  ignoreDeadLinks: true
+  ignoreDeadLinks: true,
+  lastUpdated: true,
 })
