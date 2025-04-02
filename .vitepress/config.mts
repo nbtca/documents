@@ -17,7 +17,8 @@ export default withMermaid({
     },
     sidebar: {
       '/process/': [
-        { text: '借教室', link: '/process/borrow-classroom' }
+        { text: '借教室', link: '/process/2025/borrow-classroom' },
+	{ text: '申请第二课堂学分', link: '/process/2025/apply-for-credits' },
       ],
       '/repair/': [
         { text: '维修操作指南', link: '/repair/guide' },
