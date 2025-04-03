@@ -12,14 +12,13 @@ hero:
   actions:
     - theme: brand
       text: 流程
-      link: /process/borrow-classroom
+      link: /process/index
     - theme: alt
       text: 维修
       link: /repair/tools
     - theme: alt
       text: 存档
       link: /archived/index
-
 ---
 
 <style>
@@ -29,3 +28,4 @@ hero:
     }
   }
 </style>
+
