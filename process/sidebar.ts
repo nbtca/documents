@@ -19,8 +19,8 @@ export const sidebar = [
             text: '申请第二课堂学分',
             link: 'apply-for-credits',
           },
-        ]
-      }
-    ]
-  }
+        ],
+      },
+    ],
+  },
 ]

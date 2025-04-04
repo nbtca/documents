@@ -1,6 +1,6 @@
-import { withMermaid } from 'vitepress-plugin-mermaid';
-import { sidebar as sidebarArchived } from '../archived/sidebar';
-import { sidebar as sidebarProcess } from '../process/sidebar';
+import { withMermaid } from 'vitepress-plugin-mermaid'
+import { sidebar as sidebarArchived } from '../archived/sidebar'
+import { sidebar as sidebarProcess } from '../process/sidebar'
 
 // https://vitepress.dev/reference/site-config
 export default withMermaid({
@@ -34,4 +34,4 @@ export default withMermaid({
   },
   ignoreDeadLinks: true,
   lastUpdated: true,
-});
+})
