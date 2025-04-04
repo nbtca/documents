@@ -15,7 +15,7 @@ hero:
       link: /process/index
     - theme: alt
       text: 维修
-      link: /repair/tools
+      link: /repair/guide
     - theme: alt
       text: 存档
       link: /archived/index
