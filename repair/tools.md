@@ -1,4 +1,4 @@
-# Tools
+# NBTCA 软件仓库管理
 
 :::info 维护信息
 
@@ -7,8 +7,6 @@
 | @A1exe1A-1123 | 2025.4.1 - 2025.4.15 |
 
 :::
-
-# NBTCA 软件仓库管理
 
 [主页内网访问](https://i.nbtca.space/)
 
@@ -80,10 +78,6 @@
 - macOS
 - Linux
 - 移动操作系统(Android、IOS、HarmonyOS)
-
-### xxx
-
-### xxx
 
 ## 更新日志
 
