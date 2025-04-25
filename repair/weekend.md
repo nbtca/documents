@@ -1,5 +1,13 @@
 # 维修工单系统 (weekend)
 
+:::info 维护信息
+
+| 维护人        | 时间            |
+| ------------- | --------------- |
+| @wen-templari | 2025.4.21 - now |
+
+:::
+
 ## 总览
 
 ```mermaid
@@ -17,13 +25,13 @@ flowchart LR
 
 ```
 
-| 地址                               | 仓库                                                  | 描述                       |
-| ---------------------------------- | ----------------------------------------------------- | -------------------------- |
-| https://repair.nbtca.space/api     | [ nbtca/saturday ](https://github.com/nbtca/saturday) | 后端                       |
-| https://repair.nbtca.space         | [ nbtca/sunday ](https://github.com/nbtca/sunday)     | 管理页面                   |
-| NA                                 | [nbtca/hawaii](https://github.com/nbtca/hawaii)       | 微信小程序，用于报修       |
-| https://auth-admin.app.nbtca.space | [logto-io/logto](https://github.com/logto-io/logto)   | 鉴权                       |
-| NA                                 | [nsqio/nsq](https://github.com/nsqio/nsq)             | 消息队列，用于推送维修事件 |
+| 地址                                 | 仓库                                                | 描述                       |
+| ------------------------------------ | --------------------------------------------------- | -------------------------- |
+| <https://repair.nbtca.space/api>     | [nbtca/saturday](https://github.com/nbtca/saturday) | 后端                       |
+| <https://repair.nbtca.space>         | [nbtca/sunday](https://github.com/nbtca/sunday)     | 管理页面                   |
+| NA                                   | [nbtca/hawaii](https://github.com/nbtca/hawaii)     | 微信小程序，用于报修       |
+| <https://auth-admin.app.nbtca.space> | [logto-io/logto](https://github.com/logto-io/logto) | 鉴权                       |
+| NA                                   | [nsqio/nsq](https://github.com/nsqio/nsq)           | 消息队列，用于推送维修事件 |
 
 ## 角色
 
@@ -57,6 +65,7 @@ flowchart LR
 ```
 
 ### 事件状态(status)
+
 | 状态名 | status    | 描述                                 |
 | ------ | --------- | ------------------------------------ |
 | 待处理 | open      | 维修事件未被成员接受                 |
@@ -77,3 +86,38 @@ flowchart LR
 | 修改提交 | alterCommit | current member | committed => committed | 成员修改 未被审核的维修提交                  |
 | 拒绝提交 | reject      | admin          | committed => accepted  | 管理员拒绝提交                               |
 | 关闭     | close       | admin          | committed => closed    | 管理员通过提交                               |
+
+## 在Github上处理维修
+
+```mermaid
+sequenceDiagram
+    participant Saturday
+    participant Github
+    Saturday->>+Github: Create Issue
+    Note right of Github: On Event Create
+    Github->>-Saturday: Issue Id
+    Github->>+Saturday: Comment Event (webhook)
+    Note right of Github: On Issue Update, Find event by issue id
+    Saturday->>-Github: Create Comment
+
+```
+
+目前，新的维修事件会同步到 [Github Issue](https://github.com/nbtca/repair-tickets/issues) 中。成员可以在Github Issue中处理维修事件
+
+### 前提条件
+
+在开始之前，你需要先关联你的Github账户。你可以前往 [MyId](https://myid.app.nbtca.space/account/connections) 关联你的Github账户
+
+![link-github](./assets/link-github.png)
+
+### 处理事件
+
+在Github Issue中，你可以通过在回复中包含以下命令来处理事件：
+
+- `@nbtca-bot accept` will accept this ticket
+- `@nbtca-bot drop` will drop your previous accept
+- `@nbtca-bot commit` will submit this ticket for admin approval
+- `@nbtca-bot reject` will send this ticket back to assignee
+- `@nbtca-bot close` will close this ticket as completed
+
+![issue-reply](./assets/issue-reply-example.png)

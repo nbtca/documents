@@ -20,7 +20,8 @@ export default withMermaid({
       '/process/': sidebarProcess,
       '/repair/': [
         { text: '维修操作指南', link: '/repair/guide' },
-        { text: 'Tools', link: '/repair/tools' },
+        { text: 'NBTCA 软件仓库管理', link: '/repair/tools' },
+        { text: '维修工单系统 (weekend)', link: '/repair/weekend' },
       ],
       '/archived': sidebarArchived,
     },
