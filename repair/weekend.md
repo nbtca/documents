@@ -104,6 +104,16 @@ sequenceDiagram
 
 目前，新的维修事件会同步到 [Github Issue](https://github.com/nbtca/repair-tickets/issues) 中。成员可以在Github Issue中处理维修事件。
 
+### 为什么要使用Github Issue来管理维修？
+
+- **成熟的工单系统**：Github Issue是一个成熟的工单系统，功能强大，易于使用。
+- **可追溯性**：所有的维修事件都可以在Github上查看，方便后续的查询和统计。
+- **协作**：Github Issue提供了良好的协作工具，成员可以在上面讨论和交流。
+- **自动化**：通过Github的Webhook，可以自动化处理一些事件，比如创建事件、更新事件等。
+- **社区参与**：Github是一个开放的平台，任何人都可以参与到维修事件中来，增加了社区的参与度。
+- **版本控制**：所有的事件都有版本记录，可以随时查看历史记录，方便追踪和审计。
+- **标签管理**：可以通过标签来管理事件的状态和类型，方便后续的查询和统计。
+
 ### 前提条件
 
 在开始之前，你需要先关联你的Github账户。你可以前往 [MyId](https://myid.app.nbtca.space/account/connections) 关联你的Github账户。
@@ -124,8 +134,9 @@ sequenceDiagram
 
 ### 记录事件工作量
 
-通过在Github Issue中添加标签来记录工时。
 ![issue-label](./assets/issue-label.png)
+
+在Github Issue中，可以通过添加标签来记录工作量。标签的命名规则为 `size:xs`、`size:s`、`size:m`、`size:l`、`size:xl`，分别对应不同的工作量。工作量代表的是维修事件的复杂程度和所需时间。具体的工作量和对应的标签如下：
 
 | 标签名    | 对应时长 | 示例维修任务（仅供参考）                        | 场景说明                                         |
 | --------- | -------- | ----------------------------------------------- | ------------------------------------------------ |
@@ -135,19 +146,13 @@ sequenceDiagram
 | `size:l`  | 4 小时   | 主板故障检测与更换、电源模块更换                | 较复杂的拆装和测试流程，需熟练技能、多人协作可能 |
 | `size:xl` | 8 小时   | 批量电脑检修（5 台以上）、全室网卡/主板统一更换 | 工作量极大，涉及多个设备，需团队作业和详细记录   |
 
-
-
 ### 志愿者时长统计
 
-```typescript
-type Record = {
-  studentId: string;
-  eventId: string;
-  tag: string; // e.g., "size:s"
-};
+我们可以通过记录的工作量来统计志愿者时长。
 
-const BASE_TIME = 2; // hours
-const MAX_TIME = 8;  // hours
+```typescript
+const BASE_TIME = 2 // hours
+const MAX_TIME = 8 // hours
 
 // Mapping from tag to time in hours
 const tagTimeMap: Record<string, number> = {
@@ -155,32 +160,34 @@ const tagTimeMap: Record<string, number> = {
   'size:m': 2,
   'size:l': 4,
   'size:xl': 8,
-};
-
-// Compute total time for a given student and event
-function calculateTime(records: Record[], studentId: string): number {
-  const relevantRecords = records.filter(
-    (r) => r.studentId === studentId
-  );
-
-  let totalTime = BASE_TIME;
-
-  for (const record of relevantRecords) {
-    const time = tagTimeMap[record.tag] || 0;
-    totalTime += time;
-  }
-
-  return Math.min(MAX_TIME, totalTime);
 }
 
+// Compute total time for a given student and event
+function calculateTime(records: {
+  studentId: string
+  eventId: string
+  tag: string // e.g., "size:s"
+}[], studentId: string): number {
+  const relevantRecords = records.filter(
+    r => r.studentId === studentId
+  )
+
+  let totalTime = BASE_TIME
+
+  for (const record of relevantRecords) {
+    const time = tagTimeMap[record.tag] || 0
+    totalTime += time
+  }
+
+  return Math.min(MAX_TIME, totalTime)
+}
 
 const records: Record[] = [
   { studentId: '2333333333', eventId: '123456', tag: 'size:s' },
   { studentId: '2333333333', eventId: '123456', tag: 'size:m' },
-];
-const time = calculateTime(records, '2333333333');
-console.log('Calculated time:', time); // Output: 5
-
+]
+const time = calculateTime(records, '2333333333')
+console.log('Calculated time:', time) // Output: 5
 ```
 
 | Key            | Value     | Description              |
@@ -215,6 +222,7 @@ Authorization: {{bearer_token}}
 ```
 
 ##### 示例
+
 ```bash
 curl -X GET "http://repair.nbtca.space/api/events/xlsx?start_time=2025-01-01&end_time=2025-05-31" \
   -H "Authorization:  {{bearer_token}}" \
