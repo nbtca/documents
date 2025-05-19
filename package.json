@@ -26,7 +26,7 @@
   "dependencies": {
     "dayjs": "^1.11.13",
     "lint-staged": "^16.0.0",
-    "pinyin": "4.0.0-alpha.2",
+    "pinyin": "4.0.0-alpha.3",
     "vue": "^3.5.13"
   },
   "devDependencies": {
