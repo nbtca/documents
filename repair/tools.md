@@ -18,27 +18,35 @@
 
 ### 应用程序 (Applications)
 
-#### 解压缩软件（WinRAR、BandZip）：各种用于文件传输与加载的工具软件。
-  - [WinRAR](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/WinRAR) 功能齐全且简单的解压缩软件 ( 操作说明：在运行.exe 获得解压文件夹后将其放入 C 盘目录并运行文件夹内的.exe 程序，进行全局文件的设置 )
+* 解压缩软件（WinRAR、BandZip）：各种用于文件传输与加载的工具软件。
+    - [WinRAR](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/WinRAR) 功能齐全且简单的解压缩软件 ( 操作说明：在运行.exe 获得解压文件夹后将其放入 C 盘目录并运行文件夹内的.exe 程序，进行全局文件的设置 )
 
-####  网络工具 (Browsers, Download Managers): 网络浏览器、下载管理器等工具.
-- [ChromeSetup](https://i.nbtca.space/files/d/admin/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/ChromeSetup.exe) 谷歌 Chrome 浏览器安装包。
-- [OneDrive.Setup](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/OneDriveSetup.exe) 用于下载微软 OneDrive 云盘。
+* 网络工具 (Browsers, Download Managers): 网络浏览器、下载管理器等工具.
+  - [ChromeSetup](https://i.nbtca.space/files/d/admin/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/ChromeSetup.exe) 谷歌 Chrome 浏览器安装包。
+  - [OneDrive.Setup](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/OneDriveSetup.exe) 用于下载微软 OneDrive 云盘。
 
-#### 游戏软件 (Games): 游戏软件及相关资源.
-  - [Steam SetUp](https://i.nbtca.space/files/d/admin/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/SteamSetup%20.exe) Steam 下载器，这个肯定是正版 ：） 
-  - [Flash 浏览器插件](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/Flash%E6%B5%8F%E8%A7%88%E5%99%A8%E6%8F%92%E4%BB%B6_flash_install.rar) Flash 插件下载。部分游戏可能需要 Flash 插件才能正常游玩，如 4399 小游戏。
+* 游戏软件 (Games): 游戏软件及相关资源.
+    - [Steam SetUp](https://i.nbtca.space/files/d/admin/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/SteamSetup%20.exe) Steam 下载器，这个肯定是正版 ：） 
+    - [Flash 浏览器插件](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/Flash%E6%B5%8F%E8%A7%88%E5%99%A8%E6%8F%92%E4%BB%B6_flash_install.rar) Flash 插件下载。部分游戏可能需要 Flash 插件才能正常游玩，如 4399 小游戏。
 
-#### 安全软件 (Antivirus, Firewalls): 各类安全软件，包括杀毒软件和防火墙.
+* 安全软件 (Antivirus, Firewalls): 各类安全软件，包括杀毒软件和防火墙.
 
-#### 开发工具 (IDEs, Compilers, SDKs): 集成开发环境、编译器和开发工具包.
+* 开发工具 (IDEs, Compilers, SDKs): 集成开发环境、编译器和开发工具包.
 
-#### 设计软件 (Graphics, CAD, Video Editing): 图形设计、CAD 和视频编辑软件.
+* 设计软件 (Graphics, CAD, Video Editing): 图形设计、CAD 和视频编辑软件.
+
+
+### 驱动程序 (Drivers)
+
+* 显卡驱动: 各种显卡驱动程序.
+* 声卡驱动: 各种声卡驱动程序.
+* 打印机驱动: 打印机驱动程序.
+* 其他硬件驱动: 包括其他设备的驱动程序.
 
 
 ### 操作系统 （Operating Systems）
 
-- Windows： 各种版本的Windows系统镜像。
+* Windows： 各种版本的Windows系统镜像。
   - [Win10 22H2](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Windows%E7%B3%BB%E7%BB%9F%E9%95%9C%E5%83%8F/Win10_22H2) MS Windows 10 22H2
   - [Win11 23H2](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Windows%E7%B3%BB%E7%BB%9F%E9%95%9C%E5%83%8F/Win11_23H2) MS Windows 11 23H2 **由于微软的 Windows 更新策略，官网已不支持该版本的获取与下载**
   - [Win11 24H2](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Windows%E7%B3%BB%E7%BB%9F%E9%95%9C%E5%83%8F/Win11_24H2) MS Windows 11 24H2
@@ -55,15 +63,33 @@
 
 ### 文档（Documentations）
 
-#### 技术文档（Technical documentation）
+* 技术文档（Technical documentation）
 
 - [蓝屏错误码速查表](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/%E8%93%9D%E5%B1%8F%E9%80%9F%E6%9F%A5%E8%A1%A8.xlsx) 适用于 Windows 系统报错需要重启，显示蓝屏时的问题诊断
 
-#### 教程 (Tutorials): 各类技术教程，帮助您快速掌握新技术。
+* 教程 (Tutorials): 各类技术教程，帮助您快速掌握新技术。
 
-#### 用户手册 (User Manuals): 各种软件和工具的用户手册。
+* 用户手册 (User Manuals): 各种软件和工具的用户手册。
 
-#### API 文档 (API Documentation): 各类开源项目或软件的 API 文档。
+* API 文档 (API Documentation): 各类开源项目或软件的 API 文档。
+
+
+### 代码库 (Code Libraries)
+
+* 编程语言 (Python, Java, C++): 提供各类编程语言的资源.
+* 框架 (Frameworks): 各种流行框架的资源，如 React、Spring 等.
+* 开源项目 (Open source projects): 各种开源项目的代码库.
+
+### 字体 (Fonts)
+
+* 中文字体: 各类中文字体资源.
+* 英文字体: 各类英文字体资源.
+
+### 素材 (Materials)
+
+* 图片 (Images): 各种图像素材，包括照片、插图等.
+* 音频 (Audio): 音频文件和素材.
+* 视频 (Video): 各类视频文件和素材.
 
 *** 
 
