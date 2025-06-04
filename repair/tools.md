@@ -10,6 +10,8 @@
 
 🏠 欢迎访问 NBTCA 软件仓库！这是一个集中存储并提供各种操作系统、应用程序、工具、驱动程序以及资源的软件仓库。无论您是开发者、设计师、学生，还是日常使用者，这里都能找到您所需要的资源。
 
+注意，软件标题上的超链接将指向内网地址，请确保连接并登录校园网 ( 无需购买校园网即可使用 )
+
 更多信息，请访问我们的主页：[主页内网访问](https://i.nbtca.space/)
 
 *** 
@@ -22,12 +24,12 @@
     - [WinRAR](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/WinRAR) 功能齐全且简单的解压缩软件 ( 操作说明：在运行.exe 获得解压文件夹后将其放入 C 盘目录并运行文件夹内的.exe 程序，进行全局文件的设置 )
 
 * 🌍 网络工具 (Browsers, Download Managers): 网络浏览器、下载管理器等工具.
-  - [ChromeSetup](https://i.nbtca.space/files/d/admin/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/ChromeSetup.exe) 谷歌 Chrome 浏览器安装包。
-  - [OneDrive.Setup](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/OneDriveSetup.exe) 用于下载微软 OneDrive 云盘。
+  - [ChromeSetup](https://i.nbtca.space/files/d/admin/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/ChromeSetup.exe)  谷歌 Chrome 浏览器安装包。
+  - [OneDrive.Setup](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/OneDriveSetup.exe) 用于下载微软 OneDrive 服务。
 
 * 🎮 游戏软件 (Games): 游戏软件及相关资源.
-    - [Steam SetUp](https://i.nbtca.space/files/d/admin/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/SteamSetup%20.exe) Steam 下载器，这个肯定是正版 ：） 
-    - [Flash 浏览器插件](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/Flash%E6%B5%8F%E8%A7%88%E5%99%A8%E6%8F%92%E4%BB%B6_flash_install.rar) Flash 插件下载。部分游戏可能需要 Flash 插件才能正常游玩，如 4399 小游戏。
+    - [Steam SetUp](https://i.nbtca.space/files/d/admin/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/SteamSetup%20.exe) Steam 应用程序安装包，这个肯定是正版 🤪 
+    - [Flash 浏览器插件](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/Flash%E6%B5%8F%E8%A7%88%E5%99%A8%E6%8F%92%E4%BB%B6_flash_install.rar) Flash 插件下载。用于游玩用 Flash引擎 制作的网页游戏，例如4399小游戏。
 
 * 🔐 安全软件 (Antivirus, Firewalls): 各类安全软件，包括杀毒软件和防火墙.
 
@@ -108,7 +110,7 @@
 - [DLSS Swaper](https://github.com/beeradmoore/dlss-swapper)用于替换 DLSS.dll 版本
 - [vidiaProfileInspector](https://www.kookapp.cn/go-wild.html?url=https%3A%2F%2Fgithub.com%2FOrbmu2k%2FnvidiaProfileInspector)用于对英伟达显卡进行更全面的控制选项配置
 - [MSIAfterburner 微星小飞机](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/%E6%80%A7%E8%83%BD%E7%9B%91%E8%A7%86___MSIAfterburnerSetup465.exe) 由 _微星_ 开发的显卡工具，可以监测硬件状态、超频等 _慎用_
-- [RTSS](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/%E6%80%A7%E8%83%BD%E7%9B%91%E8%A7%86___RTSSSetup736.exe) 与 **↑ 微星小飞机** 配套使用的显示/锁帧软件
+- [RTSS](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/%E6%80%A7%E8%83%BD%E7%9B%91%E8%A7%86___RTSSSetup736.exe) 与 ⬆️** 微星小飞机** 配套使用的显示/锁帧软件
 - [FurMark](https://geeks3d.com/furmark/downloads/)_甜甜圈_ 显卡压力测试/跑分软件 
 
 ### 🗄️ *Windows*系统工具
@@ -122,7 +124,7 @@
 - [autologon64](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/Autologon64.exe) 可实现 Windows 自动登录 ( 无需手动输入密码 )
 - [NET 运行库](https://dotnet.microsoft.com/en-us/download/) 基于.NET 架构开发的软件运行库依赖支持、科学上网必备组件
 - [Dism++](https://i.nbtca.space/files/d/admin/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/Win10_11_%E4%BF%AE%E6%94%B9%E5%99%A8___Dism%2B%2B10.1.1002.1B.rar) 用于优化 Windows 系统功能 _适用于 Win10 11，小白慎用_
-- [Win11 修改器](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/Win11%E4%BF%AE%E6%94%B9%E5%99%A8___Windows11%E8%BD%BB%E6%9D%BE%E8%AE%BE%E7%BD%AEV1.03.rar) 用于优化 Windows 系统功能 _仅适用于 win11_ [教程视频](https://www.bilibili.com/video/BV1Va4y1D7hu/?spm_id_from=333.337.search-card.all.click&vd_source=bafe401b08cc34b81934117dfac40b1d)
+- [Win11 修改器](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/Win11%E4%BF%AE%E6%94%B9%E5%99%A8___Windows11%E8%BD%BB%E6%9D%BE%E8%AE%BE%E7%BD%AEV1.03.rar) ➡️  [123云盘下载](https://www.123pan.com/s/1Zj8Vv-8bbcv.html) 提取码8888 ，用于优化 Windows 系统功能 _仅适用于 win11_ [教程视频](https://www.bilibili.com/video/BV1Va4y1D7hu/?spm_id_from=333.337.search-card.all.click&vd_source=bafe401b08cc34b81934117dfac40b1d)  
 - [MS Store](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/%E5%BE%AE%E8%BD%AF%E5%95%86%E5%BA%97%E5%AE%89%E8%A3%85___LTSC-Add-MicrosoftStore-2019.zip) 用于给 WIN sever 2019 系统下载缺失的微软应用商店
 - [MS Store](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/%E5%BE%AE%E8%BD%AF%E5%95%86%E5%BA%97%E5%AE%89%E8%A3%85___LTSC-Add-MicrosoftStore-master.zip) 用于给最新 WIN sever 系统下载缺失的微软应用商店
 - [MS Store](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/%E5%BE%AE%E8%BD%AF%E5%95%86%E5%BA%97%E5%AE%89%E8%A3%85___LTSC-Add-MicrosoftStore.zip) 用于给 WIN sever 系统下载缺失的微软应用商店，**请根据列表中的描述选择系统对应的版本下载！**
@@ -145,7 +147,7 @@
   - 4.1 听取 小明 的意见，布局更符合逻辑。增添了更多工具，对描述文本进行了编辑，没有浪费军事理论课的时间 :P —— 子弹
   - 4.15 根据 橙狗 在 KOOK 上的补充，更新了部分解释说明，增加了几个常用工具，军事理论课没有浪费时间 —— 子弹
   - 5.28 更新了整体布局，增加了更多分类，没有浪费马原课的时间 😇 —— 子弹
-
+  - 6.4 根据 橙狗 在 KOOK 上的补充，增加了对校园网打开方式的说明，更新了从网盘下载 *win11修改器* 的途径 —— 子弹
 ***
 ## ☎️ 联系我们 (Contact Us)
 
@@ -153,5 +155,6 @@
 
 * 📧 邮箱：contact@nbtca.com
 * 🌐 GitHub：github.com/nbtca
+* 🐧 QQ群：906370401
 
 感谢您的访问，祝您使用愉快！😊
