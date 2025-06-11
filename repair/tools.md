@@ -37,8 +37,8 @@
 
 * 🎨 设计软件 (Graphics, CAD, Video Editing): 图形设计、CAD 和视频编辑软件.
   
-* 🧑‍💻 办公软件 （Office、ADobe 全家桶）：各类工作常用表格、演示、文稿软件.
-  - [盗版Office](https://i.nbtca.space/files/维修队工具包/Repair/离线Office整合___解压即用懒人版离线安装激活Office整合包.rar) 懒人版离线Offie整合包，~~仅供学习交流使用，请下载后24小时内删除。~~
+* 🧑‍💻 办公软件 （Office、Adobe 全家桶）：各类工作常用表格、演示、文稿软件.
+  - [盗版Office](https://i.nbtca.space/files/维修队工具包/Repair/离线Office整合___解压即用懒人版离线安装激活Office整合包.rar) 懒人版离线Office整合包，~~仅供学习交流使用，请下载后24小时内删除。~~
 
 
 ### 🚗 驱动程序 (Drivers)
