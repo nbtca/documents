@@ -4,6 +4,30 @@ export const sidebar = [
     link: '/archived/index',
   },
   {
+    text: '手册',
+    collapsed: false,
+    base: '/archived/manual/',
+    items: [
+      {
+        text: '计算机协会手册',
+        items: [
+          {
+            text: '计算机硬件系统的搭建与维护(模版，待完善)',
+            link: 'hardware-establish',
+          },
+          {
+            text: '基础操作系统的使用技术(模版，待完善)',
+            link: 'os-skills',
+          },
+          {
+            text: '国际互联网的使用(模版，待完善)',
+            link: 'net-usage',
+          },
+        ],
+      },
+    ],
+  },
+  {
     text: '2025',
     collapsed: false,
     base: '/archived/2025/',
@@ -22,6 +46,10 @@ export const sidebar = [
           {
             text: '2025.01.26年度总结会议',
             link: '2025.01.26年度总结会议',
+          },
+          {
+            text: '2025.10.11第一次例行会议',
+            link: '2025.10.11第一次例行会议',
           },
         ],
       },
@@ -215,7 +243,6 @@ export const sidebar = [
           },
         ],
       },
-
     ],
   },
   {
@@ -253,7 +280,6 @@ export const sidebar = [
     collapsed: true,
     items: [
       {
-
         text: '2013-2014第一学期计划',
         link: '/archived/2014/计协2013-2014第一学期计划任务',
       },
