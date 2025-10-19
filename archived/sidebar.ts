@@ -23,6 +23,10 @@ export const sidebar = [
             text: '国际互联网的使用(模版，待完善)',
             link: 'net-usage',
           },
+          {
+            text: 'CA101介绍',
+            link: 'CA101',
+          },
         ],
       },
     ],
