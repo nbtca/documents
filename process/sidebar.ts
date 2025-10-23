@@ -19,8 +19,12 @@ export const sidebar = [
             text: '申请第二课堂学分',
             link: 'apply-for-credits',
           },
+          {
+            text: '撰写并发布你的第一篇NBTCA博客',
+            link: 'nbtca-post',
+          },
         ],
       },
     ],
   },
-]
+];
