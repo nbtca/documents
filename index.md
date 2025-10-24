@@ -8,7 +8,7 @@ hero:
   tagline: To be at the intersection of technology and liberal arts.
   image:
     src: https://oss.nbtca.space/CA-logo.svg
-    alt: VitePress
+    alt: NBTCA-Logo
   actions:
     - theme: brand
       text: 流程
