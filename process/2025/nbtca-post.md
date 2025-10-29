@@ -101,7 +101,7 @@ git config --global user.email "你的邮箱"
 
 ```bash
 git clone https://github.com/nbtca/home.git
-cd blog
+cd home
 # 如果是gh-cli则是gh repo clone nbtca/home
 ```
 
