@@ -25,6 +25,15 @@ export const sidebar = [
           },
         ],
       },
+      {
+        text: '技术指南',
+        items: [
+          {
+            text: '社团自建 Tailscale 使用指南',
+            link: 'tailscale-usage',
+          },
+        ],
+      },
     ],
   },
 ];
