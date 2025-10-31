@@ -182,10 +182,10 @@ services:
     container_name: tailscale
     hostname: my-docker-host
     environment:
-      - TS_AUTHKEY=tskey-auth-xxxxxxxxxxxxx  # 替换为你的认证密钥
+      - TS_AUTHKEY=tskey-auth-xxxxxxxxxxxxx # 替换为你的认证密钥
       - TS_STATE_DIR=/var/lib/tailscale
       - TS_USERSPACE=false
-      - TS_ROUTES=  # 可选：需要路由的子网
+      - TS_ROUTES= # 可选：需要路由的子网
     volumes:
       - ./tailscale-state:/var/lib/tailscale
       - /dev/net/tun:/dev/net/tun
@@ -262,7 +262,7 @@ services:
   app:
     image: your-app:latest
     container_name: app
-    network_mode: "service:tailscale"  # 使用 Tailscale 的网络
+    network_mode: 'service:tailscale' # 使用 Tailscale 的网络
     depends_on:
       - tailscale
 ```
