@@ -187,16 +187,16 @@ lastUpdated: true
 - 若你更倾向稳定、变动少的系统环境，可考虑 Windows 的 **LTSC / 长期支持版本**。
 - 无论安装哪个版本，都务必从微软官方或可信渠道下载原版 ISO，并做完整校验，确保系统安全干净。
 
-[1]: https://zh.wikipedia.org/zh-hans/Microsoft_Windows%E7%9A%84%E5%8E%86%E5%8F%B2?utm_source=chatgpt.com "Microsoft Windows的历史- 维基百科，自由的百科全书"
-[2]: https://www.hk01.com/%E6%95%B8%E7%A2%BC%E7%94%9F%E6%B4%BB/969500/%E4%BD%A0%E8%83%BD%E6%95%B8%E5%87%BAwindows%E7%B3%BB%E7%B5%B1%E7%99%BC%E5%B1%95%E5%8F%B2%E5%90%84%E5%80%8B%E7%89%88%E6%9C%AC%E5%97%8E-%E9%80%99%E7%89%88%E6%9C%AC%E6%98%AF%E9%87%8C%E7%A8%8B%E7%A2%91%E6%9C%80%E5%8F%97%E6%AD%A1%E8%BF%8E?utm_source=chatgpt.com "你能數出Windows系統發展史各個版本嗎？這版本是里程碑 ..."
-[3]: https://zh.wikipedia.org/wiki/Windows_Me?utm_source=chatgpt.com "Windows Me"
-[4]: https://learn.microsoft.com/zh-cn/windows/release-health/release-information?utm_source=chatgpt.com "Windows 10版本信息"
-[5]: https://zh.wikipedia.org/wiki/Windows_11%E7%89%88%E6%9C%AC%E5%8E%86%E5%8F%B2?utm_source=chatgpt.com "Windows 11版本历史"
-[6]: https://www.microsoft.com/zh-cn/software-download/windows10?utm_source=chatgpt.com "下载Windows 10 光盘映像（ISO 文件） - Microsoft"
-[7]: https://blog.csdn.net/haidadahaidada/article/details/129106726?utm_source=chatgpt.com "如何在微软官网下载win10镜像文件原创 - CSDN博客"
-[8]: https://www.microsoft.com/zh-cn/software-download/windows11?utm_source=chatgpt.com "下载Windows 11 - Microsoft"
-[9]: https://www.reddit.com/r/windows/comments/hzrwep/where_can_i_find_isos_for_windows_software_thats/?tl=zh-hans&utm_source=chatgpt.com "在哪儿能找到安全下载的Windows系统镜像文件ISO？ - Reddit"
-[10]: https://hellowindows.cn/?utm_source=chatgpt.com "HelloWindows.cn - 精校完整极致Windows系统下载仓储站"
+[1]: https://zh.wikipedia.org/zh-hans/Microsoft_Windows%E7%9A%84%E5%8E%86%E5%8F%B2?utm_source=chatgpt.com 'Microsoft Windows的历史- 维基百科，自由的百科全书'
+[2]: https://www.hk01.com/%E6%95%B8%E7%A2%BC%E7%94%9F%E6%B4%BB/969500/%E4%BD%A0%E8%83%BD%E6%95%B8%E5%87%BAwindows%E7%B3%BB%E7%B5%B1%E7%99%BC%E5%B1%95%E5%8F%B2%E5%90%84%E5%80%8B%E7%89%88%E6%9C%AC%E5%97%8E-%E9%80%99%E7%89%88%E6%9C%AC%E6%98%AF%E9%87%8C%E7%A8%8B%E7%A2%91%E6%9C%80%E5%8F%97%E6%AD%A1%E8%BF%8E?utm_source=chatgpt.com '你能數出Windows系統發展史各個版本嗎？這版本是里程碑 ...'
+[3]: https://zh.wikipedia.org/wiki/Windows_Me?utm_source=chatgpt.com 'Windows Me'
+[4]: https://learn.microsoft.com/zh-cn/windows/release-health/release-information?utm_source=chatgpt.com 'Windows 10版本信息'
+[5]: https://zh.wikipedia.org/wiki/Windows_11%E7%89%88%E6%9C%AC%E5%8E%86%E5%8F%B2?utm_source=chatgpt.com 'Windows 11版本历史'
+[6]: https://www.microsoft.com/zh-cn/software-download/windows10?utm_source=chatgpt.com '下载Windows 10 光盘映像（ISO 文件） - Microsoft'
+[7]: https://blog.csdn.net/haidadahaidada/article/details/129106726?utm_source=chatgpt.com '如何在微软官网下载win10镜像文件原创 - CSDN博客'
+[8]: https://www.microsoft.com/zh-cn/software-download/windows11?utm_source=chatgpt.com '下载Windows 11 - Microsoft'
+[9]: https://www.reddit.com/r/windows/comments/hzrwep/where_can_i_find_isos_for_windows_software_thats/?tl=zh-hans&utm_source=chatgpt.com '在哪儿能找到安全下载的Windows系统镜像文件ISO？ - Reddit'
+[10]: https://hellowindows.cn/?utm_source=chatgpt.com 'HelloWindows.cn - 精校完整极致Windows系统下载仓储站'
 
 ## 获取Windows
 
