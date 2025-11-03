@@ -42,6 +42,7 @@
     "vitest": "^3.2.4"
   },
   "lint-staged": {
-    "*": "pnpm lint"
+    "*.md": "pnpm lint:markdown",
+    "*.{js,ts,mjs,cjs,vue,json}": "pnpm lint:eslint"
   }
 }
