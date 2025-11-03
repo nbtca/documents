@@ -11,6 +11,9 @@ hero:
     alt: NBTCA-Logo
   actions:
     - theme: brand
+      text: 教程
+      link: /tutorial/index
+    - theme: brand
       text: 流程
       link: /process/index
     - theme: alt
@@ -21,6 +24,9 @@ hero:
       link: /archived/index
 ---
 
+# NBTCA Documents
+
+<!-- markdownlint-disable MD033 -->
 <style>
   .VPHero{
     .VPImage{
@@ -28,3 +34,4 @@ hero:
     }
   }
 </style>
+<!-- markdownlint-enable MD033 -->

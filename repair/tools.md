@@ -122,13 +122,13 @@
 - [RTSS](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/%E6%80%A7%E8%83%BD%E7%9B%91%E8%A7%86___RTSSSetup736.exe) 与 ⬆️**微星小飞机** 配套使用的显示/锁帧软件
 - [FurMark](https://geeks3d.com/furmark/downloads/)_甜甜圈_ 显卡压力测试/跑分软件
 
-### 🗄️ *Windows*系统工具
+### 🗄️ _Windows_系统工具
 
 - [DirectX_Repair](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/DX%E4%BF%AE%E5%A4%8D___DirectX_Repair.7z) 用于游戏 DirectX 图形接口.dll 运行库修复
 - [UAPSignedBinary_Microsoft.DirectX](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/DX%E4%BF%AE%E5%A4%8D___UAPSignedBinary_Microsoft.DirectX.x64.appx) 游戏 DirectX 图形接口.dll 运行库修复 _适用于 64 位系统_
-- [UAPSignedBinary_Microsoft.DirectX](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/DX%E4%BF%AE%E5%A4%8D___UAPSignedBinary_Microsoft.DirectX.x86.appx) 用于修复因微软*DX*接口出错导致的显示问题 _适用于 86 位系统_
-- [dxwebsetup](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/DX%E4%BF%AE%E5%A4%8D___dxwebsetup.exe) 用于修复因微软*DX*接口出错导致的显示问题
-- [DirectX_Jun2010](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/DX%E8%BF%90%E8%A1%8C%E5%BA%93____directx_Jun2010_redist.exe) 用于修复因微软*DX*接口出错导致的显示问题
+- [UAPSignedBinary_Microsoft.DirectX](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/DX%E4%BF%AE%E5%A4%8D___UAPSignedBinary_Microsoft.DirectX.x86.appx) 用于修复因微软_DX_接口出错导致的显示问题 _适用于 86 位系统_
+- [dxwebsetup](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/DX%E4%BF%AE%E5%A4%8D___dxwebsetup.exe) 用于修复因微软_DX_接口出错导致的显示问题
+- [DirectX_Jun2010](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/DX%E8%BF%90%E8%A1%8C%E5%BA%93____directx_Jun2010_redist.exe) 用于修复因微软_DX_接口出错导致的显示问题
 - [DirectX_setup](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/DirectX_setup.rar) 微软 DX 接口下载
 - [autologon64](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/Autologon64.exe) 可实现 Windows 自动登录 ( 无需手动输入密码 )
 - [NET 运行库](https://dotnet.microsoft.com/en-us/download/) 基于.NET 架构开发的软件运行库依赖支持、科学上网必备组件
@@ -172,7 +172,7 @@
 
 - 4.1 听取 [m1ngsama](https://github.com/m1ngsama) 的意见，布局更符合逻辑。增添了更多工具，对描述文本进行了编辑，没有浪费军事理论课的时间 :P
 - 4.15 根据 [Orangedog433](https://github.com/Orangedog433) 在 KOOK 上的补充，更新了部分解释说明，增加了几个常用工具，军事理论课没有浪费时间
-- 5.28 更新了整体布局，增加了更多分类，没有浪费*马原课*的时间 😇
+- 5.28 更新了整体布局，增加了更多分类，没有浪费_马原课_的时间 😇
 - 6.4 根据 [Orangedog433](https://github.com/Orangedog433) 在 KOOK 上的补充，增加了对校园网打开方式的说明，更新了从网盘下载 _win11修改器_ 的途径
 - 6.11 分类了更多文件，对格式进行了简单修改，增加了友情链接。
 
