@@ -1,14 +1,14 @@
 {
   "name": "documents",
   "version": "1.0.0",
-  "packageManager": "pnpm@9.0.0",
+  "packageManager": "pnpm@10.20.0",
   "description": "",
   "author": "",
   "license": "ISC",
   "keywords": [],
   "main": "index.js",
   "engines": {
-    "pnpm": "^9.0.0"
+    "pnpm": "^10.0.0"
   },
   "scripts": {
     "test": "vitest",
@@ -24,20 +24,20 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "dayjs": "^1.11.13",
-    "lint-staged": "^16.1.2",
+    "dayjs": "^1.11.19",
+    "lint-staged": "^16.2.6",
     "pinyin": "4.0.0-alpha.3",
-    "vue": "^3.5.17"
+    "vue": "^3.5.22"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^4.15.0",
-    "@types/node": "^22.15.32",
+    "@antfu/eslint-config": "^4.19.0",
+    "@types/node": "^22.19.0",
     "@types/pinyin": "^2.10.2",
-    "eslint": "^9.29.0",
-    "eslint-plugin-format": "^1.0.1",
+    "eslint": "^9.39.0",
+    "eslint-plugin-format": "^1.0.2",
     "husky": "^9.1.7",
     "markdownlint-cli2": "^0.18.1",
-    "vitepress": "^1.6.3",
+    "vitepress": "^1.6.4",
     "vitepress-plugin-mermaid": "^2.0.17",
     "vitest": "^3.2.4"
   },
