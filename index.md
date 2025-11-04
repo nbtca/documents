@@ -24,8 +24,6 @@ hero:
       link: /archived/index
 ---
 
-# NBTCA Documents
-
 <!-- markdownlint-disable MD033 -->
 <style>
   .VPHero{
