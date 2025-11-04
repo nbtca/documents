@@ -1,3 +1,8 @@
+---
+next:
+  text: '计算机硬件系统的搭建与维护'
+  link: '/archived/manual/hardware-establish'
+---
 # 存档
 
 目前协会使用 [Github Project](https://github.com/orgs/nbtca/projects) 进行项目管理，大部分的会议讨论结果都在相应的Github issue中记录。
