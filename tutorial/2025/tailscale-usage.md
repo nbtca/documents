@@ -2,9 +2,9 @@
 
 :::info 维护信息
 
-| 维护人 | 时间             |
-| ------ | ---------------- |
-| @LazuliKao    | 2025.11.3 - Now |
+|     维护人     |      时间       |
+| :------------: | :-------------: |
+| [@lazulikao]() | 2025.11.3 - now |
 
 :::
 
@@ -139,7 +139,6 @@ Tailscale 是一个基于 WireGuard 的零配置虚拟组网服务，它可以�
    在 Google Play 商店搜索 "Tailscale" 并安装，或从 [F-Droid](https://f-droid.org/) 下载开源版本。
 
 2. **配置自定义服务器**
-
    - 打开 Tailscale 应用
    - 点击右上角的设置图标（三个点）
    - 选择 "Use custom control server"
@@ -157,7 +156,6 @@ Tailscale 是一个基于 WireGuard 的零配置虚拟组网服务，它可以�
    在 App Store 搜索 "Tailscale" 并安装。
 
 2. **配置自定义服务器**
-
    - 打开 Tailscale 应用
    - 点击右上角的设置图标（齿轮）
    - 点击账户 `Accounts`
@@ -174,7 +172,7 @@ Tailscale 是一个基于 WireGuard 的零配置虚拟组网服务，它可以�
 创建一个 `docker-compose.yml` 文件：
 
 ```yaml
-version: '3'
+version: "3"
 
 services:
   tailscale:
@@ -201,7 +199,7 @@ services:
       TS_EXTRA_ARGS: --advertise-tags=tag:container --login-server=https://headscale.app.nbtca.space
       TS_STATE_DIR: /var/lib/tailscale
       TS_SOCKET: /var/run/tailscale/tailscaled.sock
-      TS_USERSPACE: false # 如果遇到问题可以尝试改成true，但性能会差一些，false即运行在内核模块 
+      TS_USERSPACE: false # 如果遇到问题可以尝试改成true，但性能会差一些，false即运行在内核模块
       TS_HOSTNAME: xxx-docker # 你的设备名称 建议修改
       TS_DEBUG_FIREWALL_MODE: nftables # 如果操作系统的防火墙使用的是iptables，请去掉这一行
       TZ: Asia/Shanghai
