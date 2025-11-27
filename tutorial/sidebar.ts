@@ -20,6 +20,10 @@ export const sidebar = [
         text: '社团自建日历管理指南',
         link: 'google-calendar',
       },
+      {
+        text: 'C盘清理标准化流程',
+        link: 'clean-drive-c',
+      },
     ],
   },
 ]
