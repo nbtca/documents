@@ -165,4 +165,16 @@ ps:你想更进一步？跟我一起来写手册吧😇
 
 ![Auto-Merge](../assets/Auto-Merge.png)
 
-**_如何Review就请这篇教程的Reviewer来写吧😋_**
+**_Reviewer看到的大概是这样：_**
+
+![PR-Reviewer](../assets/PR-Reviewer.png)
+
+**_批准_**
+
+![Approve](../assets/Approve.png)
+
+**_合并_**
+
+![Merge](../assets/Merge.png)
+
+🤓完成！
