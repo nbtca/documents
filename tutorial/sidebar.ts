@@ -20,6 +20,11 @@ export const sidebar = [
         text: '社团自建日历管理指南',
         link: 'google-calendar',
       },
+      {
+        text: '快速上手NBTCA的Github工作流',
+        link: 'github-workflow',
+      },
+
     ],
   },
 ]
