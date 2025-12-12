@@ -116,6 +116,8 @@ GitHub Student Developer Pack 提供众多开发工具和服务的免费或优�
 - **用途**
 Azure for Students 提供免费的云计算资源。主要是海外云服务器。每年有$100的免费额度，激活一年在最后一个月会提示续期，续期后余额会恢复$100。
 
+在教育栏中有多个`Windows Server`版本的激活码，属于正版，有需可取用。
+
 - **步骤**
 
 1. 访问 [Azure for Students](https://azure.microsoft.com/en-us/free/students/)
