@@ -111,7 +111,7 @@ GitHub Student Developer Pack 提供众多开发工具和服务的免费或优�
 > 直接上传截图可能会提示重复。
 > GitHub大概率是机器审核，如果没成功大概率5分钟就能看到结果，尝试不通方式重新提交申请即可。
 
-## Azure for Students（微软云服务）
+### Azure for Students（微软云服务）
 
 - **用途**
 Azure for Students 提供免费的云计算资源。主要是海外云服务器。每年有$100的免费额度，激活一年在最后一个月会提示续期，续期后余额会恢复$100。
