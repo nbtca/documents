@@ -24,7 +24,10 @@ export const sidebar = [
         text: '快速上手NBTCA的Github工作流',
         link: 'github-workflow',
       },
-
+      {
+        text: '教育邮箱使用指南',
+        link: 'edu-email',
+      },
     ],
   },
 ]
