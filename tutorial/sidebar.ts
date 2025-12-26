@@ -28,6 +28,10 @@ export const sidebar = [
         text: '教育邮箱使用指南',
         link: 'edu-email',
       },
+      {
+        text: 'Github Education 认证指南',
+        link: 'github-education-verification',
+      },
     ],
   },
 ]
