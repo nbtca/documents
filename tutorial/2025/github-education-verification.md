@@ -71,7 +71,7 @@ GitHub Education 围绕学生、教师、学校三类核心用户，提供工具
 
 在[账单与付款信息](https://github.com/settings/billing/payment_information)中添加个人信息。此处以`@nit.zju.edu.cn`邮箱为例:
 ![yes](../assets/Payment-information.png)
-此邮箱对应的学校信息为浙江大学紫荆港校区，如为`@nbt.edu.cn`邮箱,对应的是浙大宁波理工学院，请在这些区域如下填写：
+此邮箱对应的学校信息为浙江大学紫金港校区，如为`@nbt.edu.cn`邮箱,对应的是浙大宁波理工学院，请在这些区域如下填写：
 
 - Address: 1 Qianhu South Road, Ningbo Institute of Technology, Zhejiang University ,Ningbo ,Zhejiang Province
 - City: Ningbo
