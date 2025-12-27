@@ -23,6 +23,8 @@ export const sidebar = [
       {
         text: 'C盘清理标准化流程',
         link: 'clean-drive-c',
+      },
+      {
         text: '快速上手NBTCA的Github工作流',
         link: 'github-workflow',
       },
