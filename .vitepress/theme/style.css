@@ -1,0 +1,25 @@
+/* 页面切换过渡动效 */
+.VPDoc,
+.VPContent {
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.page-transition-leave {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.page-transition-enter {
+  animation: pageEnter 0.4s ease-out;
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
