@@ -14,7 +14,7 @@ lastUpdated: true
 
 :::
 
-<!-- [[toc]] -->
+[[toc]]
 
 ## 开发部
 部长：Yunacelisse（2026届）
