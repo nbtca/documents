@@ -12,6 +12,10 @@ export const sidebar = [
         text: '计算机协会手册',
         items: [
           {
+            text: '职能分配',
+            link: 'function-inventory',
+          },
+          {
             text: '计算机硬件系统的搭建与维护(模版，待完善)',
             link: 'hardware-establish',
           },
