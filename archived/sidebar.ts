@@ -12,6 +12,14 @@ export const sidebar = [
         text: '计算机协会手册',
         items: [
           {
+            text: 'CA101介绍',
+            link: 'CA101',
+          },
+          {
+            text: 'CA102介绍',
+            link: 'CA102',
+          },
+          {
             text: '职能分配',
             link: 'function-inventory',
           },
@@ -28,8 +36,8 @@ export const sidebar = [
             link: 'net-usage',
           },
           {
-            text: 'CA101介绍',
-            link: 'CA101',
+            text: '从零构建好用的Windows(模版，待完善)',
+            link: 'windows-from-scratch',
           },
         ],
       },
