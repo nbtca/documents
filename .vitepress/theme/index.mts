@@ -15,7 +15,7 @@ export default {
           content.classList.add('page-transition-enter')
           setTimeout(() => {
             content.classList.remove('page-transition-enter')
-          }, 400)
+          }, 200)
         }
       }
       
