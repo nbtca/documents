@@ -36,6 +36,10 @@ export const sidebar = [
         text: 'Github Education 认证指南',
         link: 'github-education-verification',
       },
+      {
+        text: '搭建属于自己的minecraft服务器',
+        link: 'minecraft-server-quick-start',
+      },
     ],
   },
 ]
