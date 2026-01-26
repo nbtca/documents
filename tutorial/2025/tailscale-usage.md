@@ -250,6 +250,38 @@ docker-compose logs -f tailscale
 
 通常不需要使用pre auth key，正常启动会跳转使用统一身份认证，如有需要请在连接一台设备后，联系社团管理员获取预注册密钥（Pre-auth key）。
 
+### 部分代理软件不能与Tailscale同时使用的解决方案
+
+转载自：[Tailscale 配合 Mihomo(Clash.Meta) TUN/Quantumult X VPN 共存使用技巧](https://blog.ichr.me/post/tailscale-mihomo-quantumult-x/)
+
+默认情况下，Tailscale 会作为 TUN 虚拟网关处理，这可能会与代理工具互斥。
+
+1. 代理工具排除 Tailscale 网段
+2. Tailscale 关闭本地 DNS 服务（并非 完全关闭 MagicDNS）或 代理工具按需设置 100.100.100.100 DNS
+
+仅以 Mihomo 为例具体操作。
+
+Tailscale 会为每个节点分配一个唯一的 100.x.y.z IP，可以单独将这些地址排除在代理之外。特别的，Mihomo 还可以在规则中根据 PROCESS-NAME 来排除 Tailscale 进程、在 TUN 网关中排除 Tailscale interface。
+
+在 Mihomo profile 中插入以下规则：
+
+```bash
+tun:
+  exclude-interface:
+    - Tailscale # maybe `utun*` on macOS
+  route-exclude-address:
+    - 100.64.0.0/10
+    - fd7a:115c:a1e0::/48
+rules:
+  - PROCESS-NAME,tailscale.exe,DIRECT # remove .exe for macOS
+  - PROCESS-NAME,tailscaled.exe,DIRECT
+dns:
+  nameserver-policy:
+    "+.<tailnet-name>.ts.net": "100.100.100.100"
+```
+
+对于获取的订阅不同，DIRECT的写法可能不同，例如SkyLinkX提供的服务其direct写法为🎯Direct。
+
 ## 进阶使用
 
 ### 子网路由
