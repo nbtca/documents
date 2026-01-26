@@ -129,6 +129,7 @@ oobe\bypassnro
 [装机教程（bilibili：硬件茶谈）](https://www.bilibili.com/video/BV1Vv411n7x8)
 
 ## 各厂商笔记本 BIOS/Boot Manager/一键恢复入口
+
 | 厂商 | BIOS入口 | Boot Manager入口 | 一键恢复入口 |
 | :---: | :--- | :--- | :--- |
 | 联想 | 多数机型开机/重启按F2；ThinkPad部分机型按F1；带Novo键机型关机按Novo键选BIOS Setup | 开机/重启按F12；部分机型需先进BIOS再设置启动项 | 带Novo键机型按Novo键选系统恢复；多数机型开机按F11 |
