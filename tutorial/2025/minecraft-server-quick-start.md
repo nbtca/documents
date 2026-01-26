@@ -6,23 +6,71 @@
 
 ## 前言
 
-在部署属于自己的服务器前,请确保你的部署设备已经安装好了所需运行环境(如对应的Java版本).可以在此处检索你需要的Java版本.本教程由简单至进阶,可以根据自身需求选择方案部署.
+一些专有名词的解释:
 
-## 部署服务端(forge/fabric)
+  | 名词 | 意义 |
+  | :-: | :-: |
+  | 客户端 | 玩家本地运行的 Minecraft 游戏程序 |
+  | 服务端 | 运行在远程主机或本地电脑上的专用程序 |
+  | 内网穿透 | 建立公网与内网的定向通信链路 |
+
+在部署属于自己的服务器前,请确保你的部署设备已经安装好了所需运行环境(如对应的Java版本).可以在此处检索你需要的Java版本.本教程由简单至进阶,系统有[Windows](#windows),[Ubuntu](#ubuntu),[MacOS](#macos)和[Docker](#docker),可以根据自身需求选择方案部署.鉴于大部分人部署服务器的需求为开设模组服/插件服或混合端,本教程主要在此方面做介绍.
+
+## 部署服务端(Mod/API or MIX)
 
 ### Windows
 
-#### 整合包作者提供了服务器版本
+#### 整合包作者提供了服务端
 
-此处以curseforge平台的ATM9 to the sky整合包(1.20.1 forge 47.4.0 JDK21)为例.可以在此处下载包括服务器版本的游戏包.
+此处以curseforge平台的ATM9整合包(forge 1.20.1)为例.可以在curseforge下载包括服务器版本的服务端.
+![serverpacks](../assets/serverpacks.png)
 
 游戏包解压后的整个文件夹为服务端的所有文件,运行run.bat可以开始自动化部署.在部署过程中,如遇文件下载失败,请切换至代理网络下载,或请有代理服务的朋友下载好后将游戏包发送给你.
 
-在下载好后,命令行窗口会显示需要同意eula用户协议,然后每过10s尝试启动服务端.此时输入ctrl+c终止命令或直接关闭命令行.进入eula.txt将false改为true.然后启动startserver.bat即可成功启动服务端.
+在下载好后,命令行窗口会显示需要同意eula用户协议,然后每过10s尝试启动服务端.此时直接关闭命令行.进入eula.txt将false改为true.然后启动startserver.bat即可成功启动服务端.
 
-还有另一种的部署方式以FTB Team的FTB下载器为例.
+还有另一种的部署方式以Feed The Beast团队的的FTB下载器为例.
 
-### Ubuntu(Linux)
+此处以FTB OceanBlocks 2整合包(neoforge 1.21.1)为例.可以在Feed-The-Beast的官方下载服务端.
+
+![FTB-serverfiles-download](../assets/FTB-serverfiles-download.png)
+
+将.exe文件移动至部署文件夹中,双击启动.如未安装对应Java,请在第二个选项选择yes.
+
+![FTBdownload](../assets/FTBdownload.png)
+
+随后的操作与上面的同理,修改eula文件然后启动服务端.
+
+#### 整合包作者未提供服务端
+
+当整合包作者未提供服务端时,我们需要通过以下步骤完成服务端的自创建.
+
+```mermaid
+graph LR
+    A[下载客户端] --> B[下载服务端核心]
+    B --> C[部署服务端]
+    C --> D[从客户端复制文件至服务端]
+```
+
+服务器核心的下载这里推荐[MSL用户中心](https://user.mslmc.net/mc-tools/download-server-core)
+
+- 如仅需部署模组服务器,根据类型选择NeoForge系或Fabric系模组服务端.
+- 如仅需使用插件不使用模组,推荐选择插件服务端的paper核心.
+- 如需模组和插件共存,推荐使用混合服务端的arclight-*核心.
+
+下载核心至部署位置,在同一目录下创建start.bat文件,内容如下.
+
+```bash
+    @echo off
+    java -Xms2g -Xmx4g -jar 核心文件名
+    pause
+```
+
+其中,-Xms为最小分配内存,-Xmx为最大分配内存.将核心文件名带扩展名(.jar)复制进去.
+
+之后的流程与前文的相符,在完成服务端的部署后将整个客户端的文件全部选择复制进服务端即可.
+
+### Ubuntu
 
 首先确保系统已安装所需的Java版本。可以使用以下命令检查Java版本:
 
@@ -53,7 +101,7 @@ chmod +x start.sh
 等待文件下载完成后,需要同意EULA协议。编辑eula.txt文件:
 
 ```bash
-nano eula.txt
+gedit eula.txt
 ```
 
 将`eula=false`改为`eula=true`,保存后退出(Ctrl+X, 然后按Y确认)。
@@ -64,7 +112,7 @@ nano eula.txt
 ./start.sh
 ```
 
-为了让服务器在终端关闭后继续运行,建议使用screen:
+<!-- 为了让服务器在终端关闭后继续运行,建议使用screen:
 
 ```bash
 sudo apt install screen
@@ -76,7 +124,7 @@ screen -S minecraft
 
 ```bash
 screen -r minecraft
-```
+``` -->
 
 ### MacOS
 
@@ -247,6 +295,8 @@ docker-compose up -d
 
 ### 隐藏ui窗口
 
-右键startserver.bat在记事本中编辑,在启动命令的后段加上 -nogui.这样在启动的时候仅显示命令行窗口而不会有ui窗口.
+编辑startserver.bat,在启动命令的后段加上 -nogui.这样在启动的时候仅显示命令行窗口而不会有ui窗口,可精简窗口并适当减少系统占用.
 
-## NBTCA提供的公益服务器方案
+## 内网穿透
+
+## 远程服务器方案
