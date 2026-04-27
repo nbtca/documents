@@ -3,10 +3,13 @@
   "config": {
     "MD013": false,
     "MD033": false,
-    "MD041": false
+    "MD041": false,
+    "MD049": false
   },
   "globs": [
     "repair/**/*.md",
-    "process/**/*.md"
+    "process/**/*.md",
+    "tutorial/**/*.md",
+    "archived/**/*.md"
   ]
 }

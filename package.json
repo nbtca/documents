@@ -2,11 +2,8 @@
   "name": "documents",
   "version": "1.0.0",
   "packageManager": "pnpm@9.0.0",
-  "description": "",
-  "author": "",
+  "description": "Documents for nbtca",
   "license": "ISC",
-  "keywords": [],
-  "main": "index.js",
   "engines": {
     "pnpm": "^9.0.0"
   },
@@ -25,21 +22,21 @@
   },
   "dependencies": {
     "dayjs": "^1.11.13",
-    "lint-staged": "^16.1.2",
     "pinyin": "4.0.0-alpha.3",
     "vue": "^3.5.17"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^6.2.0",
-    "@braintree/sanitize-url": "^7.1.1",
+    "@braintree/sanitize-url": "^7.1.2",
     "@types/node": "^22.15.32",
     "@types/pinyin": "^2.10.2",
-    "cytoscape": "^3.33.1",
+    "cytoscape": "^3.33.2",
     "cytoscape-cose-bilkent": "^4.1.0",
     "debug": "^4.4.3",
     "eslint": "^9.29.0",
     "eslint-plugin-format": "^1.0.1",
     "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
     "markdownlint-cli2": "^0.18.1",
     "vitepress": "^1.6.4",
     "vitepress-plugin-mermaid": "^2.0.17",

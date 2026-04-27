@@ -25,6 +25,7 @@ export default withMermaid({
         { text: '维修操作指南', link: '/repair/guide' },
         { text: 'NBTCA 软件仓库管理', link: '/repair/tools' },
         { text: '维修工单系统 (weekend)', link: '/repair/weekend' },
+        { text: '维修日检查单', link: '/repair/checklist' },
       ],
       '/archived': sidebarArchived,
     },
@@ -36,6 +37,9 @@ export default withMermaid({
       { icon: 'github', link: 'https://github.com/nbtca/documents' },
     ],
   },
-  ignoreDeadLinks: true,
+  ignoreDeadLinks: [
+    /^https?:\/\//,
+  ],
   lastUpdated: true,
+  sitemap: { hostname: 'https://docs.nbtca.space' },
 })
