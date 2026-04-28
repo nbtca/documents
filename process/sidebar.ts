@@ -33,7 +33,7 @@ export const sidebar = [
         text: '组织活动',
         items: [
           {
-            text: '活动举办文档',
+            text: '活动举办文档(待完善)',
             link: 'event-organization',
           },
         ],
