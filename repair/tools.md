@@ -2,9 +2,9 @@
 
 :::info 维护信息
 
-| 维护人        | 时间            |
-| ------------- | --------------- |
-| @A1exe1A-1123 | 2025.3.19 - Now |
+| 维护人                                           | 时间            |
+| ------------------------------------------------ | --------------- |
+| [@A1exe1A-1123](https://github.com/A1exe1A-1123) | 2025.3.19 - Now |
 
 :::
 
@@ -19,85 +19,48 @@
 ### 🧑‍💻 应用程序 (Applications)
 
 - 🔧 解压缩软件（WinRAR、BandZip）：各种用于文件传输与加载的工具软件。
-
   - [WinRAR](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/WinRAR) 功能齐全且简单的解压缩软件 ( 操作说明：在运行.exe 获得解压文件夹后将其放入 C 盘目录并运行文件夹内的.exe 程序，进行全局文件的设置 )
 
 - 🌍 网络工具 (Browsers, Download Managers): 网络浏览器、下载管理器等工具.
-
   - [ChromeSetup](https://i.nbtca.space/files/d/admin/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/ChromeSetup.exe) 谷歌 Chrome 浏览器安装包。
   - [OneDrive.Setup](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/OneDriveSetup.exe) 用于下载微软 OneDrive 服务。
 
 - 🎮 游戏软件 (Games): 游戏软件及相关资源.
-
   - [Steam SetUp](https://i.nbtca.space/files/d/admin/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/SteamSetup%20.exe) Steam 应用程序安装包，这个肯定是正版 🤪
   - [Flash 浏览器插件](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/Flash%E6%B5%8F%E8%A7%88%E5%99%A8%E6%8F%92%E4%BB%B6_flash_install.rar) Flash 插件下载。用于游玩用 Flash引擎 制作的网页游戏，例如4399小游戏。
-
-- 🔐 安全软件 (Antivirus, Firewalls): 各类安全软件，包括杀毒软件和防火墙.
-
-- ⌨️ 开发工具 (IDEs, Compilers, SDKs): 集成开发环境、编译器和开发工具包.
-
-- 🎨 设计软件 (Graphics, CAD, Video Editing): 图形设计、CAD 和视频编辑软件.
 
 - 🧑‍💻 办公软件 （Office、Adobe 全家桶）：各类工作常用表格、演示、文稿软件.
   - [盗版Office](https://i.nbtca.space/files/维修队工具包/Repair/离线Office整合___解压即用懒人版离线安装激活Office整合包.rar) 懒人版离线Office整合包，~~仅供学习交流使用，请下载后24小时内删除。~~
 
-### 🚗 驱动程序 (Drivers)
-
-- 🖥️ 显卡驱动: 各种显卡驱动程序.
-- 🔊 声卡驱动: 各种声卡驱动程序.
-- 🖨️ 打印机驱动: 打印机驱动程序.
-- 🔩 其他硬件驱动: 包括其他设备的驱动程序.
-
 ### 💽 操作系统 （Operating Systems）
 
 - Windows： 各种版本的Windows系统镜像。
-
   - [Win10 22H2](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Windows%E7%B3%BB%E7%BB%9F%E9%95%9C%E5%83%8F/Win10_22H2) MS Windows 10 22H2
   - [Win11 23H2](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Windows%E7%B3%BB%E7%BB%9F%E9%95%9C%E5%83%8F/Win11_23H2) MS Windows 11 23H2 **由于微软的 Windows 更新策略，官网已不支持该版本的获取与下载**
   - [Win11 24H2](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Windows%E7%B3%BB%E7%BB%9F%E9%95%9C%E5%83%8F/Win11_24H2) MS Windows 11 24H2
   - [MediaCreationTool](https://i.nbtca.space/files/维修队工具包/Repair/Win10镜像下载___MediaCreationTool_22H2.exe) 各版本 Windows10 镜像文件的下载。
 
-- 💻 macOS：各种版本的macOS系统镜像。
-
 - 🐧 Linux：各种发行版本的Linux系统镜像。
-
   - [wubuntu-11.24.04.2](https://i.nbtca.space/files/维修队工具包/Wubuntu/wubuntu-11.24.04.2-x64.iso) Wubuntu 11.24.04.2-x64 ISO镜像文件
-
-- 📲 移动操作系统(Android、IOS、HarmonyOS)等系统镜像。
 
 ## 📚资源（Resources）
 
 ### 📖 文档（Documentations）
 
 - 👩‍🔧 技术文档（Technical documentation）
-
   - [蓝屏错误码速查表](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/%E8%93%9D%E5%B1%8F%E9%80%9F%E6%9F%A5%E8%A1%A8.xlsx) 适用于 Windows 系统报错需要重启，显示蓝屏时的问题诊断
 
 - 📑 教程、书籍 (Tutorials): 各类书籍、技术教程，帮助您快速掌握新技术、学习新思想。
-
   - [Win11 快捷键](https://i.nbtca.space/files/维修队工具包/Repair/Win11使用快捷键.pdf) Windows 11 系统使用快捷键，帮助用户快速进行操作。
   - [Go 程序设计语言](https://i.nbtca.space/files/Resources/Documentation/Tutorials/Go%20程序设计语言.pdf) GO 程序设计教程
   - [编码：隐匿在计算机软硬件背后的语言](https://i.nbtca.space/files/Resources/Documentation/Tutorials/编码：隐匿在计算机软硬件背后的语言（美）佩措尔德.pdf) （美）佩措尔德
 
-- 📄 用户手册 (User Manuals): 各种软件和工具的用户手册。
-
-- 📝 API 文档 (API Documentation): 各类开源项目或软件的 API 文档。
-
-### 💻代码库 (Code Libraries)
-
-- 🐍 编程语言 (Python, Java, C++): 提供各类编程语言的资源.
-- 🔧 框架 (Frameworks): 各种流行框架的资源，如 React、Spring 等.
-- 🌱 开源项目 (Open source projects): 各种开源项目的代码库.
-
 ### 🎨字体 (Fonts)
 
 - 🀄️ 中文字体: 各类中文字体资源. -[PingFang SC、HK、TC](https://i.nbtca.space/files/Resources/Fonts/PingFang%20SC、HK、TC（Win%20完美协作-修改版）.zip) Win 完美协作-修改版
-- 🇬🇧 英文字体: 各类英文字体资源.
 
 ### 📸 素材 (Materials)
 
-- 🖼️ 图片 (Images): 各种图像素材，包括照片、插图等.
-- 🎵 音频 (Audio): 音频文件和素材.
 - 🎬 视频 (Video): 各类视频文件和素材.
   - [Introduction to the Adobe Premiere Pro](https://i.nbtca.space/files/Resources/Materials/Courses/Adobe%20Premiere/Udemy%20-%20Adobe%20Premiere%20Pro%20CC%20Masterclass%20Video%20Editing%20in%20Premiere%202023-6/1%20-%20Introduction%20to%20the%20Adobe%20Premiere%20Pro%20Course/1%20-%20Welcome%20to%20Class%20Premiere%20Pro%20Video%20Editing%20Course.mp4) Adobe PR 视频教程
 
@@ -122,13 +85,13 @@
 - [RTSS](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/%E6%80%A7%E8%83%BD%E7%9B%91%E8%A7%86___RTSSSetup736.exe) 与 ⬆️**微星小飞机** 配套使用的显示/锁帧软件
 - [FurMark](https://geeks3d.com/furmark/downloads/)_甜甜圈_ 显卡压力测试/跑分软件
 
-### 🗄️ _Windows_系统工具
+### 🗄️ *Windows*系统工具
 
 - [DirectX_Repair](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/DX%E4%BF%AE%E5%A4%8D___DirectX_Repair.7z) 用于游戏 DirectX 图形接口.dll 运行库修复
 - [UAPSignedBinary_Microsoft.DirectX](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/DX%E4%BF%AE%E5%A4%8D___UAPSignedBinary_Microsoft.DirectX.x64.appx) 游戏 DirectX 图形接口.dll 运行库修复 _适用于 64 位系统_
-- [UAPSignedBinary_Microsoft.DirectX](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/DX%E4%BF%AE%E5%A4%8D___UAPSignedBinary_Microsoft.DirectX.x86.appx) 用于修复因微软_DX_接口出错导致的显示问题 _适用于 86 位系统_
-- [dxwebsetup](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/DX%E4%BF%AE%E5%A4%8D___dxwebsetup.exe) 用于修复因微软_DX_接口出错导致的显示问题
-- [DirectX_Jun2010](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/DX%E8%BF%90%E8%A1%8C%E5%BA%93____directx_Jun2010_redist.exe) 用于修复因微软_DX_接口出错导致的显示问题
+- [UAPSignedBinary_Microsoft.DirectX](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/DX%E4%BF%AE%E5%A4%8D___UAPSignedBinary_Microsoft.DirectX.x86.appx) 用于修复因微软*DX*接口出错导致的显示问题 _适用于 86 位系统_
+- [dxwebsetup](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/DX%E4%BF%AE%E5%A4%8D___dxwebsetup.exe) 用于修复因微软*DX*接口出错导致的显示问题
+- [DirectX_Jun2010](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/DX%E8%BF%90%E8%A1%8C%E5%BA%93____directx_Jun2010_redist.exe) 用于修复因微软*DX*接口出错导致的显示问题
 - [DirectX_setup](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/DirectX_setup.rar) 微软 DX 接口下载
 - [autologon64](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/Autologon64.exe) 可实现 Windows 自动登录 ( 无需手动输入密码 )
 - [NET 运行库](https://dotnet.microsoft.com/en-us/download/) 基于.NET 架构开发的软件运行库依赖支持、科学上网必备组件
@@ -172,7 +135,7 @@
 
 - 4.1 听取 [m1ngsama](https://github.com/m1ngsama) 的意见，布局更符合逻辑。增添了更多工具，对描述文本进行了编辑，没有浪费军事理论课的时间 :P
 - 4.15 根据 [Orangedog433](https://github.com/Orangedog433) 在 KOOK 上的补充，更新了部分解释说明，增加了几个常用工具，军事理论课没有浪费时间
-- 5.28 更新了整体布局，增加了更多分类，没有浪费_马原课_的时间 😇
+- 5.28 更新了整体布局，增加了更多分类，没有浪费*马原课*的时间 😇
 - 6.4 根据 [Orangedog433](https://github.com/Orangedog433) 在 KOOK 上的补充，增加了对校园网打开方式的说明，更新了从网盘下载 _win11修改器_ 的途径
 - 6.11 分类了更多文件，对格式进行了简单修改，增加了友情链接。
 

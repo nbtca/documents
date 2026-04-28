@@ -1,4 +1,4 @@
-name: Lint Code
+name: Lint and Build
 
 on:
   push:
@@ -21,4 +21,7 @@ jobs:
         run: pnpm install
 
       - name: Run lint
-        run: pnpm run lint
+        run: pnpm run ci:lint
+
+      - name: Build site
+        run: pnpm docs:build
