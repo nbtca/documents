@@ -3,3 +3,7 @@ node_modules
 .vitepress/cache
 .vitepress/dist
 docs/
+
+# Local preview and browser automation artifacts
+.playwright-mcp/
+/nbtca-documents-preview*.png
