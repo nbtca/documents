@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
@@ -69,6 +70,14 @@ export function expandAssetRegistry(manifest = loadAssetRegistry()): AssetRegist
 }
 
 export function listTargetBinaryAssets(rootDir = repoRoot): string[] {
+  const trackedAssets = listTrackedRepoFiles(rootDir)
+
+  if (trackedAssets) {
+    return trackedAssets
+      .filter(repoPath => targetAssetExtensions.has(path.extname(repoPath).toLowerCase()))
+      .sort((a, b) => a.localeCompare(b))
+  }
+
   const assets: string[] = []
 
   function visit(directory: string) {
@@ -128,6 +137,17 @@ function isIgnoredDirectory(repoPath: string): boolean {
   return ignoredDirectoryPaths.some((ignoredPath) => {
     return repoPath === ignoredPath || repoPath.startsWith(`${ignoredPath}/`)
   })
+}
+
+function listTrackedRepoFiles(rootDir: string): string[] | undefined {
+  try {
+    return execFileSync('git', ['-C', rootDir, 'ls-files', '-z'], { encoding: 'utf8' })
+      .split('\0')
+      .filter(Boolean)
+  }
+  catch {
+    return undefined
+  }
 }
 
 function toRepoPath(absolutePath: string, rootDir: string): string {
