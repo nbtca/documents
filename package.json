@@ -12,7 +12,7 @@
     "test": "vitest",
     "docs:dev": "vitepress dev",
     "docs:build": "vitepress build",
-    "docs:preview": "vitepress preview",
+    "docs:preview": "node scripts/docs-preview.mjs",
     "lint:markdown": "markdownlint-cli2 --fix --config .markdownlint-cli2.jsonc",
     "lint:eslint": "eslint --fix",
     "lint": "pnpm run '/^lint:.*/'",
