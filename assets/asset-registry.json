@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "collections": [
+    {
+      "id": "process-event-templates",
+      "domain": "process",
+      "purpose": "event-template-download",
+      "canonical": true,
+      "compatibilityNote": "Canonical process templates referenced as a collection from process/index.md.",
+      "assets": [
+        "process/assets/event-templates/活动策划书.docx",
+        "process/assets/event-templates/第二课堂申报表.doc",
+        "process/assets/event-templates/计算机协会 志愿者招募.docx"
+      ]
+    },
+    {
+      "id": "process-repair-day-templates",
+      "domain": "process",
+      "purpose": "repair-day-template-download",
+      "canonical": true,
+      "compatibilityNote": "Canonical repair-day template set. Legacy Chinese paths mirror these files for compatibility and should not be used by new links.",
+      "assets": [
+        "process/assets/repair-day-templates/理工维修日志愿者活动总结表.docx",
+        "process/assets/repair-day-templates/注意事项.docx",
+        "process/assets/repair-day-templates/202X.X.X理工维修日签到表.xlsx",
+        "process/assets/repair-day-templates/202X.X.X理工维修日.xlsx",
+        "process/assets/repair-day-templates/理工维修日志愿者活动申请表.docx",
+        "process/assets/repair-day-templates/组织委员会议/1.个人申报志愿者活动材料/志愿者活动总结表.docx",
+        "process/assets/repair-day-templates/组织委员会议/1.个人申报志愿者活动材料/活动名称+时长.xlsx",
+        "process/assets/repair-day-templates/组织委员会议/1.个人申报志愿者活动材料/注意事项.docx",
+        "process/assets/repair-day-templates/组织委员会议/1.个人申报志愿者活动材料/志愿者活动申请表.docx",
+        "process/assets/repair-day-templates/组织委员会议/2.班级申报志愿者活动材料/xx班级-xx志愿者活动志愿者情况汇总表.xlsx",
+        "process/assets/repair-day-templates/组织委员会议/2.班级申报志愿者活动材料/数据学院班级志愿者活动申报表.docx",
+        "process/assets/repair-day-templates/组织委员会议/2.班级申报志愿者活动材料/数据学院班级自主申报志愿者活动方案（试行）.docx",
+        "process/assets/repair-day-templates/组织委员会议/3.社团及实验室申报志愿者活动材料/社团及实验室自主申报志愿者活动材料/数据学院各类社团及实验室志愿者时长管理细则.docx",
+        "process/assets/repair-day-templates/组织委员会议/3.社团及实验室申报志愿者活动材料/社团及实验室自主申报志愿者活动材料/数据学院社团及实验室志愿者活动申报表.docx",
+        "process/assets/repair-day-templates/组织委员会议/3.社团及实验室申报志愿者活动材料/社团及实验室自主申报志愿者活动材料/活动相关情况记录.xlsx",
+        "process/assets/repair-day-templates/组织委员会议/4.志愿者时长统计材料/数据学院青年志愿者协会志愿时长线上认证规定.docx",
+        "process/assets/repair-day-templates/组织委员会议/4.志愿者时长统计材料/xxx班-志愿时长汇总材料/xxx班-志愿者时长汇总表.xlsx",
+        "process/assets/repair-day-templates/组织委员会议/4.志愿者时长统计材料/xxx班-志愿时长汇总材料/个人志愿者时长汇总材料/应佩钰-志愿者时长汇总材料/志愿时长汇总表.xlsx",
+        "process/assets/repair-day-templates/组织委员会议/4.志愿者时长统计材料/xxx班-志愿时长汇总材料/个人志愿者时长汇总材料/应佩钰-志愿者时长汇总材料/时长证明材料汇总/2020.10.7-我爱微积分活动.png",
+        "process/assets/repair-day-templates/组织委员会议/4.志愿者时长统计材料/xxx班-志愿时长汇总材料/个人志愿者时长汇总材料/张三-志愿者时长汇总材料/张三-志愿时长认证.xlsx",
+        "process/assets/repair-day-templates/组织委员会议/5.组织委员大会内容重点摘要.docx"
+      ]
+    },
+    {
+      "id": "legacy-repair-day-template-mirror",
+      "domain": "legacy-repair-day",
+      "purpose": "legacy-template-download",
+      "canonical": false,
+      "legacyRoot": "维修日/理工维修日活动申请文件模板",
+      "canonicalRoot": "process/assets/repair-day-templates",
+      "compatibilityNote": "Legacy Chinese path mirror retained for existing inbound links and manual file lookup. Prefer canonical process/assets/repair-day-templates paths for new content.",
+      "assets": [
+        "维修日/理工维修日活动申请文件模板/理工维修日志愿者活动总结表.docx",
+        "维修日/理工维修日活动申请文件模板/注意事项.docx",
+        "维修日/理工维修日活动申请文件模板/202X.X.X理工维修日签到表.xlsx",
+        "维修日/理工维修日活动申请文件模板/202X.X.X理工维修日.xlsx",
+        "维修日/理工维修日活动申请文件模板/理工维修日志愿者活动申请表.docx",
+        "维修日/理工维修日活动申请文件模板/组织委员会议/1.个人申报志愿者活动材料/志愿者活动总结表.docx",
+        "维修日/理工维修日活动申请文件模板/组织委员会议/1.个人申报志愿者活动材料/活动名称+时长.xlsx",
+        "维修日/理工维修日活动申请文件模板/组织委员会议/1.个人申报志愿者活动材料/注意事项.docx",
+        "维修日/理工维修日活动申请文件模板/组织委员会议/1.个人申报志愿者活动材料/志愿者活动申请表.docx",
+        "维修日/理工维修日活动申请文件模板/组织委员会议/2.班级申报志愿者活动材料/xx班级-xx志愿者活动志愿者情况汇总表.xlsx",
+        "维修日/理工维修日活动申请文件模板/组织委员会议/2.班级申报志愿者活动材料/数据学院班级志愿者活动申报表.docx",
+        "维修日/理工维修日活动申请文件模板/组织委员会议/2.班级申报志愿者活动材料/数据学院班级自主申报志愿者活动方案（试行）.docx",
+        "维修日/理工维修日活动申请文件模板/组织委员会议/3.社团及实验室申报志愿者活动材料/社团及实验室自主申报志愿者活动材料/数据学院各类社团及实验室志愿者时长管理细则.docx",
+        "维修日/理工维修日活动申请文件模板/组织委员会议/3.社团及实验室申报志愿者活动材料/社团及实验室自主申报志愿者活动材料/数据学院社团及实验室志愿者活动申报表.docx",
+        "维修日/理工维修日活动申请文件模板/组织委员会议/3.社团及实验室申报志愿者活动材料/社团及实验室自主申报志愿者活动材料/活动相关情况记录.xlsx",
+        "维修日/理工维修日活动申请文件模板/组织委员会议/4.志愿者时长统计材料/数据学院青年志愿者协会志愿时长线上认证规定.docx",
+        "维修日/理工维修日活动申请文件模板/组织委员会议/4.志愿者时长统计材料/xxx班-志愿时长汇总材料/xxx班-志愿者时长汇总表.xlsx",
+        "维修日/理工维修日活动申请文件模板/组织委员会议/4.志愿者时长统计材料/xxx班-志愿时长汇总材料/个人志愿者时长汇总材料/应佩钰-志愿者时长汇总材料/志愿时长汇总表.xlsx",
+        "维修日/理工维修日活动申请文件模板/组织委员会议/4.志愿者时长统计材料/xxx班-志愿时长汇总材料/个人志愿者时长汇总材料/应佩钰-志愿者时长汇总材料/时长证明材料汇总/2020.10.7-我爱微积分活动.png",
+        "维修日/理工维修日活动申请文件模板/组织委员会议/4.志愿者时长统计材料/xxx班-志愿时长汇总材料/个人志愿者时长汇总材料/张三-志愿者时长汇总材料/张三-志愿时长认证.xlsx",
+        "维修日/理工维修日活动申请文件模板/组织委员会议/5.组织委员大会内容重点摘要.docx"
+      ]
+    },
+    {
+      "id": "repair-documentation-images",
+      "domain": "repair",
+      "purpose": "documentation-image",
+      "canonical": true,
+      "compatibilityNote": "Canonical screenshots used by repair/weekend.md.",
+      "assets": [
+        "repair/assets/issue-label.png",
+        "repair/assets/issue-reply-example.png",
+        "repair/assets/link-github.png"
+      ]
+    },
+    {
+      "id": "tutorial-documentation-images",
+      "domain": "tutorial",
+      "purpose": "documentation-image",
+      "canonical": true,
+      "compatibilityNote": "Canonical screenshots used by tutorial guides.",
+      "assets": [
+        "tutorial/assets/Approve.png",
+        "tutorial/assets/Assignees.png",
+        "tutorial/assets/Auto-Merge.png",
+        "tutorial/assets/Branch.png",
+        "tutorial/assets/Commit.png",
+        "tutorial/assets/Create-PR.png",
+        "tutorial/assets/Edit.png",
+        "tutorial/assets/Label-Setup.png",
+        "tutorial/assets/Merge.png",
+        "tutorial/assets/Minecraft-Server-Management.png",
+        "tutorial/assets/Minecraft-Wiki-git.png",
+        "tutorial/assets/Minecraft-Wiki-gh.png",
+        "tutorial/assets/Minecraft-Wiki.png",
+        "tutorial/assets/PR-Reviewer.png",
+        "tutorial/assets/Payment-information.png",
+        "tutorial/assets/Reviewer-PR.png",
+        "tutorial/assets/Roadmap.png",
+        "tutorial/assets/Subs.png",
+        "tutorial/assets/Success.png",
+        "tutorial/assets/gh-issue-list.png",
+        "tutorial/assets/gh-issue-view.png"
+      ]
+    },
+    {
+      "id": "archived-2017-workbooks",
+      "domain": "archived",
+      "purpose": "archive-record",
+      "canonical": true,
+      "compatibilityNote": "Historical workbook retained as an archived record; not a reusable template.",
+      "assets": [
+        "archived/2017/2017~2018星级评定评分汇总.xlsx"
+      ]
+    }
+  ]
+}
