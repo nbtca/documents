@@ -1,0 +1,14 @@
+# Default repository owners.
+* @m1ngsama @Orangedog433
+
+# Documentation governance and review flow.
+/CONTRIBUTING.md @m1ngsama @Orangedog433
+/CONTEXT.md @m1ngsama @Orangedog433
+/docs/adr/ @m1ngsama @Orangedog433
+/.github/ @m1ngsama @Orangedog433
+
+# Active documentation areas.
+/tutorial/ @m1ngsama @Yuna-Celisse
+/process/ @m1ngsama @Yuna-Celisse
+/repair/ @m1ngsama @Orangedog433
+/archived/ @m1ngsama @Yuna-Celisse
