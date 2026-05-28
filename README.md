@@ -6,14 +6,17 @@ Documents for nbtca.
 
 ### Install dependencies
 
-1. Install Node.js
-2. Install pnpm
+1. Install Node.js 22.21.1
+2. Install pnpm 9.0.0
+
    ```bash
    npm install -g pnpm
    ```
+
 3. Install dependencies
+
    ```bash
-    pnpm install
+   pnpm install --frozen-lockfile
    ```
 
 ### Start development server
@@ -32,4 +35,15 @@ pnpm docs:build
 
 ```bash
 pnpm lint
+```
+
+### Verify before pushing
+
+Run the same checks as CI locally:
+
+```bash
+pnpm install --frozen-lockfile
+pnpm test -- --run
+pnpm run ci:lint
+pnpm docs:build
 ```
