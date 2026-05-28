@@ -1,300 +1,94 @@
+import { readdirSync, readFileSync, statSync } from 'node:fs'
+import path from 'node:path'
+
+const SUBDIR_LABELS: Record<string, string> = {
+  meetings: '会议纪要',
+  developer: '开发组',
+}
+
+const archivedDir = path.resolve(__dirname)
+
+function getTitle(filepath: string): string {
+  try {
+    const content = readFileSync(filepath, 'utf-8')
+    const match = content.match(/^# (.+)$/m)
+    if (match)
+      return match[1]
+  }
+  catch {}
+  return path.basename(filepath, '.md')
+}
+
+function listMdFiles(dir: string): string[] {
+  return readdirSync(dir)
+    .filter(f => f.endsWith('.md') && f !== 'index.md')
+    .sort()
+}
+
+function listDirs(dir: string): string[] {
+  return readdirSync(dir)
+    .filter((f) => {
+      try {
+        return statSync(path.join(dir, f)).isDirectory() && !f.startsWith('.')
+      }
+      catch { return false }
+    })
+    .sort()
+}
+
+function buildYearItems(dir: string, urlBase: string) {
+  const files = listMdFiles(dir)
+  const subdirs = listDirs(dir)
+  const items: Record<string, unknown>[] = []
+
+  for (const f of files) {
+    items.push({
+      text: getTitle(path.join(dir, f)),
+      link: `${urlBase}${f.replace(/\.md$/, '')}`,
+    })
+  }
+
+  for (const sub of subdirs) {
+    const subFiles = listMdFiles(path.join(dir, sub))
+    if (subFiles.length === 0)
+      continue
+    items.push({
+      text: SUBDIR_LABELS[sub] || sub,
+      base: `${urlBase}${sub}/`,
+      items: subFiles.map(f => ({
+        text: getTitle(path.join(dir, sub, f)),
+        link: f.replace(/\.md$/, ''),
+      })),
+    })
+  }
+
+  return items
+}
+
+const allDirs = listDirs(archivedDir)
+const years = allDirs.filter(d => /^\d{4}$/.test(d)).sort((a, b) => +b - +a)
+
 export const sidebar = [
-  {
-    text: '简介',
-    link: '/archived/index',
-  },
-  {
-    text: '手册',
-    collapsed: false,
-    base: '/archived/manual/',
-    items: [
-      {
-        text: '计算机协会手册',
-        items: [
-          {
-            text: '职能分配',
-            link: 'function-inventory',
-          },
-          {
-            text: '计算机硬件系统的搭建与维护(模版，待完善)',
-            link: 'hardware-establish',
-          },
-          {
-            text: '基础操作系统的使用技术(模版，待完善)',
-            link: 'os-skills',
-          },
-          {
-            text: '国际互联网的使用(模版，待完善)',
-            link: 'net-usage',
-          },
-          {
-            text: 'CA101介绍',
-            link: 'CA101',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    text: '2025',
-    collapsed: false,
-    base: '/archived/2025/',
-    items: [
-      {
-        text: '会议纪要',
-        items: [
-          {
-            text: '2025.01.24开发部例会',
-            link: '2025.01.24开发部例会',
-          },
-          {
-            text: '2025.01.25部长会议',
-            link: '2025.01.25部长会议',
-          },
-          {
-            text: '2025.01.26年度总结会议',
-            link: '2025.01.26年度总结会议',
-          },
-          {
-            text: '2025.10.11第一次例会',
-            link: '2025.10.11第一次例会',
-          },
-          {
-            text: '2025.12.26NWDC',
-            link: '2025.12.26NWDC',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    text: '2024',
-    collapsed: true,
-    items: [
-      {
-        text: '计算机协会纲要',
-        link: '/archived/2024/计算机协会纲要',
-      },
-      {
-        text: '会议纪要',
-        base: '/archived/2024/meetings/',
-        items: [
-          {
-            text: '2024.01.06例会',
-            link: '2024.01.06例会',
-          }, // 2024.01.06例会.md
-          {
-            text: '2024.03.01例会',
-            link: '2024.03.01例会',
-          }, // 2024.03.01例会.md
-          {
-            text: '2024.03.16例会',
-            link: '2024.03.16例会',
-          }, // 2024.03.16例会.md
-          {
-            text: '2024.04.13例会',
-            link: '2024.04.13例会',
-          }, // 2024.04.13例会.md
-          {
-            text: '2024.05.11例会',
-            link: '2024.05.11例会',
-          }, // 2024.05.11例会.md
-          {
-            text: '2024.08.07线上会议',
-            link: '2024.08.07线上会议',
-          }, // 2024.08.07线上会议.md
-          {
-            text: '2024.09.14线上会议',
-            link: '2024.09.14线上会议',
-          }, // 2024.09.14线上会议.md
-          {
-            text: '2024.10.13例会',
-            link: '2024.10.13例会',
-          }, // 2024.10.13例会.md
-          {
-            text: '2024.11.03例会',
-            link: '2024.11.03例会',
-          }, // 2024.11.03例会.md
-        ],
-      },
-    ],
-  },
-  {
-    text: '2023',
-    collapsed: true,
-    items: [
-      {
-        text: '2023-2024第一学期计划',
-        link: '/archived/2023/计算机协会2023-2024第一学期计划书',
-      },
-      {
-        text: '开发组',
-        base: '/archived/2023/developer/',
-        items: [
-          {
-            text: '2023.10 开发组新人培养方案',
-            link: '2023.10.开发组新人培养方案',
-          },
-          {
-            text: '2023.10 聊天室项目设计方案',
-            link: '2023.10.聊天室项目设计方案',
-          },
-          {
-            text: '2023.10 开发组规划',
-            link: '2023.10开发组规划',
-          },
-          {
-            text: '2023.11 重启计协博客',
-            link: '2023.11.重启计协博客',
-          },
-          {
-            text: '2023.11 内网服务器事宜',
-            link: '2023.11.内网服务器事宜',
-          },
-        ],
-      },
-      {
-        text: '会议纪要',
-        base: '/archived/2023/meetings/',
-        items: [
-          {
-            text: '2023.01.31例会',
-            link: '2023.01.31例会',
-          }, // 2023.03.12集会.md
-          {
-            text: '2023.03.12集会',
-            link: '2023.03.12集会',
-          }, // 2023.03.12集会.md
-          {
-            text: '2023.03.17例会',
-            link: '2023.03.17例会',
-          }, // 2023.03.17例会.md
-          {
-            text: '2023.04.01例会',
-            link: '2023.04.01例会',
-          }, // 2023.04.01例会.md
-          {
-            text: '2023.04.13同宋光慧老师的交流',
-            link: '2023.04.13同宋光慧老师的交流',
-          }, // 2023.04.13同宋光慧老师的交流.md
-          {
-            text: '2023.04.15例会',
-            link: '2023.04.15例会',
-          }, // 2023.04.15例会.md
-          {
-            text: '2023.05.07例会',
-            link: '2023.05.07例会',
-          }, // 2023.05.07例会.md
-          {
-            text: '2023.05.20例会',
-            link: '2023.05.20例会',
-          }, // 2023.05.20例会.md
-          {
-            text: '2023.06.10例会',
-            link: '2023.06.10例会',
-          }, // 2023.06.10例会.md
-          {
-            text: '2023.08.05例会',
-            link: '2023.08.05例会',
-          }, // 2023.08.05例会.md
-          {
-            text: '2023.09.02例会',
-            link: '2023.09.02例会',
-          }, // 2023.09.02例会.md
-          {
-            text: '2023.09.25例会',
-            link: '2023.09.25例会',
-          }, // 2023.09.25例会.md
-          {
-            text: '2023.10.21例会',
-            link: '2023.10.21例会',
-          }, // 2023.10.21例会.md
-          {
-            text: '2023.11.04例会',
-            link: '2023.11.04例会',
-          }, // 2023.11.04例会.md
-        ],
-      },
-    ],
-  },
-  {
-    text: '2022',
-    collapsed: true,
-    items: [
-      {
-        text: '会议纪要',
-        base: '/archived/2022/',
-        items: [
-          {
-            text: '2022.08.26例会',
-            link: '2022.08.26例会',
-          },
-          {
-            text: '2022.09.03例会',
-            link: '2022.09.03例会',
-          },
-          {
-            text: '2022.09.10例会',
-            link: '2022.09.10例会',
-          },
-          {
-            text: '2022.10.15例会',
-            link: '2022.10.15例会',
-          },
-          {
-            text: '2022.10.29例会',
-            link: '2022.10.29例会',
-          },
-          {
-            text: '2022.11.12例会',
-            link: '2022.11.12例会',
-          },
-          {
-            text: '2022.11.26例会',
-            link: '2022.11.26例会',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    text: '2019',
-    collapsed: true,
-    items: [
-      {
-        text: '2019-2020工作计划大纲',
-        link: '/archived/2019/计算机协会2019-2020工作计划大纲',
-      },
-    ],
-  },
-  {
-    text: '2018',
-    collapsed: true,
-    items: [
-      {
-        text: '计算机协会组织架构改革方案',
-        link: '/archived/2018/2018年计算机协会组织架构改革方案',
-      },
-    ],
-  },
-  {
-    text: '2017',
-    collapsed: true,
-    items: [
-      {
-        text: '致计算机协会全体成员-朱柯权',
-        link: '/archived/2017/致计算机协会全体成员-朱柯权',
-      },
-    ],
-  },
-  {
-    text: '2014',
-    collapsed: true,
-    items: [
-      {
-        text: '2013-2014第一学期计划',
-        link: '/archived/2014/计协2013-2014第一学期计划任务',
-      },
-    ],
-  },
+  { text: '简介', link: '/archived/index' },
+
+  ...(allDirs.includes('manual')
+    ? [{
+        text: '手册',
+        collapsed: false,
+        base: '/archived/manual/',
+        items: [{
+          text: '计算机协会手册',
+          items: listMdFiles(path.join(archivedDir, 'manual')).map(f => ({
+            text: getTitle(path.join(archivedDir, 'manual', f)),
+            link: f.replace(/\.md$/, ''),
+          })),
+        }],
+      }]
+    : []),
+
+  ...years.map((year, i) => ({
+    text: year,
+    collapsed: i > 0,
+    items: buildYearItems(path.join(archivedDir, year), `/archived/${year}/`),
+  })),
 ]

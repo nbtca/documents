@@ -23,6 +23,19 @@ export const sidebar = [
             text: '撰写并发布你的第一篇NBTCA博客',
             link: 'nbtca-post',
           },
+          {
+            text: '报销流程',
+            link: 'reimbursement-process',
+          },
+        ],
+      },
+      {
+        text: '组织活动',
+        items: [
+          {
+            text: '活动举办文档(待完善)',
+            link: 'event-organization',
+          },
         ],
       },
     ],
