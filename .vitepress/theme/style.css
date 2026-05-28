@@ -1,0 +1,25 @@
+@media (prefers-reduced-motion: no-preference) {
+  .page-transition-leave {
+    opacity: 0;
+    transform: translateY(-8px);
+    transition:
+      opacity 0.1s ease-in-out,
+      transform 0.1s ease-in-out;
+  }
+
+  .page-transition-enter {
+    animation: pageEnter 0.2s ease-out;
+  }
+
+  @keyframes pageEnter {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
