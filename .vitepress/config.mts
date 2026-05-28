@@ -7,6 +7,10 @@ import { sidebar as sidebarTutorial } from '../tutorial/sidebar'
 export default withMermaid({
   title: '计算机协会文档',
   description: 'Documents for nbtca',
+  head: [
+    ['link', { rel: 'icon', href: '/favicon.ico', sizes: 'any' }],
+    ['link', { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }],
+  ],
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
