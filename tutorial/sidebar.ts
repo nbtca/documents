@@ -1,41 +1,19 @@
+import { group, pageInGroup, pageInSection } from '../utils/navigation'
+
 export const sidebar = [
-  {
-    text: '说明',
-    link: '/tutorial/index',
-  },
-  {
+  pageInSection('说明', 'tutorial', 'index'),
+  group({
     text: '教程和指南',
     collapsed: false,
     base: '/tutorial/2025/',
     items: [
-      {
-        text: '社团自建 Tailscale 使用指南',
-        link: 'tailscale-usage',
-      },
-      {
-        text: '快速上手你的 nginx',
-        link: 'nginx-usage',
-      },
-      {
-        text: '社团自建日历管理指南',
-        link: 'google-calendar',
-      },
-      {
-        text: 'C盘清理标准化流程',
-        link: 'clean-drive-c',
-      },
-      {
-        text: '快速上手NBTCA的Github工作流',
-        link: 'github-workflow',
-      },
-      {
-        text: '教育邮箱使用指南',
-        link: 'edu-email',
-      },
-      {
-        text: 'Github Education 认证指南',
-        link: 'github-education-verification',
-      },
+      pageInGroup('社团自建 Tailscale 使用指南', 'tailscale-usage'),
+      pageInGroup('快速上手你的 nginx', 'nginx-usage'),
+      pageInGroup('社团自建日历管理指南', 'google-calendar'),
+      pageInGroup('C盘清理标准化流程', 'clean-drive-c'),
+      pageInGroup('快速上手NBTCA的Github工作流', 'github-workflow'),
+      pageInGroup('教育邮箱使用指南', 'edu-email'),
+      pageInGroup('Github Education 认证指南', 'github-education-verification'),
     ],
-  },
+  }),
 ]

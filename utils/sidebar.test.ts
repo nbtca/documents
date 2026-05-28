@@ -1,8 +1,17 @@
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { getTitle, scanDir } from '../utils/sidebar'
+import { sidebar as archivedSidebar } from '../archived/sidebar'
+import { sidebar as repairSidebar } from '../repair/sidebar'
+import {
+  getTitle,
+  joinBasePath,
+  listDirectories,
+  listMarkdownFiles,
+  pageLink,
+  scanDir,
+} from './navigation'
 
 let tempDir: string
 
@@ -10,7 +19,10 @@ beforeAll(() => {
   tempDir = mkdtempSync(join(tmpdir(), 'test-'))
   writeFileSync(join(tempDir, 'test1.md'), '# First Document')
   writeFileSync(join(tempDir, 'test2.md'), '# Second Document')
+  writeFileSync(join(tempDir, 'index.md'), '# Index Document')
   writeFileSync(join(tempDir, 'test.txt'), 'Not a markdown file')
+  mkdirSync(join(tempDir, '2024'))
+  mkdirSync(join(tempDir, '.hidden'))
 })
 
 afterAll(() => {
@@ -18,7 +30,7 @@ afterAll(() => {
 })
 
 describe('scanDir', () => {
-  it('should return only markdown files with correct structure', () => {
+  it('should return only markdown files with correct links', () => {
     const res = scanDir(tempDir)
     expect(res).toHaveLength(2)
     res.forEach((item) => {
@@ -41,6 +53,25 @@ describe('scanDir', () => {
   })
 })
 
+describe('listMarkdownFiles', () => {
+  it('should filter index.md by default', () => {
+    const files = listMarkdownFiles(tempDir).map(file => file.filename)
+    expect(files).toEqual(['test1.md', 'test2.md'])
+  })
+
+  it('should include index.md when requested', () => {
+    const files = listMarkdownFiles(tempDir, { includeIndex: true })
+      .map(file => file.filename)
+    expect(files).toEqual(['index.md', 'test1.md', 'test2.md'])
+  })
+})
+
+describe('listDirectories', () => {
+  it('should list visible child directories only', () => {
+    expect(listDirectories(tempDir)).toEqual(['2024'])
+  })
+})
+
 describe('getTitle', () => {
   it('should extract the first H1 heading', () => {
     const title = getTitle(join(tempDir, 'test1.md'))
@@ -52,5 +83,40 @@ describe('getTitle', () => {
     writeFileSync(noHeadingFile, 'Just some text without a heading')
     const title = getTitle(noHeadingFile)
     expect(title).toBe('no-heading')
+  })
+})
+
+describe('link helpers', () => {
+  it('should build absolute page links without markdown extensions', () => {
+    expect(pageLink('repair', 'guide.md')).toBe('/repair/guide')
+    expect(pageLink('/archived/2025/', '2025.01.24开发部例会.md'))
+      .toBe('/archived/2025/2025.01.24开发部例会')
+  })
+
+  it('should join sidebar base paths with a trailing slash', () => {
+    expect(joinBasePath('/archived/2023/', 'meetings'))
+      .toBe('/archived/2023/meetings/')
+  })
+})
+
+describe('archived sidebar', () => {
+  it('should sort archived years in descending order', () => {
+    const yearTexts = archivedSidebar
+      .map(item => item.text)
+      .filter((text): text is string => typeof text === 'string' && /^\d{4}$/.test(text))
+
+    const sorted = [...yearTexts].sort((a, b) => Number(b) - Number(a))
+    expect(yearTexts).toEqual(sorted)
+  })
+})
+
+describe('repair sidebar', () => {
+  it('should export the repair navigation from its own module', () => {
+    expect(repairSidebar).toEqual([
+      { text: '维修操作指南', link: '/repair/guide' },
+      { text: 'NBTCA 软件仓库管理', link: '/repair/tools' },
+      { text: '维修工单系统 (weekend)', link: '/repair/weekend' },
+      { text: '维修日检查单', link: '/repair/checklist' },
+    ])
   })
 })

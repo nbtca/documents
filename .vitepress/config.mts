@@ -1,6 +1,7 @@
 import { withMermaid } from 'vitepress-plugin-mermaid'
 import { sidebar as sidebarArchived } from '../archived/sidebar'
 import { sidebar as sidebarProcess } from '../process/sidebar'
+import { sidebar as sidebarRepair } from '../repair/sidebar'
 import { sidebar as sidebarTutorial } from '../tutorial/sidebar'
 
 // https://vitepress.dev/reference/site-config
@@ -21,12 +22,7 @@ export default withMermaid({
     sidebar: {
       '/tutorial/': sidebarTutorial,
       '/process/': sidebarProcess,
-      '/repair/': [
-        { text: '维修操作指南', link: '/repair/guide' },
-        { text: 'NBTCA 软件仓库管理', link: '/repair/tools' },
-        { text: '维修工单系统 (weekend)', link: '/repair/weekend' },
-        { text: '维修日检查单', link: '/repair/checklist' },
-      ],
+      '/repair/': sidebarRepair,
       '/archived': sidebarArchived,
     },
     editLink: {
