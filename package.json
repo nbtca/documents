@@ -27,7 +27,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^6.2.0",
     "@braintree/sanitize-url": "^7.1.2",
-    "@types/node": "^22.15.32",
+    "@types/node": "^25.9.3",
     "cytoscape": "^3.33.2",
     "cytoscape-cose-bilkent": "^4.1.0",
     "dayjs": "^1.11.13",
