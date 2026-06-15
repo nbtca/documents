@@ -30,7 +30,7 @@
     "@types/node": "^22.15.32",
     "cytoscape": "^3.33.2",
     "cytoscape-cose-bilkent": "^4.1.0",
-    "dayjs": "^1.11.13",
+    "dayjs": "^1.11.21",
     "debug": "^4.4.3",
     "eslint": "^9.29.0",
     "eslint-plugin-format": "^1.0.1",
