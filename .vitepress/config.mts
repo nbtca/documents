@@ -40,6 +40,15 @@ export default withMermaid({
   ignoreDeadLinks: [
     /^https?:\/\//,
   ],
+  // Repo-governance docs are tracked in git but must not be published as
+  // site pages (they would otherwise leak into search and the sitemap as
+  // orphan pages with no navigation entry).
+  srcExclude: [
+    'README.md',
+    'CONTRIBUTING.md',
+    'CONTEXT.md',
+    'docs/**',
+  ],
   lastUpdated: true,
   sitemap: { hostname: 'https://docs.nbtca.space' },
 })
