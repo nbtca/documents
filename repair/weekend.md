@@ -1,13 +1,5 @@
 # 维修工单系统 (weekend)
 
-:::info 维护信息
-
-| 维护人                                           | 时间            |
-| ------------------------------------------------ | --------------- |
-| [@wen-templari](https://github.com/wen-templari) | 2025.4.21 - Now |
-
-:::
-
 维修工单系统（内部代号 weekend）是 NBTCA 自建的报修与维修协作系统：校内任何人可以通过微信小程序发起报修，维修事件在后端与 GitHub 之间同步，队员用机器人命令接单、提交、审核，并据此统计[志愿者时长](/concepts/volunteer-hours)。
 
 ## 总览
@@ -230,3 +222,11 @@ curl -X GET "http://repair.nbtca.space/api/events/xlsx?start_time=2025-01-01&end
   -H "Authorization:  {{bearer_token}}" \
   -OJ
 ```
+
+:::info 维护信息
+
+| 维护人                                           | 时间            |
+| ------------------------------------------------ | --------------- |
+| [@wen-templari](https://github.com/wen-templari) | 2025.4.21 - Now |
+
+:::

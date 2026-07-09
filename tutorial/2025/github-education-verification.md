@@ -1,13 +1,5 @@
 # Github Education 认证指南
 
-:::info 维护信息
-
-| 维护人                                           | 时间             |
-| ------------------------------------------------ | ---------------- |
-| [@Yuna-Celisse](https://github.com/Yuna-Celisse) | 2025.12.26 - Now |
-
-:::
-
 GitHub Education 面向在校学生提供 [GitHub Student Developer Pack](https://education.github.com/pack)——免费的 GitHub Pro、Copilot、Codespaces，以及一批合作厂商的开发工具与云资源。用[教育邮箱](/tutorial/2025/edu-email)完成学生身份认证即可领取。本文讲怎么通过这个认证。
 
 ## 获取Github Education认证
@@ -51,3 +43,11 @@ GitHub Education 面向在校学生提供 [GitHub Student Developer Pack](https:
 
 - 使用浏览器中的camera上传该内容，注意清晰度且无遮挡
 - 等待一段时间后可再次进去该页面查看认证情况，在此期间GitHub会自动审核，审核通过后，即可获得认证，在72h后会发放权限。若审核未通过，会直接发送相关邮件告知原因，请根据邮件修改相关内容，重新提交认证。
+
+:::info 维护信息
+
+| 维护人                                           | 时间             |
+| ------------------------------------------------ | ---------------- |
+| [@Yuna-Celisse](https://github.com/Yuna-Celisse) | 2025.12.26 - Now |
+
+:::
