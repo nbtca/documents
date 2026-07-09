@@ -1,10 +1,3 @@
-# Repository owner — tooling, CI and governance files.
-* @m1ngsama
-
-# Documentation content — reviewed by the president and the documents maintainers.
-/about/ @Sheepkinn @Yuna-Celisse @wen-templari
-/concepts/ @Sheepkinn @Yuna-Celisse @wen-templari
-/tutorial/ @Sheepkinn @Yuna-Celisse @wen-templari
-/process/ @Sheepkinn @Yuna-Celisse @wen-templari
-/repair/ @Sheepkinn @Yuna-Celisse @wen-templari
-/archived/ @Sheepkinn @Yuna-Celisse @wen-templari
+# The club president is the standing code owner.
+# Other reviewers are requested per pull request, not auto-subscribed.
+* @Sheepkinn
