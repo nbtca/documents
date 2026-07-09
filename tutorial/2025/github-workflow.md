@@ -56,7 +56,7 @@ flowchart TD
 
 ### 检查目前我们正在关注的事务
 
-**_访问[Roadmap](https://github.com/orgs/nbtca/projects/5)_**
+**_访问 [Roadmap](/concepts/roadmap)_**
 
 ![Roadmap主界面](../assets/Roadmap.png)
 
@@ -114,32 +114,6 @@ flowchart TD
 🎉这样就完成了基本的常见NBTCA事务的Github工作流了
 
 ps:你想更进一步？跟我一起来写手册吧😇
-
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
 
 ## 附加内容
 

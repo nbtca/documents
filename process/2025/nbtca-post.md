@@ -35,7 +35,7 @@ B --> E[Git 基础配置]
 
 ## 一、前言
 
-本指南将指导你如何使用最主流的开源协作方式——**Git + Markdown + Pull Request**，来撰写并发布你的第一篇NBTCA博客。
+本指南将指导你如何使用最主流的开源协作方式——**Git + Markdown + Pull Request**，来撰写并发布你的第一篇 [NBTCA](/about/what-is-nbtca) 博客。若只想了解通用的 Git 协作流程，见[快速上手 GitHub 工作流](/tutorial/2025/github-workflow)；本文在其基础上，讲博客特有的部分。
 
 目标是：
 
@@ -208,9 +208,9 @@ git push origin add-my-first-blog
 
 ## 九、推荐工具
 
-- 编辑器：**VS Code**、**Neovim**、**Typora**
-- Markdown 预览插件：_Markdown Preview Enhanced_
-- Git 图形界面工具：_GitHub Desktop_、_Sourcetree_
+- 编辑器：[VS Code](https://code.visualstudio.com/)、[Neovim](https://neovim.io/)、[Typora](https://typora.io/)
+- Markdown 预览插件：[Markdown Preview Enhanced](https://github.com/shd101wyy/markdown-preview-enhanced)
+- Git 图形界面工具：[GitHub Desktop](https://desktop.github.com/)、[Sourcetree](https://www.sourcetreeapp.com/)
 
 ---
 
