@@ -1,14 +1,10 @@
-# Default repository owners.
-* @m1ngsama @Orangedog433
+# Repository owner — tooling, CI and governance files.
+* @m1ngsama
 
-# Documentation governance and review flow.
-/CONTRIBUTING.md @m1ngsama @Orangedog433
-/CONTEXT.md @m1ngsama @Orangedog433
-/docs/adr/ @m1ngsama @Orangedog433
-/.github/ @m1ngsama @Orangedog433
-
-# Active documentation areas.
-/tutorial/ @m1ngsama @Yuna-Celisse
-/process/ @m1ngsama @Yuna-Celisse
-/repair/ @m1ngsama @Orangedog433
-/archived/ @m1ngsama @Yuna-Celisse
+# Documentation content — reviewed by the president and the documents maintainers.
+/about/ @Sheepkinn @Yuna-Celisse @wen-templari
+/concepts/ @Sheepkinn @Yuna-Celisse @wen-templari
+/tutorial/ @Sheepkinn @Yuna-Celisse @wen-templari
+/process/ @Sheepkinn @Yuna-Celisse @wen-templari
+/repair/ @Sheepkinn @Yuna-Celisse @wen-templari
+/archived/ @Sheepkinn @Yuna-Celisse @wen-templari

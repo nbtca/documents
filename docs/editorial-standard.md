@@ -14,7 +14,7 @@ Active（活文档，随实践更新）
 
 AI 繁荣的当下，愿意手写文档的人越来越少——这没关系。但 AI 不知道所有约束，会随处乱写；真人没有规范也一样。没有成文约束，站点会退回到「看似专业、其实脑补」的内容。而 NBTCA 是一个把细节与人文当回事的社区，垃圾内容会让人离开。
 
-这份标准让文档的**严谨与可读可被检查、可被守住**。它是 [ADR 0001](./adr/0001-documentation-governance.md) 治理基线之上的内容契约。我们不是 Wikipedia 那样的大组织，但我们借鉴它的经验：可供查证（Verifiability）、不搞原创研究（No Original Research）、中立（NPOV）。
+这份标准让文档的**严谨与可读可被检查、可被守住**。我们不是 Wikipedia 那样的大组织，但我们借鉴它的经验：可供查证（Verifiability）、不搞原创研究（No Original Research）、中立（NPOV）。
 
 ## 北极星
 

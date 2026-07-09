@@ -46,7 +46,6 @@ export default withMermaid({
   srcExclude: [
     'README.md',
     'CONTRIBUTING.md',
-    'CONTEXT.md',
     'docs/**',
   ],
   lastUpdated: true,
