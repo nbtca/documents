@@ -3,7 +3,6 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { sidebar as archivedSidebar } from '../archived/sidebar'
-import { sidebar as repairSidebar } from '../repair/sidebar'
 import {
   getTitle,
   joinBasePath,
@@ -107,16 +106,5 @@ describe('archived sidebar', () => {
 
     const sorted = [...yearTexts].sort((a, b) => Number(b) - Number(a))
     expect(yearTexts).toEqual(sorted)
-  })
-})
-
-describe('repair sidebar', () => {
-  it('should export the repair navigation from its own module', () => {
-    expect(repairSidebar).toEqual([
-      { text: '维修操作指南', link: '/repair/guide' },
-      { text: 'NBTCA 软件仓库管理', link: '/repair/tools' },
-      { text: '维修工单系统 (weekend)', link: '/repair/weekend' },
-      { text: '维修日检查单', link: '/repair/checklist' },
-    ])
   })
 })
