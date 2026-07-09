@@ -1,8 +1,7 @@
 import { withMermaid } from 'vitepress-plugin-mermaid'
+import { sidebar as sidebarAbout } from '../about/sidebar'
 import { sidebar as sidebarArchived } from '../archived/sidebar'
-import { sidebar as sidebarProcess } from '../process/sidebar'
-import { sidebar as sidebarRepair } from '../repair/sidebar'
-import { sidebar as sidebarTutorial } from '../tutorial/sidebar'
+import { sidebar as sidebarGuide } from '../tutorial/sidebar'
 
 // https://vitepress.dev/reference/site-config
 export default withMermaid({
@@ -15,18 +14,19 @@ export default withMermaid({
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
-      { text: '教程', link: '/tutorial/' },
-      { text: '流程', link: '/process/' },
-      { text: '维修', link: '/repair/guide' },
-      { text: '存档', link: '/archived' },
+      { text: '关于', link: '/about/' },
+      { text: '指南', link: '/tutorial/' },
+      { text: '维修', link: '/repair/' },
     ],
     search: {
       provider: 'local',
     },
     sidebar: {
-      '/tutorial/': sidebarTutorial,
-      '/process/': sidebarProcess,
-      '/repair/': sidebarRepair,
+      '/about/': sidebarAbout,
+      // Guide = tutorial + process; one shared sidebar mounted on both paths.
+      '/tutorial/': sidebarGuide,
+      '/process/': sidebarGuide,
+      // repair and concepts use a hub + inline-link + search model; no full sidebar.
       '/archived': sidebarArchived,
     },
     editLink: {
@@ -46,7 +46,6 @@ export default withMermaid({
   srcExclude: [
     'README.md',
     'CONTRIBUTING.md',
-    'CONTEXT.md',
     'docs/**',
   ],
   lastUpdated: true,

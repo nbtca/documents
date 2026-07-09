@@ -29,9 +29,9 @@ describe('content contract', () => {
     writeFixture('repair/guide.md', '# Repair')
     writeFixture('archived/2025/meeting.md', '# Meeting')
 
+    // repair uses the hub model, so it is not a contract-governed active doc.
     expect(listActiveDocs(tempDir).map(doc => doc.relativePath)).toEqual([
       'process/2025/example.md',
-      'repair/guide.md',
       'tutorial/index.md',
     ])
     expect(listArchivedDocs(tempDir).map(doc => doc.relativePath)).toEqual([

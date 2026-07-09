@@ -54,3 +54,192 @@
   height: 1rem;
   vertical-align: middle;
 }
+
+/* Narrow tables (e.g. leadership roster): no wrap; scroll instead of squishing on small screens. */
+.vp-doc .nb-people-table th,
+.vp-doc .nb-people-table td {
+  white-space: nowrap;
+}
+
+/* NBTCA visual identity. Brand blue #124689 from the logo; metadata/dates use a
+   monospace "machine voice" against prose. */
+
+:root {
+  --vp-c-brand-1: #124689;
+  --vp-c-brand-2: #0f3a73;
+  --vp-c-brand-3: #17529c;
+  --vp-c-brand-soft: rgba(18, 70, 137, 0.1);
+
+  --nb-mono: var(--vp-font-family-mono);
+}
+
+.dark {
+  --vp-c-brand-1: #7db0ec;
+  --vp-c-brand-2: #9cc4f2;
+  --vp-c-brand-3: #2f6bbd;
+  --vp-c-brand-soft: rgba(125, 176, 236, 0.16);
+}
+
+/* Home hero — monospace tagline. */
+.VPHero .name {
+  letter-spacing: -0.02em;
+}
+
+.VPHero .tagline {
+  font-family: var(--nb-mono);
+  font-size: 15px;
+  line-height: 1.6;
+  letter-spacing: 0.005em;
+  color: var(--vp-c-text-2);
+}
+
+/* Home composition — centre the hero in the content area; spacing/split follow φ. */
+@media (min-width: 960px) {
+  .VPContent.is-home {
+    display: flex;
+    min-height: calc(100vh - var(--vp-nav-height));
+    align-items: center;
+  }
+
+  .VPContent.is-home .VPHome {
+    width: 100%;
+  }
+
+  .VPContent.is-home .VPHero {
+    padding-top: 0;
+    padding-bottom: 8vh;
+  }
+
+  .VPContent.is-home .VPHero .container {
+    align-items: center;
+  }
+
+  /* text : emblem ≈ φ */
+  .VPContent.is-home .VPHero .main {
+    flex-grow: 1.618;
+  }
+
+  .VPContent.is-home .VPHero .image {
+    flex-grow: 1;
+  }
+
+  /* gaps step by φ: 13 → 21 → 34 */
+  .VPContent.is-home .VPHero .tagline {
+    margin-top: 21px;
+  }
+
+  .VPContent.is-home .VPHero .actions {
+    margin-top: 34px;
+  }
+}
+
+/* Callouts — calmer surfaces, monospace kicker titles. */
+.vp-doc .custom-block {
+  border-radius: 8px;
+}
+
+.vp-doc .custom-block-title {
+  font-family: var(--nb-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* Maintainer-info blocks read as a small monospace stamp. */
+.vp-doc .custom-block.info table {
+  margin: 0;
+  font-family: var(--nb-mono);
+  font-size: 13px;
+}
+
+.vp-doc .custom-block.info table th {
+  font-weight: 600;
+  color: var(--vp-c-text-2);
+}
+
+/* Internal links: dotted, hover-previewable. */
+.vp-doc a:not([href^='http']):not([href^='#']):not([href^='mailto']):not(.header-anchor) {
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+/* External links: trailing ↗. */
+.vp-doc a[target='_blank']::after {
+  content: '↗';
+  display: inline-block;
+  margin-left: 1px;
+  font-size: 0.72em;
+  font-weight: 400;
+  line-height: 0;
+  vertical-align: baseline;
+  color: var(--vp-c-text-3);
+}
+
+/* "Back to hub" anchor for sidebar-less sections. */
+.nb-hub-back {
+  display: inline-block;
+  margin-bottom: 18px;
+  font-family: var(--nb-mono);
+  font-size: 13px;
+  color: var(--vp-c-text-2);
+  text-decoration: none;
+}
+
+.nb-hub-back:hover {
+  color: var(--vp-c-brand-1);
+}
+
+/* Hover preview card. */
+.nb-concept-card {
+  position: fixed;
+  z-index: 60;
+  width: 320px;
+  max-width: calc(100vw - 24px);
+  padding: 14px 16px 15px;
+  background: var(--vp-c-bg);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 10px;
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.12),
+    0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.nb-concept-card.is-above {
+  transform: translateY(-100%);
+}
+
+.nb-cp-kicker {
+  margin-bottom: 5px;
+  font-family: var(--nb-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--vp-c-brand-1);
+}
+
+.nb-cp-title {
+  margin-bottom: 6px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--vp-c-text-1);
+}
+
+.nb-cp-summary {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.62;
+  color: var(--vp-c-text-2);
+}
+
+.nb-cp-enter-active,
+.nb-cp-leave-active {
+  transition: opacity 0.14s ease;
+}
+
+.nb-cp-enter-from,
+.nb-cp-leave-to {
+  opacity: 0;
+}

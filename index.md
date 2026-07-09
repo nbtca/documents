@@ -11,23 +11,20 @@ hero:
     alt: NBTCA-Logo
   actions:
     - theme: brand
-      text: 教程
-      link: /tutorial/index
-    - theme: brand
-      text: 流程
-      link: /process/index
+      text: 认识 NBTCA
+      link: /about/what-is-nbtca
+    - theme: alt
+      text: 指南
+      link: /tutorial/
     - theme: alt
       text: 维修
-      link: /repair/guide
-    - theme: alt
-      text: 存档
-      link: /archived/index
+      link: /repair/
 ---
 
 <!-- markdownlint-disable MD033 -->
 <style>
-  .VPHero{
-    .VPImage{
+  .VPHero {
+    .VPImage {
       padding: 16px;
     }
   }

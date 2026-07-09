@@ -1,7 +1,10 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
 
-export const ACTIVE_DOC_DIRS = ['tutorial', 'process', 'repair'] as const
+// Sections whose every page must appear in nav/sidebar. about, concepts and
+// repair use a hub + inline-link + search model (see .vitepress/config.mts),
+// so they carry no full sidebar and are excluded from this contract.
+export const ACTIVE_DOC_DIRS = ['tutorial', 'process'] as const
 export const ARCHIVED_DOC_DIR = 'archived'
 
 export type ActiveDocDomain = typeof ACTIVE_DOC_DIRS[number]

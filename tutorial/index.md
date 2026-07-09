@@ -1,19 +1,7 @@
----
-next:
-  text: '社团自建 Tailscale 使用指南'
-  link: '/tutorial/2025/tailscale-usage'
----
+# 指南
 
-# 教程文档
+社团事务怎么办、常用技术怎么学，都收在这里。左侧分三组，也可以直接 <kbd>⌘K</kbd> 搜索：
 
-讲解社内基础设施的使用方法和注意事项。
-
-## 可用教程
-
-- [社团自建 Tailscale 使用指南](/tutorial/2025/tailscale-usage) — 社团内网组网工具的安装与使用
-- [教育邮箱用途](/tutorial/2025/edu-email) — 教育邮箱的申请与常见用途
-- [Github Education 认证指南](/tutorial/2025/github-education-verification) — 如何通过 GitHub 学生认证
-- [快速上手社团 Github 工作流](/tutorial/2025/github-workflow) — 社团项目协作的 Git 工作流程
-- [谷歌日历使用指南](/tutorial/2025/google-calendar) — 社团日程管理与共享日历的使用
-- [快速上手 nginx](/tutorial/2025/nginx-usage) — nginx 反向代理的基本配置与使用
-- [C 盘清理标准化流程](/tutorial/2025/clean-drive-c) — Windows C 盘空间不足时的清理流程
+- **流程** — 借教室、报销、第二课堂、发博客等社务办理。
+- **教程** — GitHub 工作流、教育邮箱、Tailscale、nginx 等工具与服务。
+- **手册** — 硬件、系统、装机、CA 讲座等成体系的知识。

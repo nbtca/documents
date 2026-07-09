@@ -1,13 +1,5 @@
 # 快速上手你的nginx
 
-:::info 维护信息
-
-| 维护人                                   | 时间            |
-| ---------------------------------------- | --------------- |
-| [@m1ngsama](https://github.com/m1ngsama) | 2025.11.3 - Now |
-
-:::
-
 ## nginx做什么
 
 - http web server
@@ -140,3 +132,11 @@ nginx: configuration file /etc/nginx/nginx.conf test is successful
 ```bash
 sudo ln -s /etc/nginx/sites-available/hello.conf /etc/nginx/sites-enabled/hello.conf
 ```
+
+:::info 维护信息
+
+| 维护人                                   | 时间            |
+| ---------------------------------------- | --------------- |
+| [@m1ngsama](https://github.com/m1ngsama) | 2025.11.3 - Now |
+
+:::
