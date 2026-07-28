@@ -35,6 +35,98 @@
 
 使用软件测试硬件性能，确定是否为硬件损坏。
 
+## C盘清理
+
+### 事前确认
+
+- [ ] 已备份重要数据
+- [ ] 已关闭正在运行的程序
+- [ ] 已确认当前 C 盘可用空间
+
+### 推荐工具
+
+- [Dism++](https://github.com/Chuyu-Team/Dism-Multi-language) —— 系统优化与清理，支持 Windows 更新清理、AppX 清理等
+- [WizTree](https://wiztreefree.com/) —— 磁盘空间分析，直观查看文件占用
+- [DiskGenius](https://www.diskgenius.com/) —— 分区管理，用于调整分区大小
+
+> 社团内部下载地址详见[软件仓库索引](/repair/tools)，或联系维修部成员。
+
+### 基础清理流程
+
+1. **系统自带工具**
+   - 右键 C 盘 → 属性 → 磁盘清理 → 清理系统文件
+   - 设置 → 系统 → 存储 → 开启存储感知 或 手动清理临时文件
+2. **Dism++**：以管理员身份运行 → 空间回收 → 勾选项目 → 清理
+3. **WizTree**：扫描 C 盘 → 定位大文件 → 确认后清理
+
+### 常见清理项目
+
+#### 用户数据迁移
+
+- **系统文件夹**（推荐）：桌面/下载/文档文件夹移至 D 盘（右键属性 → 位置 → 移动），兼容性最好
+- **已安装程序或其他目录**：使用目录联接（junction），需以管理员身份运行 PowerShell
+
+创建目标文件夹：
+
+```powershell
+New-Item -ItemType Directory -Path "D:\Target\Folder" -Force
+```
+
+复制文件：
+
+```powershell
+robocopy "C:\Source\Folder" "D:\Target\Folder" /E /COPYALL /XJ /R:2 /W:2
+```
+
+确认复制完成后，将原文件夹重命名作为备份：
+
+```powershell
+Rename-Item "C:\Source\Folder" "Folder_backup"
+```
+
+创建目录联接（`mklink` 是 `cmd` 内置命令，须通过 `cmd /c` 调用）：
+
+```powershell
+cmd /c mklink /J "C:\Source\Folder" "D:\Target\Folder"
+```
+
+检查联接：
+
+```powershell
+Get-Item "C:\Source\Folder" | Format-List FullName,LinkType,Target
+```
+
+确认一切正常后删除备份：
+
+```powershell
+Remove-Item "C:\Source\Folder_backup" -Recurse -Force
+```
+
+> 创建联接前，原路径 `C:\Source\Folder` 必须不存在（改名步骤已确保这一点）。
+
+#### 软件缓存清理
+
+- 浏览器缓存
+- 微信/QQ 缓存文件
+- 软件临时文件
+
+#### 系统文件清理
+
+- Windows 更新缓存
+- 系统还原点（谨慎操作）
+- 休眠文件（如不需要休眠功能）
+
+### 分区调整（高风险）
+
+将 D 盘多余空间分配给 C 盘：
+
+1. 运行 DiskGenius
+2. 选择 D 盘 → 调整分区大小
+3. 将多余空间分配给 C 盘
+4. 应用更改并重启
+
+> ⚠ 操作前务必提前备份重要数据！建议在 [PE 环境](/concepts/winpe) 下操作。
+
 ## 重新安装 Windows
 
 更完整的从零装机流程，见教程栏的[从零开始安装 Windows](/tutorial/manual/windows-from-scratch)。
