@@ -27,7 +27,6 @@ export const sidebar = [
       pageInGroup('社团自建 Tailscale 使用指南', 'tailscale-usage'),
       pageInGroup('快速上手 nginx', 'nginx-usage'),
       pageInGroup('谷歌日历使用指南', 'google-calendar'),
-      pageInGroup('C 盘清理标准化流程', 'clean-drive-c'),
     ],
   }),
   group({
