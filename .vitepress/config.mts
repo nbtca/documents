@@ -141,6 +141,7 @@ export default withMermaid({
         use: ['xlink:href', 'href'],
         Band: ['src'],
         Figure: ['src'],
+        LinkCard: ['src'],
         PageHero: ['src'],
         Split: ['src'],
       },

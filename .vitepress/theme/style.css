@@ -609,6 +609,133 @@
   }
 }
 
+/* Timeline — a spine for chronologies. */
+.vp-doc .nb-timeline {
+  margin: 28px 0 36px;
+}
+
+.vp-doc .nb-tl-entry {
+  position: relative;
+  padding: 0 0 26px 22px;
+  border-left: 2px solid var(--vp-c-divider);
+}
+
+.vp-doc .nb-tl-entry:last-child {
+  border-left-color: transparent;
+  padding-bottom: 0;
+}
+
+/* The node. Pivots are filled; ordinary moments are hollow. */
+.nb-tl-entry::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: -6px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--vp-c-divider);
+  border-radius: 50%;
+  background: var(--vp-c-bg);
+}
+
+.nb-tl-entry.is-pivot::before {
+  border-color: var(--vp-c-brand-1);
+  background: var(--vp-c-brand-1);
+}
+
+.nb-tl-year {
+  margin: 0 0 4px;
+  font-family: var(--nb-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--vp-c-text-3);
+}
+
+.nb-tl-entry.is-pivot .nb-tl-year {
+  color: var(--vp-c-brand-1);
+}
+
+.vp-doc .nb-tl-title {
+  margin: 0 0 6px;
+  border: 0;
+  padding: 0;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.vp-doc .nb-tl-body > p {
+  margin: 0 0 10px;
+}
+
+.vp-doc .nb-tl-body > :last-child {
+  margin-bottom: 0;
+}
+
+/* Portal cards. */
+.vp-doc .nb-cards {
+  display: grid;
+  gap: 16px;
+  margin: 28px 0;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.vp-doc .nb-card {
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  background: var(--vp-c-bg);
+  text-decoration: none;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.vp-doc .nb-card:hover {
+  border-color: var(--vp-c-brand-1);
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vp-doc .nb-card {
+    transition: border-color 0.2s ease;
+  }
+
+  .vp-doc .nb-card:hover {
+    transform: none;
+  }
+}
+
+.vp-doc .nb-card img {
+  display: block;
+  width: 100%;
+  height: 132px;
+  object-fit: cover;
+}
+
+.nb-card-body {
+  display: block;
+  padding: 13px 15px 15px;
+}
+
+.nb-card-title {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--vp-c-text-1);
+}
+
+.nb-card-desc {
+  display: block;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--vp-c-text-2);
+}
+
 /* Screenshots and photos are lit for paper-white pages; ease them in dark. */
 .dark .vp-doc .nb-figure img,
 .dark .vp-doc p > img {

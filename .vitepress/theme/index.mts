@@ -5,8 +5,12 @@ import FactStrip from './FactStrip.vue'
 import Figure from './Figure.vue'
 import FigureGrid from './FigureGrid.vue'
 import Layout from './Layout.vue'
+import LinkCard from './LinkCard.vue'
+import LinkCards from './LinkCards.vue'
 import PageHero from './PageHero.vue'
 import Split from './Split.vue'
+import Timeline from './Timeline.vue'
+import TimelineEntry from './TimelineEntry.vue'
 import './style.css'
 
 let transitionTimer: number | undefined
@@ -28,8 +32,12 @@ export default {
     app.component('FactStrip', FactStrip)
     app.component('Figure', Figure)
     app.component('FigureGrid', FigureGrid)
+    app.component('LinkCard', LinkCard)
+    app.component('LinkCards', LinkCards)
     app.component('PageHero', PageHero)
     app.component('Split', Split)
+    app.component('Timeline', Timeline)
+    app.component('TimelineEntry', TimelineEntry)
 
     if (typeof window === 'undefined')
       return
