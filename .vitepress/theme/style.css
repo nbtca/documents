@@ -252,20 +252,24 @@
   margin: 0;
 }
 
-/* Break out of the prose column. With an outline aside on the right there is
-   no room that side, so widen leftwards only and keep the right edge aligned. */
+/* Break out of the prose column by a bounded amount on both sides. Anchoring
+   to the column (rather than the viewport) keeps the gutters to the sidebar
+   and the outline intact at every width. */
 @media (min-width: 960px) {
-  .VPDoc:not(.has-aside) .vp-doc .nb-figure.is-wide,
-  .VPDoc:not(.has-aside) .vp-doc .nb-figure-grid.is-wide {
-    width: min(920px, calc(100vw - 96px));
-    margin-left: 50%;
-    transform: translateX(-50%);
+  .vp-doc .nb-figure.is-wide,
+  .vp-doc .nb-figure-grid.is-wide {
+    width: calc(100% + 64px);
+    margin-left: -32px;
   }
+}
 
-  .VPDoc.has-aside .vp-doc .nb-figure.is-wide,
-  .VPDoc.has-aside .vp-doc .nb-figure-grid.is-wide {
-    width: calc(100% + 112px);
-    margin-left: -112px;
+/* 1280px is where the outline appears and squeezes the space back; only past
+   1440px is there room for the wider breakout. */
+@media (min-width: 1440px) {
+  .vp-doc .nb-figure.is-wide,
+  .vp-doc .nb-figure-grid.is-wide {
+    width: calc(100% + 128px);
+    margin-left: -64px;
   }
 }
 

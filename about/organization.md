@@ -94,9 +94,11 @@ NBTCA 的组织结构不是一成不变的——从 2001 年创立至今，每�
 
 ## 本届组织
 
+<Split src="./assets/meeting.jpg" alt="会议室里成员围着长桌开会，一位成员拿着材料在说明" kicker="Now" heading="多数决定是在这样的桌子边做出的" reverse>
+
 本届（26 届，2026）各岗位的详细职责分配见[职能分配](/archived/manual/function-inventory)。往届的职能记录随年份保存在存档里，作为组织演变的痕迹。
 
-<Figure src="./assets/meeting.jpg" alt="会议室里成员围着长桌开会，一位成员拿着材料在说明" caption="例会：多数决定是在这样的桌子边做出的。" source="协会照片档案" wide />
+</Split>
 
 :::info 维护信息
 
