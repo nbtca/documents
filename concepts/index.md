@@ -24,6 +24,7 @@
 - [部门（开发·维修·宣传·组织）](./departments)
 - [指导老师（宋光慧）](./advisor)
 - [NBTCA Roadmap](./roadmap)
+- [数聚青年（公众号沿革）](./shuju-qingnian) · 历史
 
 ## 活动与讲座
 
@@ -31,12 +32,13 @@
 - [CA102](./ca102)
 - [DEV101](./dev101) · 存根，待补充
 - [技术分享会](./tech-talk)
-- [百团大战](./club-fair) · 存根，待补充
-- [迎新会](./welcome-party) · 存根，待补充
-- [每周学习日](./weekly-study) · 存根，待补充
+- [百团大战](./club-fair)
+- [迎新会](./welcome-party)
+- [每周学习日](./weekly-study)
+- [计算机知识竞赛](./knowledge-contest) · 历史活动
 
 ## 维修与技术
 
-- [维修日的前身：理工服务日](./service-day)
+- [理工服务日](./service-day) · 历史活动
 - [PE 系统](./winpe)
 - [报修小程序](./repair-miniprogram)
