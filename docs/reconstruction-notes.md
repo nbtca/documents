@@ -81,7 +81,7 @@
 
 - `process/2025/apply-for-credits.md` — [@ZaoAn0skiler]，时间 `??? - ???`
 - `process/2025/borrow-classroom.md` — [@qyc1319]，时间 `??? - ???`
-- `process/2025/event-organization.md`、`repair/checklist.md`、`tutorial/2025/clean-drive-c.md` — 维护人 `待补充`
+- `process/2025/event-organization.md`、`repair/checklist.md` — 维护人 `待补充`
 
 这些是真人负责的页面，请补真实的维护人与起止时间——不替真人编日期。
 

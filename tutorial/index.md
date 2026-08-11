@@ -22,7 +22,7 @@
 
 ## 我的电脑有问题 / 想折腾电脑
 
-- C 盘满了 → [C 盘清理标准化流程](/tutorial/2025/clean-drive-c)
+- C 盘满了 → [C 盘清理](/repair/guide#c盘清理)（在维修操作指南里）
 - 要装机 → 先读[计算机硬件系统的搭建与维护](/tutorial/manual/hardware-establish)选配组装，再[从零开始安装 Windows](/tutorial/manual/windows-from-scratch)
 - 想把系统用明白 → [基础操作系统的使用技术](/tutorial/manual/os-skills)；上网与网络排障 → [国际互联网的使用](/tutorial/manual/net-usage)
 - 自己搞不定 → 找[维修部](/repair/)
