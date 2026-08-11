@@ -44,9 +44,26 @@ function stripFrontmatter(src: string): string {
   return after === -1 ? '' : src.slice(after + 1)
 }
 
+// Frontmatter scalar, quoted or bare. Pages whose title lives in a hero
+// component have no H1, and any page may override the auto-summary.
+function frontmatterValue(src: string, key: string): string | undefined {
+  if (!src.startsWith('---'))
+    return undefined
+  const end = src.indexOf('\n---', 3)
+  if (end === -1)
+    return undefined
+  const block = src.slice(3, end)
+  const m = block.match(new RegExp(`^${key}:[ \\t]*(.+)$`, 'm'))
+  if (!m)
+    return undefined
+  return cleanInline(m[1].trim().replace(/^(['"])(.*)\1$/, '$2'))
+}
+
 function extractTitle(src: string): string | undefined {
   const m = stripFrontmatter(src).match(/^#[ \t]+(\S.*)$/m)
-  return m ? cleanInline(m[1]) : undefined
+  if (m)
+    return cleanInline(m[1])
+  return frontmatterValue(src, 'title') || undefined
 }
 
 // First prose paragraph, skipping headings, `:::` blocks, fenced code, tables, lists and quotes.
@@ -126,7 +143,8 @@ function loadPages(): PagePreview[] {
       const title = extractTitle(src)
       if (!title)
         return null
-      return { path: toUrlPath(file), title, summary: extractSummary(src) }
+      const summary = frontmatterValue(src, 'summary') ?? extractSummary(src)
+      return { path: toUrlPath(file), title, summary }
     })
     .filter((x): x is PagePreview => x !== null)
 }

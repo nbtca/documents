@@ -1,4 +1,18 @@
-# 什么是 NBTCA
+---
+title: 什么是 NBTCA
+aside: false
+summary: 浙大宁波理工学院计算机协会（NBTCA）是一个诞生于 2001 年的计算机社区：在校园里，它是一个学生社团；在互联网上，它是一个开源社区——两面是同一群人。
+---
+
+<PageHero
+  src="./assets/general-assembly.jpg"
+  alt="全体大会现场，成员围坐在沙发与茶几旁听一位成员讲话，左侧立着写有「浙大宁波理工学院计算机协会」的展架"
+  kicker="Computer Association of NBT"
+  title="什么是 NBTCA"
+  lede="站在科技与人文的十字路口，用技术做真正有用、也有温度的事。"
+  source="协会照片档案"
+  scrim="strong"
+/>
 
 浙大宁波理工学院计算机协会（NBTCA）是一个诞生于 2001 年的计算机社区：在校园里，它是一个学生社团；在互联网上，它是一个开源社区——两面是同一群人。把大家聚在一起的是同一件事：**站在科技与人文的十字路口，用技术做真正有用、也有温度的事。**
 
@@ -19,7 +33,7 @@
 
 - **科技与人文的十字路口。** 这是我们的那句话，也是判断一件事该不该做的尺子：既要有技术的分量，也要对具体的人有用、有温度。它就印在协会的标识上——`To be at the intersection of technology and liberal arts`，也贴在维修队的工具箱上。
 
-  ![维修工具箱上贴着协会的圆形标识，箱前摆着撬棒、撬片和镊子；标识外圈印有 To be at the intersection of technology and liberal arts](./assets/repair-toolkit.jpg)
+<Figure src="./assets/repair-toolkit.jpg" alt="维修工具箱上贴着协会的圆形标识，箱前摆着撬棒、撬片和镊子；标识外圈印有 To be at the intersection of technology and liberal arts" caption="那句话不只写在文档里——它贴在每天真正被打开的工具箱上。" source="协会照片档案" tall />
 
 - **有集市，也有教堂。** 一件事怎么成形，靠参与者自己推动（集市）；到了要拍板时，我们集中意见（教堂）。这两个词借自 Eric Raymond 的[《大教堂与集市》](/concepts/bazaar-and-cathedral)。
 - **人强则扁平，人弱则托底。** 当大家自驱力足够，社区就像典型开源社区一样扁平协作；当新人还没接上力，我们靠清晰的组织和文档把事情兜住，不让它荒废。你正在读的这个文档站，就是我们留给未来每一届人的那份「托底」。

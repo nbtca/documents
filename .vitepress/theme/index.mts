@@ -1,6 +1,9 @@
 import type { EnhanceAppContext, Theme } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
+import Figure from './Figure.vue'
+import FigureGrid from './FigureGrid.vue'
 import Layout from './Layout.vue'
+import PageHero from './PageHero.vue'
 import './style.css'
 
 let transitionTimer: number | undefined
@@ -17,7 +20,11 @@ function clearTransition(content: HTMLElement) {
 export default {
   extends: DefaultTheme,
   Layout,
-  enhanceApp({ router }: EnhanceAppContext) {
+  enhanceApp({ app, router }: EnhanceAppContext) {
+    app.component('Figure', Figure)
+    app.component('FigureGrid', FigureGrid)
+    app.component('PageHero', PageHero)
+
     if (typeof window === 'undefined')
       return
 

@@ -98,8 +98,6 @@ oobe\bypassnro
 
 ## 物理维护
 
-![队员用撬片沿边缘撬开笔记本后盖](./assets/repair-teardown-2023.jpg)
-
 ### 开盖前准备工作
 
 - 确保所有外接设备均已移除，如电源线缆、USB 设备、SD 卡等。
@@ -121,7 +119,7 @@ oobe\bypassnro
 
 ## 各类常见物理维护
 
-![已拆开后盖的笔记本，露出散热风扇与主板，队员正在处理内部部件](./assets/repair-teardown.jpg)
+<Figure src="./assets/repair-teardown.jpg" alt="拆开后盖的笔记本平放在桌上，内存条、固态硬盘、电池与散热风扇一览无余，队员俯身用手处理内部部件，旁边摊着螺丝收纳盒" caption="拆开后盖之后：内存、固态、电池和散热都在这一面——螺丝分类暂存，别混。" source="协会照片档案" wide />
 
 ### 风扇清理
 
