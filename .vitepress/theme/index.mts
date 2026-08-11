@@ -1,9 +1,12 @@
 import type { EnhanceAppContext, Theme } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
+import Band from './Band.vue'
+import FactStrip from './FactStrip.vue'
 import Figure from './Figure.vue'
 import FigureGrid from './FigureGrid.vue'
 import Layout from './Layout.vue'
 import PageHero from './PageHero.vue'
+import Split from './Split.vue'
 import './style.css'
 
 let transitionTimer: number | undefined
@@ -21,9 +24,12 @@ export default {
   extends: DefaultTheme,
   Layout,
   enhanceApp({ app, router }: EnhanceAppContext) {
+    app.component('Band', Band)
+    app.component('FactStrip', FactStrip)
     app.component('Figure', Figure)
     app.component('FigureGrid', FigureGrid)
     app.component('PageHero', PageHero)
+    app.component('Split', Split)
 
     if (typeof window === 'undefined')
       return

@@ -425,6 +425,190 @@
   }
 }
 
+/* Split — photo beside prose, alternating down the page. */
+.vp-doc .nb-split {
+  display: grid;
+  gap: 20px 32px;
+  align-items: center;
+  margin: 36px 0;
+}
+
+.nb-split-media img {
+  display: block;
+  width: 100%;
+  border-radius: 10px;
+}
+
+.nb-split-kicker {
+  margin: 0 0 6px;
+  font-family: var(--nb-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--vp-c-brand-1);
+  text-transform: uppercase;
+}
+
+.vp-doc .nb-split-heading {
+  margin: 0 0 10px;
+  border: 0;
+  padding: 0;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.vp-doc .nb-split-body > :last-child {
+  margin-bottom: 0;
+}
+
+@media (min-width: 860px) {
+  .vp-doc .nb-split {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .vp-doc .nb-split.is-reverse .nb-split-media {
+    order: 2;
+  }
+}
+
+/* Section break: a full-bleed photo, optionally carrying one line of text. */
+.vp-doc .nb-band {
+  position: relative;
+  margin: 44px calc(50% - 50vw);
+  width: 100vw;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.nb-band img {
+  display: block;
+  width: 100%;
+  height: clamp(220px, 38vh, 420px);
+  object-fit: cover;
+}
+
+.nb-band-quote {
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  border: 0;
+  padding: 44px 24px 26px;
+  background: linear-gradient(to top, rgb(0 0 0 / 76%), rgb(0 0 0 / 0%));
+}
+
+.vp-doc .nb-band-quote p {
+  margin: 0 auto;
+  max-width: 800px;
+  font-size: clamp(17px, 2.4vw, 23px);
+  font-weight: 600;
+  line-height: 1.45;
+  color: #fff;
+  text-wrap: balance;
+}
+
+.nb-band-quote cite {
+  display: block;
+  margin: 8px auto 0;
+  max-width: 800px;
+  font-family: var(--nb-mono);
+  font-size: 11px;
+  font-style: normal;
+  letter-spacing: 0.06em;
+  color: rgb(255 255 255 / 70%);
+}
+
+.nb-band-stamp {
+  position: absolute;
+  z-index: 1;
+  top: 10px;
+  right: 14px;
+  margin: 0;
+  font-family: var(--nb-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: rgb(255 255 255 / 55%);
+}
+
+@media (min-width: 960px) {
+  .VPDoc.has-sidebar .vp-doc .nb-band {
+    margin-right: -48px;
+    margin-left: -48px;
+    width: auto;
+  }
+}
+
+@media (min-width: 1440px) {
+  .VPDoc.has-sidebar .vp-doc .nb-band {
+    margin-right: -64px;
+    margin-left: -64px;
+  }
+}
+
+.dark .vp-doc .nb-band img {
+  filter: none;
+}
+
+/* Fact strip — scannable hard facts before any prose. */
+.vp-doc .nb-facts {
+  display: grid;
+  gap: 1px;
+  margin: 28px 0;
+  background: var(--vp-c-divider);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 10px;
+  overflow: hidden;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.nb-fact {
+  padding: 14px 16px;
+  background: var(--vp-c-bg);
+}
+
+.vp-doc .nb-facts dt {
+  margin: 0 0 5px;
+  font-family: var(--nb-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--vp-c-text-3);
+  text-transform: uppercase;
+}
+
+.vp-doc .nb-facts dd {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--vp-c-text-1);
+}
+
+@media print {
+  .vp-doc .nb-band {
+    margin: 0 0 16px;
+    width: 100%;
+  }
+
+  .nb-band img {
+    height: auto;
+  }
+
+  .nb-band-quote {
+    position: static;
+    padding: 8px 0 0;
+    background: none;
+  }
+
+  .vp-doc .nb-band-quote p,
+  .nb-band-quote cite {
+    color: var(--vp-c-text-1);
+  }
+}
+
 /* Screenshots and photos are lit for paper-white pages; ease them in dark. */
 .dark .vp-doc .nb-figure img,
 .dark .vp-doc p > img {

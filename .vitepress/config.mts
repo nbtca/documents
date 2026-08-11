@@ -128,6 +128,24 @@ export default withMermaid({
   // katex/wardley chunks are modulepreloaded on every page although only
   // mermaid diagrams may dynamically import them; drop the eager hint.
   shouldPreload: link => !/katex|wardley/i.test(link),
+  // Asset URLs in props of our own components are plain strings to the
+  // compiler; without this they ship unhashed and 404 in production. This map
+  // replaces Vue's defaults wholesale, so the built-in tags are repeated here.
+  vue: {
+    template: {
+      transformAssetUrls: {
+        video: ['src', 'poster'],
+        source: ['src'],
+        img: ['src'],
+        image: ['xlink:href', 'href'],
+        use: ['xlink:href', 'href'],
+        Band: ['src'],
+        Figure: ['src'],
+        PageHero: ['src'],
+        Split: ['src'],
+      },
+    },
+  },
   ignoreDeadLinks: [
     /^https?:\/\//,
   ],
