@@ -7,9 +7,8 @@ summary: 浙大宁波理工学院计算机协会（NBTCA）是一个诞生于 20
 <PageHero
   src="./assets/general-assembly.jpg"
   alt="全体大会现场，成员围坐在沙发与茶几旁听一位成员讲话，左侧立着写有「浙大宁波理工学院计算机协会」的展架"
-  kicker="Computer Association of NBT"
   title="什么是 NBTCA"
-  lede="站在科技与人文的十字路口，用技术做真正有用、也有温度的事。"
+  lede="一个 2001 年就在的学生社团，也是一个开源社区。修电脑、办讲座、写代码，全校都能来。"
   source="协会照片档案"
   scrim="strong"
 />
@@ -27,7 +26,7 @@ summary: 浙大宁波理工学院计算机协会（NBTCA）是一个诞生于 20
 
 ## 一体的两面
 
-<Split src="./assets/community.jpg" alt="十余名成员在地铁站内并排合影，有人搭着彼此的肩笑着" kicker="One community" heading="线上线下，同一群朋友">
+<Split src="./assets/community.jpg" alt="十余名成员在地铁站内并排合影，有人搭着彼此的肩笑着" heading="线上线下是同一群人">
 
 开源社区里的很多开发者，曾经或正是社团的成员；也有人是被我们的项目和理念吸引来的校外朋友。不论你从哪一面进来，结论都一样——**你就是 NBTCA 的一员**。
 
@@ -37,7 +36,7 @@ summary: 浙大宁波理工学院计算机协会（NBTCA）是一个诞生于 20
 
 ## 我们相信什么
 
-<Split src="./assets/repair-toolkit.jpg" alt="维修工具箱上贴着协会的圆形标识，箱前摆着撬棒、撬片和镊子；标识外圈印有 To be at the intersection of technology and liberal arts" kicker="Technology & liberal arts" heading="科技与人文的十字路口" reverse>
+<Split src="./assets/repair-toolkit.jpg" alt="维修工具箱上贴着协会的圆形标识，箱前摆着撬棒、撬片和镊子；标识外圈印有 To be at the intersection of technology and liberal arts" heading="那句话就印在工具箱上" reverse>
 
 这是我们的那句话，也是判断一件事该不该做的尺子：既要有技术的分量，也要对具体的人有用、有温度。
 
@@ -51,31 +50,30 @@ summary: 浙大宁波理工学院计算机协会（NBTCA）是一个诞生于 20
 <Band
   src="../repair/assets/repair-craft.jpg"
   alt="镊子夹起主板上的一根排线，旁边是散热风扇与电池，特写"
-  quote="判断一件事该不该做的尺子：既要有技术的分量，也要对具体的人有用。"
   source="协会照片档案"
 />
 
 ## 我们做什么
 
-<Split src="../repair/assets/repair-outdoor.jpg" alt="树荫下几张长桌拼成工位，队员与同学围坐着检修笔记本" kicker="Repair day" heading="维修日">
+<Split src="../repair/assets/repair-outdoor.jpg" alt="树荫下几张长桌拼成工位，队员与同学围坐着检修笔记本" heading="维修日">
 
 向全校师生提供免费电脑维修，一年约十次。这是我们最有代表性的公共服务，参与的同学也会获得[志愿者时长](/concepts/volunteer-hours)。详见[维修日](/repair/repair-day)。
 
 </Split>
 
-<Split src="./assets/lecture.jpg" alt="讲座现场，一名成员手持话筒在讲台前讲解，另一名成员架着相机拍摄" kicker="Lectures" heading="讲座与学习" reverse>
+<Split src="./assets/lecture.jpg" alt="讲座现场，一名成员手持话筒在讲台前讲解，另一名成员架着相机拍摄" heading="讲座与学习" reverse>
 
 面向全校的 [CA101](/concepts/ca101) / [CA102](/concepts/ca102) 电脑知识普及讲座、面向社内的 [DEV101](/concepts/dev101) 开发讲座和[每周学习日](/concepts/weekly-study)，以及不定期的[技术分享会](/concepts/tech-talk)。参与 CA 讲座通常可申报[第二课堂](/concepts/second-classroom)学分（[怎么申报](/process/2025/apply-for-credits)）。
 
 </Split>
 
-<Split src="./assets/building.jpg" alt="阶梯教室里一名成员用笔记本电脑记笔记，桌上摆着相机与开发板" kicker="Build" heading="开发与基建">
+<Split src="./assets/building.jpg" alt="阶梯教室里一名成员用笔记本电脑记笔记，桌上摆着相机与开发板" heading="开发与基建">
 
 我们维护自己的服务器、公网站点、电脑维修小程序、QQ 机器人等开源项目，社区的技术积累就沉淀在这些真实项目里。详见[基础设施与项目](/about/infrastructure)。
 
 </Split>
 
-<Split src="./assets/gathering.jpg" alt="夜里户外长桌旁，两名成员端着饮料聊天，背景是其他成员" kicker="Together" heading="社团日常" reverse>
+<Split src="./assets/gathering.jpg" alt="夜里户外长桌旁，两名成员端着饮料聊天，背景是其他成员" heading="社团日常" reverse>
 
 招新（[百团大战](/concepts/club-fair)）、[迎新会](/concepts/welcome-party)、桌搭等线下活动，让线上的朋友在校园里也能碰面。很多事情是在这样的桌子边定下来的。
 

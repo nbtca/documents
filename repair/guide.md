@@ -77,8 +77,8 @@ C 盘之所以总是最先满：Windows 默认把用户资料（桌面、下载�
 因此清理按三层递进，**风险由低到高**：先清各类缓存（见效快、无风险），再把数据和软件迁走（治本），实在不够才动分区（有风险，放最后）。
 
 <FigureGrid>
-  <Figure src="./assets/ca-lecture-c-drive.jpg" alt="讲座投影上写着「分区C满了该咋办」，正解释「盘」指硬盘、而 C 盘只是硬盘上人为划出的一个分区；讲台右侧挂着协会队旗" caption="先讲清「硬盘」与「分区」的区别，再谈怎么清。" source="协会照片档案" />
-  <Figure src="./assets/ca-lecture-partition.jpg" alt="讲座投影上是分区示意图，标题为「如何将分区D（或后面空间）移 50GB 给分区C」" caption="扩容的本质：把相邻分区的空间让给 C 盘。" source="协会照片档案" />
+  <Figure src="./assets/ca-lecture-c-drive.jpg" alt="讲座投影上写着「分区C满了该咋办」，正解释「盘」指硬盘、而 C 盘只是硬盘上人为划出的一个分区；讲台右侧挂着协会队旗" caption="给同学解释时，先说清硬盘和分区不是一回事。" source="协会照片档案" />
+  <Figure src="./assets/ca-lecture-partition.jpg" alt="讲座投影上是分区示意图，标题为「如何将分区D（或后面空间）移 50GB 给分区C」" caption="所谓扩容，就是把旁边分区的空间划给 C 盘。" source="协会照片档案" />
 </FigureGrid>
 
 这也是 [CA101](/concepts/ca101) 讲座上讲过的题目，给机主解释时可以照这个顺序说。
@@ -227,7 +227,7 @@ oobe\bypassnro
 
 ## 各类常见物理维护
 
-<Figure src="./assets/repair-teardown.jpg" alt="拆开后盖的笔记本平放在桌上，内存条、固态硬盘、电池与散热风扇一览无余，队员俯身用手处理内部部件，旁边摊着螺丝收纳盒" caption="拆开后盖之后：内存、固态、电池和散热都在这一面——螺丝分类暂存，别混。" source="协会照片档案" wide />
+<Figure src="./assets/repair-teardown.jpg" alt="拆开后盖的笔记本平放在桌上，内存条、固态硬盘、电池与散热风扇一览无余，队员俯身用手处理内部部件，旁边摊着螺丝收纳盒" caption="后盖一开，内存、固态、电池和风扇都在这一面。拆下的螺丝分开放，别混。" source="协会照片档案" wide />
 
 ### 风扇清理
 

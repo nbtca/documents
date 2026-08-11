@@ -12,11 +12,11 @@ NBTCA 的组织结构不是一成不变的——从 2001 年创立至今，每�
 
 </TimelineEntry>
 
-<TimelineEntry year="2010 · 07" title="「服务社区」比口号更早">
+<TimelineEntry year="2010 · 07" title="一张暑期社会实践的合影">
 
 协会照片档案里留下了一张暑期社会实践的合影，横幅写着「计算机协会『强化自身，服务社区』暑期社会实践系列活动——浙江大学宁波理工学院」。「服务社区」这个提法，比后来写进工作大纲的「半学习半公益」早了将近十年。
 
-<Figure src="./assets/service-day-2010.jpg" alt="二十余名成员在教学楼前拉着横幅合影，横幅写有「计算机协会『强化自身，服务社区』暑期社会实践系列活动——浙江大学宁波理工学院」" caption="横幅落款「浙江大学宁波理工学院」，是学校转设前的旧称。" date="2010-07" source="协会照片档案" />
+<Figure src="./assets/service-day-2010.jpg" alt="二十余名成员在教学楼前拉着横幅合影，横幅写有「计算机协会『强化自身，服务社区』暑期社会实践系列活动——浙江大学宁波理工学院」" caption="横幅落款还是「浙江大学宁波理工学院」——学校 2020 年才转设改名。" date="2010-07" source="协会照片档案" />
 
 </TimelineEntry>
 
@@ -44,25 +44,25 @@ NBTCA 的组织结构不是一成不变的——从 2001 年创立至今，每�
 
 </TimelineEntry>
 
-<TimelineEntry year="2019" title="半学习半公益">
+<TimelineEntry year="2019" title="定位为「半学习半公益」">
 
 [2019–2020 工作计划大纲](/archived/2019/计算机协会2019-2020工作计划大纲)把协会定位为「半学习半公益」的社团，两条主线：对内「学生教学生」提升硬实力，对外靠理工服务日服务大众。
 
 </TimelineEntry>
 
-<TimelineEntry year="2024" title="把协作原则写成文字" pivot>
+<TimelineEntry year="2024" title="《计算机协会纲要》" pivot>
 
 张明俊修订[《计算机协会纲要》](/archived/2024/计算机协会纲要)：事务形成靠参与者推动（集市），事务决定时集中意见（教堂）；架构定为会长 1 人、副会长 2 人、四位部长、组长 10 人，并给四部门各写了一句定位——开发是基础，维修是行动队，宣传是协会本质，组织是传承。
 
 </TimelineEntry>
 
-<TimelineEntry year="2025" title="例会里的调整">
+<TimelineEntry year="2025" title="例会上的几项调整">
 
 把每周学习会向「团建 + 不定期学习分享会 + 维修日 mini」改革，并着手改善维修日的志愿时长统计（[2025.10.11 例会](/archived/2025/2025.10.11第一次例会)）；[技术分享会](/concepts/tech-talk)讲到了可观测性实践（[纪要](/archived/2025/2025.12.26NWDC)）。
 
 </TimelineEntry>
 
-<TimelineEntry year="2023–2026" title="近几届">
+<TimelineEntry year="2023–2026" title="近几届会长与常办的事">
 
 会长依次为张明俊（23 届）、李义杨（24 届）、陈正浩（25 届）、杨裕豪（26 届）。持续办 [CA101](/concepts/ca101) / [CA102](/concepts/ca102) 讲座（如 24 届的「电脑从入门到入土」）、维修日与迎新、[百团大战](/concepts/club-fair)招新，同时推进服务器与镜像站运维（见[基础设施与项目](/about/infrastructure)）。
 
@@ -94,7 +94,7 @@ NBTCA 的组织结构不是一成不变的——从 2001 年创立至今，每�
 
 ## 本届组织
 
-<Split src="./assets/meeting.jpg" alt="会议室里成员围着长桌开会，一位成员拿着材料在说明" kicker="Now" heading="多数决定是在这样的桌子边做出的" reverse>
+<Split src="./assets/meeting.jpg" alt="会议室里成员围着长桌开会，一位成员拿着材料在说明" reverse>
 
 本届（26 届，2026）各岗位的详细职责分配见[职能分配](/archived/manual/function-inventory)。往届的职能记录随年份保存在存档里，作为组织演变的痕迹。
 

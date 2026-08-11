@@ -22,7 +22,7 @@ NBTCA 的[项目与基础设施](/about/infrastructure)都公开在 [GitHub](htt
 - **电脑维修小程序**：微信搜索「NBT电脑维修」
 - **代码与文档**：[github.com/nbtca](https://github.com/nbtca)
 
-<Split src="./assets/community.jpg" alt="十余名成员在地铁站内并排合影，有人搭着彼此的肩笑着" kicker="Welcome" heading="社团活动之外，大家也一起出门">
+<Split src="./assets/community.jpg" alt="十余名成员在地铁站内并排合影，有人搭着彼此的肩笑着" heading="除了社团活动，大家也一起出门">
 
 拿不准从哪一步开始？进 QQ 群打个招呼就好。不论你从哪一面进来，结论都一样——**你就是 NBTCA 的一员**。
 

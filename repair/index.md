@@ -1,15 +1,14 @@
 ---
 title: 维修
 aside: false
-summary: 维修是 NBTCA 最有分量的公共服务：维修队面向全校师生提供免费的电脑维修，把「行动队」这三个字落到每一台修好的机器上。
+summary: 维修队面向全校师生提供免费的电脑维修，一年办十次左右。
 ---
 
 <PageHero
   src="./assets/repair-outdoor.jpg"
   alt="树荫下几张长桌拼成工位，队员与同学围坐着检修笔记本，一名志愿者在旁等候"
-  kicker="Repair Team"
   title="维修"
-  lede="维修队面向全校师生提供免费的电脑维修，把「行动队」这三个字落到每一台修好的机器上。"
+  lede="电脑坏了可以找我们，不收钱。一年办十次左右，全校师生都能来。"
   source="协会照片档案"
   scrim="strong"
 />
