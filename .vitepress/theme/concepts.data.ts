@@ -66,11 +66,14 @@ function extractTitle(src: string): string | undefined {
   return frontmatterValue(src, 'title') || undefined
 }
 
-// First prose paragraph, skipping headings, `:::` blocks, fenced code, tables, lists and quotes.
+// First prose paragraph, skipping headings, `:::` blocks, fenced code, tables,
+// lists, quotes, horizontal rules and component tags. A page that opens with a
+// component (a hero, say) has no prose to quote, so it should set `summary:`.
 function extractSummary(src: string): string {
   const lines = stripFrontmatter(src).split(/\r?\n/)
   let inContainer = false
   let inFence = false
+  let inTag = false
   let current: string[] = []
   let paragraph = ''
 
@@ -88,11 +91,27 @@ function extractSummary(src: string): string {
     }
     if (inContainer)
       continue
+    // A tag whose attributes wrap across lines: skip until it closes.
+    if (inTag) {
+      if (line.endsWith('>'))
+        inTag = false
+      continue
+    }
+    if (line.startsWith('<')) {
+      current = []
+      if (!line.endsWith('>'))
+        inTag = true
+      continue
+    }
     if (line === '') {
       if (current.length) {
         paragraph = current.join(' ')
         break
       }
+      continue
+    }
+    if (/^(?:-{3,}|\*{3,}|_{3,})$/.test(line)) {
+      current = []
       continue
     }
     if (/^(?:[#>|]|[-*+]\s|\d+\.\s)/.test(line)) {
