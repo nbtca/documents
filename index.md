@@ -7,7 +7,7 @@ hero:
   text: "计算机协会文档"
   tagline: To be at the intersection of technology and liberal arts.
   image:
-    src: https://oss.nbtca.space/CA-logo.svg
+    src: /CA-logo.svg
     alt: NBTCA-Logo
   actions:
     - theme: brand

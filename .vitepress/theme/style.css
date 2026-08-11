@@ -71,6 +71,12 @@
   --vp-c-brand-soft: rgba(18, 70, 137, 0.1);
 
   --nb-mono: var(--vp-font-family-mono);
+
+  /* Latin first, then explicit CJK sans: without these, zh-CN text on
+     Windows can fall back to a serif default for Han glyphs. */
+  --vp-font-family-base:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC',
+    'Microsoft YaHei', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
 }
 
 .dark {
@@ -210,6 +216,19 @@
   transform: translateY(-100%);
 }
 
+/* Dark surfaces need a heavier shadow to separate from the page. */
+.dark .nb-concept-card {
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.55),
+    0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+@media (max-width: 479px) {
+  .nb-concept-card {
+    width: calc(100vw - 24px);
+  }
+}
+
 .nb-cp-kicker {
   margin-bottom: 5px;
   font-family: var(--nb-mono);
@@ -242,4 +261,39 @@
 .nb-cp-enter-from,
 .nb-cp-leave-to {
   opacity: 0;
+}
+
+/* Print: chrome off, content full width; keep last-updated as a version stamp. */
+@media print {
+  .VPNav,
+  .VPLocalNav,
+  .VPSidebar,
+  .VPDoc .aside,
+  .VPDoc .edit-link,
+  .VPDoc .prev-next,
+  .VPFooter,
+  .nb-hub-back,
+  .nb-concept-card {
+    display: none !important;
+  }
+
+  .VPDoc {
+    padding: 0 !important;
+  }
+
+  .VPDoc .container,
+  .VPDoc .content {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  /* Checklist tables must fit the sheet instead of forcing overflow. */
+  .vp-doc table:has(input[type='checkbox']) th,
+  .vp-doc table:has(input[type='checkbox']) td {
+    white-space: normal;
+  }
+
+  .vp-doc a {
+    text-decoration: none;
+  }
 }
