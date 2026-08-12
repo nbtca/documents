@@ -35,7 +35,8 @@ GitHub 会用申请时的网络位置核对你是否真的在学校所在地，�
 :::
 
 - 类型选 `Student`，选择你的学校，按提示共享位置
-- ID 选择 0，然后在一张白纸上工整写上以下内容（注意大小写）：
+- **先看你有没有学校开的材料。** GitHub 官方接受的是学校出具的证明：带在读日期的学生证、课表、成绩单，或学籍 / 在读证明信（见 [GitHub 官方说明](https://docs.github.com/en/education/about-github-education/github-education-for-students/apply-to-github-education-as-a-student)）。有这些就直接用，通过率最高。
+- 手头没有的时候，社区里流传的做法是在一张白纸上工整写下在读信息再拍照上传（注意大小写）：
 
         Student Verification Report
         Name: Your Name
@@ -44,7 +45,7 @@ GitHub 会用申请时的网络位置核对你是否真的在学校所在地，�
         Study Form: Full-time
         Graduation date: Your Graduation Date
 
-  以上内容均需与付款信息中的个人信息一致——审核会拿两处比对，对不上即拒。对于 2024 级学生，Graduation date 为 2028.6。
+  〔这个格式不是 GitHub 规定的，是往届同学试出来的写法，能否通过取决于当次审核。〕内容必须是你真实的学籍信息，并与付款信息中的姓名一致——审核会拿两处比对，对不上即拒。对于 2024 级学生，Graduation date 为 2028.6。
 
 - 使用浏览器调起的相机拍摄上传，注意清晰无遮挡。不要上传截图或现成文件：重复的文件容易被判定为重复提交
 - 提交后 GitHub 自动审核，可再次进入该页面查看进度；审核多为机器完成，通常几分钟内出结果。通过后 72h 内发放权限；未通过会有邮件告知原因，按邮件调整后重新提交即可
