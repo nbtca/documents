@@ -1,4 +1,10 @@
-# 撰写并发布你的第一篇NBTCA博客
+# 撰写并发布你的第一篇 NBTCA 博客
+
+本指南带你用最主流的开源协作方式——**Git + Markdown + Pull Request**——撰写并发布你的第一篇 [NBTCA](/about/what-is-nbtca) 博客。若只想了解通用的 Git 协作流程，见[快速上手 GitHub 工作流](/tutorial/2025/github-workflow)；本文在其基础上，讲博客投稿特有的部分。
+
+目标是：
+
+> 让每位新社员都能独立完成一篇博客投稿流程。
 
 ## 流程
 
@@ -25,17 +31,7 @@ B --> E[Git 基础配置]
     O --> P[🎉 完成]
 ```
 
-## 一、前言
-
-本指南将指导你如何使用最主流的开源协作方式——**Git + Markdown + Pull Request**，来撰写并发布你的第一篇 [NBTCA](/about/what-is-nbtca) 博客。若只想了解通用的 Git 协作流程，见[快速上手 GitHub 工作流](/tutorial/2025/github-workflow)；本文在其基础上，讲博客特有的部分。
-
-目标是：
-
-> 让每位新社员都能独立完成一篇博客投稿流程。
-
----
-
-## 二、准备工作
+## 准备工作
 
 ### 1. 安装 Git
 
@@ -45,7 +41,7 @@ B --> E[Git 基础配置]
 
 #### macOS
 
-安装命令行工具集，使用brew安装git
+先安装命令行工具集，再用 Homebrew 安装 Git：
 
 ```bash
 xcode-select --install
@@ -54,7 +50,7 @@ brew install git
 
 #### Linux（例如 Ubuntu / Arch）
 
-使用对应发行版的包管理器安装git
+使用对应发行版的包管理器安装 Git：
 
 ```bash
 sudo apt install git
@@ -62,13 +58,9 @@ sudo apt install git
 sudo pacman -S git
 ```
 
----
-
 ### 2. 注册 GitHub 账号
 
 访问 [https://github.com](https://github.com)，注册并登录，设置一个好记的用户名。
-
----
 
 ### 3. 基础配置
 
@@ -77,40 +69,32 @@ git config --global user.name "你的名字"
 git config --global user.email "你的邮箱"
 ```
 
-> 当然，你也可以使用[github-cli](https://github.com/cli/cli)来完成github的认证过程，但是[git的工作流程](https://nbtca.space/posts/blogs/Tech/Git/git-book-1)还是必要掌握的
+> 你也可以用 [GitHub CLI](https://github.com/cli/cli) 完成 GitHub 的认证过程，但 [Git 的工作流程](https://nbtca.space/posts/blogs/Tech/Git/git-book-1)仍是必要掌握的基础。
 
----
+## Fork 与 Clone：向博客仓库贡献
 
-## 三、Fork 与 Clone 以及目前协会博客仓库的贡献方法
+一般的工作流程是把源代码仓库 [Fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo) 一份到自己名下，得到一个下游仓库；在下游仓库里编写内容，再通过[创建 PR](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests) 把更新提交回上游仓库。
 
-一般的工作流程是将源代码仓库[Fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo)一份到自己名下创建一个新的下游仓库，在自己的下游仓库编写代码并通过[创建pr](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests)的方式提交更新到上游仓库。
+博客所在的 [Home 项目](https://github.com/nbtca/home)集成了 [CI/CD](https://github.com/resources/articles/ci-cd)。为了保证交付安全，默认只有源仓库分支提交的 PR 会触发 [GitHub Actions](https://github.com/features/actions)；从下游（Fork）仓库提交的 PR 在合并后不会触发构建。因此**推荐直接在源仓库上创建分支再提交 PR**。
 
-目前NBTCA的[Home项目](https://github.com/nbtca/home)集成了[CI/CD](https://github.com/resources/articles/ci-cd)
-
-为了保证交付安全，默认只有项目源代码仓库的分支提交的pr会触发[github action](https://github.com/features/actions)，从下游仓库提交的pr在合并后并不会触发构建，这一点需要注意，所以推荐在源代码的基础上创建分支并pr
-
-### 2. Clone
+### Clone
 
 ```bash
 git clone https://github.com/nbtca/home.git
 cd home
-# 如果是gh-cli则是gh repo clone nbtca/home
+# 如果是 gh-cli 则是 gh repo clone nbtca/home
 ```
 
----
-
-## 四、创建分支
+## 创建分支
 
 ```bash
 git checkout -b add-my-first-blog
 # -b 参数代表创建一个新的分支
-# 此处add-my-first-blog作为分支名可以自行替换，
-# 我个人的习惯是提交类型+具体事务类型，例如post/blog-post、feature/homepage等。
+# 分支名 add-my-first-blog 可自行替换，
+# 常见习惯是「类型/具体事务」，例如 post/blog-post、feature/homepage
 ```
 
----
-
-## 五、撰写博客（Markdown 格式）
+## 撰写博客（Markdown 格式）
 
 ### 1. 新建文件
 
@@ -129,7 +113,7 @@ layout: "../../layouts/MarkdownPost.astro"
 title: "题目"
 pubDate: 2025-10-10
 description: "描述"
-author: "张三
+author: "张三"
 cover:
   url: "封面地址url，也可以引用本地图片"
   alt: "cover"
@@ -159,11 +143,9 @@ Markdown 是一种轻量级标记语言，用简单的符号来排版文字。
 学会使用 Git + Markdown，你就能参与到开源协作中了！
 ```
 
-> 以上为行文推荐格式，关于[markdown](https://www.markdownguide.org/)的写法可自行查阅手册。
+> 以上为行文推荐格式，[Markdown](https://www.markdownguide.org/) 的具体写法可自行查阅手册。
 
----
-
-## 六、提交与推送
+## 提交与推送
 
 ```bash
 git add my-first-blog.md
@@ -173,12 +155,10 @@ git commit -m "Add my first blog: Git 与 Markdown 入门"
 # 将暂存区的文件集合为一次提交，并对本次提交做出说明
 
 git push origin add-my-first-blog
-# 将提交从本地同步到远程Github仓库，提交到远程仓库的对应新分支
+# 将提交从本地同步到远程 GitHub 仓库的对应新分支
 ```
 
----
-
-## 七、创建 Pull Request（PR）
+## 创建 Pull Request（PR）
 
 1. 打开你的 GitHub 仓库。
 2. 点击 “**Compare & pull request**”。
@@ -186,9 +166,7 @@ git push origin add-my-first-blog
 4. 目标仓库选择 `nbtca/home`。
 5. 提交 Pull Request。
 
----
-
-## 八、常见问题
+## 常见问题
 
 | 问题                | 解决方案                                               |
 | ------------------- | ------------------------------------------------------ |
@@ -196,19 +174,15 @@ git push origin add-my-first-blog
 | 提交重复文件或出错  | 使用 `git status` 查看状态，`git reset` 撤销错误提交。 |
 | PR 没被合并         | 可能格式不规范，等待管理员审核反馈。                   |
 
----
-
-## 九、推荐工具
+## 推荐工具
 
 - 编辑器：[VS Code](https://code.visualstudio.com/)、[Neovim](https://neovim.io/)、[Typora](https://typora.io/)
 - Markdown 预览插件：[Markdown Preview Enhanced](https://github.com/shd101wyy/markdown-preview-enhanced)
 - Git 图形界面工具：[GitHub Desktop](https://desktop.github.com/)、[Sourcetree](https://www.sourcetreeapp.com/)
 
----
+## 结语
 
-## 十、结语
-
-当仓库管理员[Review](https://github.com/features/code-review)代码后，代码就可以[Merge](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/merging-a-pull-request)了
+当仓库管理员完成 [Review](https://github.com/features/code-review) 后，你的提交就可以 [Merge](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/merging-a-pull-request) 进主仓库了。
 
 当你第一次成功合并 PR 时：
 

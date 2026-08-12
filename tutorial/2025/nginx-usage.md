@@ -1,12 +1,12 @@
-# 快速上手你的nginx
+# 快速上手 nginx
 
-## nginx做什么
+nginx 是一个高性能的 Web 服务器与反向代理。本文用最短路径带你跑起第一个静态页面，讲清每一步在做什么，最后给出反向代理的最小示例。
 
-- http web server
-- reverse proxy
-- load balance
-- etc.
-  快速上手着重介绍你如何配置nginx完成你的个人http web server设置
+## nginx 做什么
+
+- http web server（托管静态网页，本文主线）
+- reverse proxy（反向代理，见文末）
+- load balance（负载均衡）
 
 ## index.html
 
@@ -57,7 +57,8 @@ mv index.html /var/www/myWebsite/
 - `/etc/nginx/conf.d/` (通常用于放置单独的配置文件（以 .conf 结尾），Nginx 会自动加载 conf.d/\*.conf 文件。)
 - `/etc/nginx/sites-available/` (用于存放可用站点配置，但不会自动启用。)
 - `/etc/nginx/sites-enabled/` (用于启用的站点配置，通常通过软链接指向 sites-available 中的配置文件。)
-  你只需要将你写的每个配置丢到conf.d就好了
+
+你只需要将你写的每个配置丢到 conf.d 就好了
 
 ## nginx.conf
 
@@ -121,7 +122,34 @@ sudo systemctl reload nginx
 nginx: configuration file /etc/nginx/nginx.conf test is successful
 ```
 
-说明配置正确，浏览器访问ip即可成功见到`hello XD`
+说明配置正确，浏览器访问 ip 即可成功见到`hello XD`
+
+> `nginx -t` 只检查配置语法，`reload` 才让它生效——reload 是平滑重载、不断线。改了配置没生效，十有八九是忘了 reload。
+
+## 一次请求发生了什么
+
+浏览器访问 `http://ip/` 时：请求到达 80 端口 → nginx 用 `listen` + `server_name` 挑出匹配的 server 块 → `location` 匹配路径 → 以 `root` + 路径拼出文件位置，`try_files` 依次尝试。排错就沿这条链查：`nginx -t` 报错是配置写错了；404 是拼出的文件路径不存在；403 多半是 nginx 对文件没有读权限。
+
+另外，conf.d 里每个 `server {}` 就是一个「虚拟主机」：同一个 80 端口可以挂多个站点，nginx 靠请求头里的域名（对上哪个 `server_name`）区分它们——这就是「每个配置丢进 conf.d」背后发生的事。
+
+## 下一步：反向代理
+
+nginx 的另一大用途是反向代理：你的程序（比如跑在 3000 端口的 Node 服务）躲在后面，nginx 在前面统一收请求再转发——对外只暴露 80/443，还能顺手做 HTTPS、缓存与负载均衡。最小配置：
+
+```nginx
+server {
+    listen 80;
+    server_name localhost;
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+```
+
+两行 `proxy_set_header` 是把访客真实的域名与 IP 传给后端——否则后端看到的请求全部来自 nginx 自己。
 
 本文初版专为小朋友所写，见文记得去[他的仓库](https://github.com/sheepkinn/sheepkinn.github.io)踢他一下XD
 

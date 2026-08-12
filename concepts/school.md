@@ -21,7 +21,7 @@
 
 ## 与 NBTCA
 
-NBTCA 是这所学校的学生社团，线下挂靠[计算机学院](/concepts/college)。学校层面的[第二课堂](/concepts/second-classroom)、[志愿者时长](/concepts/volunteer-hours)、[校历](/concepts/school-calendar)等政策各见其词条。
+NBTCA 是这所学校的学生社团，线下挂靠[计算机学院](/concepts/college)。学校层面的[第二课堂](/concepts/second-classroom)、[志愿者时长](/concepts/volunteer-hours)、[校历](/concepts/school-calendar)、[学校标识](/concepts/school-identity)等政策与事务各见其词条。
 
 ::: tip 资料来源
 沿革经交叉核对（最后核对 2026-07）：教育部《关于同意浙江大学宁波理工学院转设为浙大宁波理工学院的函》（2020-01）、学校官网「学校概况」，并对照公开报道。校园百科亦有对应条目。

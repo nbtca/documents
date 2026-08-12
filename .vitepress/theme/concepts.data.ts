@@ -44,16 +44,36 @@ function stripFrontmatter(src: string): string {
   return after === -1 ? '' : src.slice(after + 1)
 }
 
-function extractTitle(src: string): string | undefined {
-  const m = stripFrontmatter(src).match(/^#[ \t]+(\S.*)$/m)
-  return m ? cleanInline(m[1]) : undefined
+// Frontmatter scalar, quoted or bare. Pages whose title lives in a hero
+// component have no H1, and any page may override the auto-summary.
+function frontmatterValue(src: string, key: string): string | undefined {
+  if (!src.startsWith('---'))
+    return undefined
+  const end = src.indexOf('\n---', 3)
+  if (end === -1)
+    return undefined
+  const block = src.slice(3, end)
+  const m = block.match(new RegExp(`^${key}:[ \\t]*(.+)$`, 'm'))
+  if (!m)
+    return undefined
+  return cleanInline(m[1].trim().replace(/^(['"])(.*)\1$/, '$2'))
 }
 
-// First prose paragraph, skipping headings, `:::` blocks, fenced code, tables, lists and quotes.
+function extractTitle(src: string): string | undefined {
+  const m = stripFrontmatter(src).match(/^#[ \t]+(\S.*)$/m)
+  if (m)
+    return cleanInline(m[1])
+  return frontmatterValue(src, 'title') || undefined
+}
+
+// First prose paragraph, skipping headings, `:::` blocks, fenced code, tables,
+// lists, quotes, horizontal rules and component tags. A page that opens with a
+// component (a hero, say) has no prose to quote, so it should set `summary:`.
 function extractSummary(src: string): string {
   const lines = stripFrontmatter(src).split(/\r?\n/)
   let inContainer = false
   let inFence = false
+  let inTag = false
   let current: string[] = []
   let paragraph = ''
 
@@ -71,11 +91,27 @@ function extractSummary(src: string): string {
     }
     if (inContainer)
       continue
+    // A tag whose attributes wrap across lines: skip until it closes.
+    if (inTag) {
+      if (line.endsWith('>'))
+        inTag = false
+      continue
+    }
+    if (line.startsWith('<')) {
+      current = []
+      if (!line.endsWith('>'))
+        inTag = true
+      continue
+    }
     if (line === '') {
       if (current.length) {
         paragraph = current.join(' ')
         break
       }
+      continue
+    }
+    if (/^(?:-{3,}|\*{3,}|_{3,})$/.test(line)) {
+      current = []
       continue
     }
     if (/^(?:[#>|]|[-*+]\s|\d+\.\s)/.test(line)) {
@@ -126,7 +162,8 @@ function loadPages(): PagePreview[] {
       const title = extractTitle(src)
       if (!title)
         return null
-      return { path: toUrlPath(file), title, summary: extractSummary(src) }
+      const summary = frontmatterValue(src, 'summary') ?? extractSummary(src)
+      return { path: toUrlPath(file), title, summary }
     })
     .filter((x): x is PagePreview => x !== null)
 }

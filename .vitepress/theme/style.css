@@ -71,6 +71,12 @@
   --vp-c-brand-soft: rgba(18, 70, 137, 0.1);
 
   --nb-mono: var(--vp-font-family-mono);
+
+  /* Latin first, then explicit CJK sans: without these, zh-CN text on
+     Windows can fall back to a serif default for Han glyphs. */
+  --vp-font-family-base:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC',
+    'Microsoft YaHei', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
 }
 
 .dark {
@@ -191,6 +197,561 @@
   color: var(--vp-c-brand-1);
 }
 
+/* Figures — photos carry a provenance stamp, same discipline as prose. */
+.vp-doc .nb-figure {
+  margin: 28px 0;
+}
+
+.vp-doc .nb-figure img {
+  display: block;
+  width: 100%;
+  border-radius: 10px;
+  background: var(--vp-c-bg-soft);
+}
+
+.vp-doc .nb-figure.is-tall img {
+  width: auto;
+  max-width: 100%;
+  max-height: 62vh;
+  margin: 0 auto;
+}
+
+.vp-doc .nb-figure figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin-top: 9px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--vp-c-text-2);
+}
+
+.nb-fig-caption {
+  flex: 1 1 260px;
+}
+
+/* Date and origin read as metadata, not prose. */
+.nb-fig-stamp {
+  flex: 0 0 auto;
+  font-family: var(--nb-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--vp-c-text-3);
+  white-space: nowrap;
+}
+
+.vp-doc .nb-figure-grid {
+  display: grid;
+  gap: 16px;
+  margin: 28px 0;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.vp-doc .nb-figure-grid .nb-figure {
+  margin: 0;
+}
+
+/* Break out of the prose column by a bounded amount on both sides. Anchoring
+   to the column (rather than the viewport) keeps the gutters to the sidebar
+   and the outline intact at every width. */
+@media (min-width: 960px) {
+  .vp-doc .nb-figure.is-wide,
+  .vp-doc .nb-figure-grid.is-wide {
+    width: calc(100% + 64px);
+    margin-left: -32px;
+  }
+}
+
+/* 1280px is where the outline appears and squeezes the space back; only past
+   1440px is there room for the wider breakout. */
+@media (min-width: 1440px) {
+  .vp-doc .nb-figure.is-wide,
+  .vp-doc .nb-figure-grid.is-wide {
+    width: calc(100% + 128px);
+    margin-left: -64px;
+  }
+}
+
+/* Full-bleed hero. Escapes the doc padding entirely; pages using it set
+   `aside: false` so nothing sits in the bled-out area. */
+.vp-doc .nb-hero {
+  position: relative;
+  margin: -32px calc(50% - 50vw) 40px;
+  width: 100vw;
+  height: clamp(300px, 52vh, 520px);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* With a sidebar there is no viewport to bleed into on the left, so fill the
+   content area instead of sliding under the sidebar. */
+@media (min-width: 960px) {
+  .VPDoc.has-sidebar .vp-doc .nb-hero {
+    margin-right: -48px;
+    margin-left: -48px;
+    width: auto;
+  }
+}
+
+@media (min-width: 1440px) {
+  .VPDoc.has-sidebar .vp-doc .nb-hero {
+    margin-right: -64px;
+    margin-left: -64px;
+  }
+}
+
+.nb-hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Scrim: keeps the title legible without washing the photo out. */
+.nb-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgb(0 0 0 / 78%) 0%,
+    rgb(0 0 0 / 46%) 38%,
+    rgb(0 0 0 / 6%) 72%,
+    rgb(0 0 0 / 0%) 100%
+  );
+}
+
+.nb-hero.scrim-strong::after {
+  background: linear-gradient(
+    to top,
+    rgb(0 0 0 / 88%) 0%,
+    rgb(0 0 0 / 62%) 45%,
+    rgb(0 0 0 / 24%) 78%,
+    rgb(0 0 0 / 8%) 100%
+  );
+}
+
+.nb-hero-body {
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 0 24px 30px;
+  margin: 0 auto;
+  max-width: 848px;
+}
+
+.nb-hero-kicker {
+  margin: 0 0 10px;
+  font-family: var(--nb-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: rgb(255 255 255 / 82%);
+  text-transform: uppercase;
+}
+
+.vp-doc .nb-hero-title {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  font-size: clamp(30px, 5vw, 46px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #fff;
+  text-wrap: balance;
+}
+
+.nb-hero-lede {
+  margin: 12px 0 0;
+  max-width: 46em;
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgb(255 255 255 / 88%);
+}
+
+.nb-hero-stamp {
+  position: absolute;
+  z-index: 1;
+  right: 14px;
+  bottom: 10px;
+  margin: 0;
+  font-family: var(--nb-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: rgb(255 255 255 / 55%);
+}
+
+@media (max-width: 640px) {
+  .vp-doc .nb-hero {
+    height: clamp(240px, 44vh, 360px);
+  }
+
+  .nb-hero-body {
+    padding: 0 20px 22px;
+  }
+}
+
+/* The hero already darkens its own photo; don't dim it again. */
+.dark .vp-doc .nb-hero-img {
+  filter: none;
+}
+
+@media print {
+  .vp-doc .nb-hero {
+    height: auto;
+    margin: 0 0 16px;
+    width: 100%;
+  }
+
+  .nb-hero-img {
+    position: static;
+    height: auto;
+  }
+
+  .nb-hero::after {
+    display: none;
+  }
+
+  .nb-hero-body {
+    position: static;
+    padding: 8px 0 0;
+  }
+
+  .nb-hero-kicker,
+  .vp-doc .nb-hero-title,
+  .nb-hero-lede {
+    color: var(--vp-c-text-1);
+  }
+}
+
+/* Split — photo beside prose, alternating down the page. */
+.vp-doc .nb-split {
+  display: grid;
+  gap: 20px 32px;
+  align-items: center;
+  margin: 36px 0;
+}
+
+.nb-split-media img {
+  display: block;
+  width: 100%;
+  border-radius: 10px;
+}
+
+.nb-split-kicker {
+  margin: 0 0 6px;
+  font-family: var(--nb-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--vp-c-brand-1);
+  text-transform: uppercase;
+}
+
+.vp-doc .nb-split-heading {
+  margin: 0 0 10px;
+  border: 0;
+  padding: 0;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.vp-doc .nb-split-body > :last-child {
+  margin-bottom: 0;
+}
+
+@media (min-width: 860px) {
+  .vp-doc .nb-split {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .vp-doc .nb-split.is-reverse .nb-split-media {
+    order: 2;
+  }
+}
+
+/* Section break: a full-bleed photo, optionally carrying one line of text. */
+.vp-doc .nb-band {
+  position: relative;
+  margin: 44px calc(50% - 50vw);
+  width: 100vw;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.nb-band img {
+  display: block;
+  width: 100%;
+  height: clamp(220px, 38vh, 420px);
+  object-fit: cover;
+}
+
+.nb-band-quote {
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  border: 0;
+  padding: 44px 24px 26px;
+  background: linear-gradient(to top, rgb(0 0 0 / 76%), rgb(0 0 0 / 0%));
+}
+
+.vp-doc .nb-band-quote p {
+  margin: 0 auto;
+  max-width: 800px;
+  font-size: clamp(17px, 2.4vw, 23px);
+  font-weight: 600;
+  line-height: 1.45;
+  color: #fff;
+  text-wrap: balance;
+}
+
+.nb-band-quote cite {
+  display: block;
+  margin: 8px auto 0;
+  max-width: 800px;
+  font-family: var(--nb-mono);
+  font-size: 11px;
+  font-style: normal;
+  letter-spacing: 0.06em;
+  color: rgb(255 255 255 / 70%);
+}
+
+.nb-band-stamp {
+  position: absolute;
+  z-index: 1;
+  top: 10px;
+  right: 14px;
+  margin: 0;
+  font-family: var(--nb-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: rgb(255 255 255 / 55%);
+}
+
+@media (min-width: 960px) {
+  .VPDoc.has-sidebar .vp-doc .nb-band {
+    margin-right: -48px;
+    margin-left: -48px;
+    width: auto;
+  }
+}
+
+@media (min-width: 1440px) {
+  .VPDoc.has-sidebar .vp-doc .nb-band {
+    margin-right: -64px;
+    margin-left: -64px;
+  }
+}
+
+.dark .vp-doc .nb-band img {
+  filter: none;
+}
+
+/* Fact strip — scannable hard facts before any prose. */
+.vp-doc .nb-facts {
+  display: grid;
+  gap: 1px;
+  margin: 28px 0;
+  background: var(--vp-c-divider);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 10px;
+  overflow: hidden;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.nb-fact {
+  padding: 14px 16px;
+  background: var(--vp-c-bg);
+}
+
+.vp-doc .nb-facts dt {
+  margin: 0 0 5px;
+  font-family: var(--nb-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--vp-c-text-3);
+  text-transform: uppercase;
+}
+
+.vp-doc .nb-facts dd {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--vp-c-text-1);
+}
+
+@media print {
+  .vp-doc .nb-band {
+    margin: 0 0 16px;
+    width: 100%;
+  }
+
+  .nb-band img {
+    height: auto;
+  }
+
+  .nb-band-quote {
+    position: static;
+    padding: 8px 0 0;
+    background: none;
+  }
+
+  .vp-doc .nb-band-quote p,
+  .nb-band-quote cite {
+    color: var(--vp-c-text-1);
+  }
+}
+
+/* Timeline — a spine for chronologies. */
+.vp-doc .nb-timeline {
+  margin: 28px 0 36px;
+}
+
+.vp-doc .nb-tl-entry {
+  position: relative;
+  padding: 0 0 26px 22px;
+  border-left: 2px solid var(--vp-c-divider);
+}
+
+.vp-doc .nb-tl-entry:last-child {
+  border-left-color: transparent;
+  padding-bottom: 0;
+}
+
+/* The node. Pivots are filled; ordinary moments are hollow. */
+.nb-tl-entry::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: -6px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--vp-c-divider);
+  border-radius: 50%;
+  background: var(--vp-c-bg);
+}
+
+.nb-tl-entry.is-pivot::before {
+  border-color: var(--vp-c-brand-1);
+  background: var(--vp-c-brand-1);
+}
+
+.nb-tl-year {
+  margin: 0 0 4px;
+  font-family: var(--nb-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--vp-c-text-3);
+}
+
+.nb-tl-entry.is-pivot .nb-tl-year {
+  color: var(--vp-c-brand-1);
+}
+
+.vp-doc .nb-tl-title {
+  margin: 0 0 6px;
+  border: 0;
+  padding: 0;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.vp-doc .nb-tl-body > p {
+  margin: 0 0 10px;
+}
+
+.vp-doc .nb-tl-body > :last-child {
+  margin-bottom: 0;
+}
+
+/* Portal cards. */
+.vp-doc .nb-cards {
+  display: grid;
+  gap: 16px;
+  margin: 28px 0;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.vp-doc .nb-card {
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  background: var(--vp-c-bg);
+  text-decoration: none;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.vp-doc .nb-card:hover {
+  border-color: var(--vp-c-brand-1);
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vp-doc .nb-card {
+    transition: border-color 0.2s ease;
+  }
+
+  .vp-doc .nb-card:hover {
+    transform: none;
+  }
+}
+
+.vp-doc .nb-card img {
+  display: block;
+  width: 100%;
+  height: 132px;
+  object-fit: cover;
+}
+
+.nb-card-body {
+  display: block;
+  padding: 13px 15px 15px;
+}
+
+.nb-card-title {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--vp-c-text-1);
+}
+
+.nb-card-desc {
+  display: block;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--vp-c-text-2);
+}
+
+/* Screenshots and photos are lit for paper-white pages; ease them in dark. */
+.dark .vp-doc .nb-figure img,
+.dark .vp-doc p > img {
+  filter: brightness(0.92) contrast(1.02);
+  transition: filter 0.2s ease;
+}
+
+.dark .vp-doc .nb-figure img:hover,
+.dark .vp-doc p > img:hover {
+  filter: none;
+}
+
 /* Hover preview card. */
 .nb-concept-card {
   position: fixed;
@@ -208,6 +769,19 @@
 
 .nb-concept-card.is-above {
   transform: translateY(-100%);
+}
+
+/* Dark surfaces need a heavier shadow to separate from the page. */
+.dark .nb-concept-card {
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.55),
+    0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+@media (max-width: 479px) {
+  .nb-concept-card {
+    width: calc(100vw - 24px);
+  }
 }
 
 .nb-cp-kicker {
@@ -242,4 +816,39 @@
 .nb-cp-enter-from,
 .nb-cp-leave-to {
   opacity: 0;
+}
+
+/* Print: chrome off, content full width; keep last-updated as a version stamp. */
+@media print {
+  .VPNav,
+  .VPLocalNav,
+  .VPSidebar,
+  .VPDoc .aside,
+  .VPDoc .edit-link,
+  .VPDoc .prev-next,
+  .VPFooter,
+  .nb-hub-back,
+  .nb-concept-card {
+    display: none !important;
+  }
+
+  .VPDoc {
+    padding: 0 !important;
+  }
+
+  .VPDoc .container,
+  .VPDoc .content {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  /* Checklist tables must fit the sheet instead of forcing overflow. */
+  .vp-doc table:has(input[type='checkbox']) th,
+  .vp-doc table:has(input[type='checkbox']) td {
+    white-space: normal;
+  }
+
+  .vp-doc a {
+    text-decoration: none;
+  }
 }
