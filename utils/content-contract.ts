@@ -1,14 +1,19 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
+import { frontmatterValue } from './page-preview'
 
-// Sections whose every page must appear in nav/sidebar. about, concepts and
-// repair use a hub + inline-link + search model (see .vitepress/config.mts),
-// so they carry no full sidebar and are excluded from this contract.
-export const ACTIVE_DOC_DIRS = ['tutorial', 'process'] as const
+export const ACTIVE_DOC_DIRS = ['about', 'tutorial', 'process'] as const
+
+// Hub sections carry no sidebar, so they are exempt from the nav contract only.
+export const HUB_DOC_DIRS = ['concepts', 'repair'] as const
+
 export const ARCHIVED_DOC_DIR = 'archived'
 
+export const ROUTED_DOC_DIRS = [...ACTIVE_DOC_DIRS, ...HUB_DOC_DIRS] as const
+
 export type ActiveDocDomain = typeof ACTIVE_DOC_DIRS[number]
-export type DocCategory = 'active' | 'archived'
+export type HubDocDomain = typeof HUB_DOC_DIRS[number]
+export type DocCategory = 'active' | 'hub' | 'archived'
 
 export interface DocFile {
   absolutePath: string
@@ -18,6 +23,8 @@ export interface DocFile {
   h1: string | undefined
   relativePath: string
   routePath: string
+  /** h1, or the frontmatter title for pages whose heading lives in a hero. */
+  title: string | undefined
 }
 
 export interface MarkdownLink {
@@ -69,11 +76,18 @@ export function extractH1(content: string): string | undefined {
   }
 }
 
+export function extractTitle(content: string): string | undefined {
+  return extractH1(content) ?? frontmatterValue(content, 'title')
+}
+
 export function listDocs(root = DEFAULT_ROOT): DocFile[] {
   const docs: DocFile[] = []
 
   for (const domain of ACTIVE_DOC_DIRS)
     docs.push(...listDocsInDomain(root, domain, 'active'))
+
+  for (const domain of HUB_DOC_DIRS)
+    docs.push(...listDocsInDomain(root, domain, 'hub'))
 
   docs.push(...listDocsInDomain(root, ARCHIVED_DOC_DIR, 'archived'))
 
@@ -82,6 +96,14 @@ export function listDocs(root = DEFAULT_ROOT): DocFile[] {
 
 export function listActiveDocs(root = DEFAULT_ROOT): DocFile[] {
   return listDocs(root).filter(doc => doc.category === 'active')
+}
+
+export function listHubDocs(root = DEFAULT_ROOT): DocFile[] {
+  return listDocs(root).filter(doc => doc.category === 'hub')
+}
+
+export function listRoutedDocs(root = DEFAULT_ROOT): DocFile[] {
+  return listDocs(root).filter(doc => doc.category !== 'archived')
 }
 
 export function listArchivedDocs(root = DEFAULT_ROOT): DocFile[] {
@@ -177,16 +199,20 @@ export function resolveInternalLink(link: MarkdownLink, root = DEFAULT_ROOT): Li
 
   const decodedTargetPath = decodeLinkPath(targetPath)
   const sourceDir = path.posix.dirname(toPosixPath(link.sourceRelativePath))
-  const candidatePath = decodedTargetPath.startsWith('/')
-    ? path.join(root, decodedTargetPath)
-    : path.resolve(root, sourceDir, decodedTargetPath)
-  const resolvedPath = resolveExistingPath(candidatePath)
+  // VitePress serves public/ from the site root, so /templates/x.doc on a page
+  // is public/templates/x.doc on disk.
+  const candidatePaths = decodedTargetPath.startsWith('/')
+    ? [path.join(root, decodedTargetPath), path.join(root, 'public', decodedTargetPath)]
+    : [path.resolve(root, sourceDir, decodedTargetPath)]
 
-  if (resolvedPath) {
-    return {
-      link,
-      resolvedPath,
-      status: 'ok',
+  for (const candidatePath of candidatePaths) {
+    const resolvedPath = resolveExistingPath(candidatePath)
+    if (resolvedPath) {
+      return {
+        link,
+        resolvedPath,
+        status: 'ok',
+      }
     }
   }
 
@@ -246,6 +272,7 @@ function listDocsInDomain(root: string, domain: string, category: DocCategory): 
       h1: extractH1(content),
       relativePath,
       routePath: routePathFromRelativePath(relativePath),
+      title: extractTitle(content),
     }
   })
 }

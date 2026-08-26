@@ -6,9 +6,12 @@ import {
   collectNavigationLinks,
   extractH1,
   extractMarkdownLinks,
+  extractTitle,
   findDuplicateRoutePaths,
   listActiveDocs,
   listArchivedDocs,
+  listHubDocs,
+  listRoutedDocs,
   resolveInternalLink,
   routePathFromRelativePath,
 } from '../utils/content-contract'
@@ -22,21 +25,45 @@ afterEach(() => {
 })
 
 describe('content contract', () => {
-  it('classifies active and archived document trees separately', () => {
+  it('classifies active, hub and archived document trees separately', () => {
     tempDir = mkdtempSync(path.join(tmpdir(), 'content-contract-'))
+    writeFixture('about/index.md', '# About')
     writeFixture('tutorial/index.md', '# Tutorial')
     writeFixture('process/2025/example.md', '# Process')
+    writeFixture('concepts/college.md', '# College')
     writeFixture('repair/guide.md', '# Repair')
     writeFixture('archived/2025/meeting.md', '# Meeting')
 
-    // repair uses the hub model, so it is not a contract-governed active doc.
     expect(listActiveDocs(tempDir).map(doc => doc.relativePath)).toEqual([
+      'about/index.md',
       'process/2025/example.md',
       'tutorial/index.md',
+    ])
+    expect(listHubDocs(tempDir).map(doc => doc.relativePath)).toEqual([
+      'concepts/college.md',
+      'repair/guide.md',
     ])
     expect(listArchivedDocs(tempDir).map(doc => doc.relativePath)).toEqual([
       'archived/2025/meeting.md',
     ])
+    expect(listRoutedDocs(tempDir).map(doc => doc.relativePath)).not.toContain(
+      'archived/2025/meeting.md',
+    )
+  })
+
+  it('falls back to the frontmatter title when the heading lives in a hero', () => {
+    const hero = [
+      '---',
+      'title: 什么是 NBTCA',
+      'aside: false',
+      '---',
+      '',
+      '<PageHero title="什么是 NBTCA" />',
+    ].join('\n')
+
+    expect(extractH1(hero)).toBeUndefined()
+    expect(extractTitle(hero)).toBe('什么是 NBTCA')
+    expect(extractTitle('---\ntitle: Front\n---\n\n# Heading')).toBe('Heading')
   })
 
   it('extracts the first prose H1 and ignores fenced code', () => {

@@ -47,7 +47,11 @@ export function joinBasePath(basePath: string, ...segments: string[]): string {
 }
 
 export function pageLink(basePath: string, filenameOrSlug: string): string {
-  return `${normalizeBasePath(basePath)}${markdownStem(filenameOrSlug)}`
+  const base = normalizeBasePath(basePath)
+  const stem = markdownStem(filenameOrSlug)
+  // An index page is served as its directory; linking it as .../index leaves
+  // the sidebar unable to recognise the page the reader is already on.
+  return stem === 'index' ? base : `${base}${stem}`
 }
 
 export function relativePageLink(filenameOrSlug: string): string {
