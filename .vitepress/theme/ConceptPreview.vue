@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { PagePreview } from './concepts.data'
 import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { routeFromHref } from '../../utils/page-preview'
 import { data as pages } from './concepts.data'
 
-// Build-time map: page URL path -> its preview. Every internal link previews.
 const map = new Map(pages.map(p => [p.path, p]))
 
 const card = ref<HTMLElement | null>(null)
@@ -19,21 +19,6 @@ const state = reactive({
 let showTimer: ReturnType<typeof setTimeout> | undefined
 let hideTimer: ReturnType<typeof setTimeout> | undefined
 let current: HTMLAnchorElement | null = null
-
-function pathFromHref(href: string): string | null {
-  try {
-    const url = new URL(href, location.origin)
-    if (url.origin !== location.origin)
-      return null
-    let p = url.pathname.replace(/\.html$/, '')
-    if (p.endsWith('/index'))
-      p = p.slice(0, -'index'.length)
-    return p
-  }
-  catch {
-    return null
-  }
-}
 
 function anchorFrom(target: EventTarget | null): HTMLAnchorElement | null {
   let el = target as HTMLElement | null
@@ -61,7 +46,7 @@ function place(a: HTMLAnchorElement, preview: PagePreview) {
 }
 
 function scheduleShow(a: HTMLAnchorElement) {
-  const p = pathFromHref(a.href)
+  const p = routeFromHref(a.href, location.origin)
   const preview = p ? map.get(p) : undefined
   if (!preview)
     return

@@ -1,8 +1,9 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { extractTitle } from '../../utils/content-contract'
+import { extractSummary, frontmatterValue } from '../../utils/page-preview'
 
-// Indexes every content page by URL path, title and first paragraph, for hover previews.
 export interface PagePreview {
   path: string
   title: string
@@ -17,114 +18,6 @@ const rootDir = path.resolve(
   '../..',
 )
 const contentDirs = ['about', 'process', 'repair', 'tutorial', 'concepts', 'archived']
-
-function cleanInline(s: string): string {
-  return s
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
-    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
-    .replace(/`([^`]+)`/g, '$1')
-    .replace(/\*\*([^*]+)\*\*/g, '$1')
-    .replace(/\*([^*]+)\*/g, '$1')
-    .replace(/<[^>]+>/g, '')
-    .replace(/\s+/g, ' ')
-    .trim()
-}
-
-function truncate(s: string, n: number): string {
-  return s.length > n ? `${s.slice(0, n).trimEnd()}…` : s
-}
-
-function stripFrontmatter(src: string): string {
-  if (!src.startsWith('---'))
-    return src
-  const end = src.indexOf('\n---', 3)
-  if (end === -1)
-    return src
-  const after = src.indexOf('\n', end + 1)
-  return after === -1 ? '' : src.slice(after + 1)
-}
-
-// Frontmatter scalar, quoted or bare. Pages whose title lives in a hero
-// component have no H1, and any page may override the auto-summary.
-function frontmatterValue(src: string, key: string): string | undefined {
-  if (!src.startsWith('---'))
-    return undefined
-  const end = src.indexOf('\n---', 3)
-  if (end === -1)
-    return undefined
-  const block = src.slice(3, end)
-  const m = block.match(new RegExp(`^${key}:[ \\t]*(.+)$`, 'm'))
-  if (!m)
-    return undefined
-  return cleanInline(m[1].trim().replace(/^(['"])(.*)\1$/, '$2'))
-}
-
-function extractTitle(src: string): string | undefined {
-  const m = stripFrontmatter(src).match(/^#[ \t]+(\S.*)$/m)
-  if (m)
-    return cleanInline(m[1])
-  return frontmatterValue(src, 'title') || undefined
-}
-
-// First prose paragraph, skipping headings, `:::` blocks, fenced code, tables,
-// lists, quotes, horizontal rules and component tags. A page that opens with a
-// component (a hero, say) has no prose to quote, so it should set `summary:`.
-function extractSummary(src: string): string {
-  const lines = stripFrontmatter(src).split(/\r?\n/)
-  let inContainer = false
-  let inFence = false
-  let inTag = false
-  let current: string[] = []
-  let paragraph = ''
-
-  for (const raw of lines) {
-    const line = raw.trim()
-    if (line.startsWith('```') || line.startsWith('~~~')) {
-      inFence = !inFence
-      continue
-    }
-    if (inFence)
-      continue
-    if (line.startsWith(':::')) {
-      inContainer = !inContainer
-      continue
-    }
-    if (inContainer)
-      continue
-    // A tag whose attributes wrap across lines: skip until it closes.
-    if (inTag) {
-      if (line.endsWith('>'))
-        inTag = false
-      continue
-    }
-    if (line.startsWith('<')) {
-      current = []
-      if (!line.endsWith('>'))
-        inTag = true
-      continue
-    }
-    if (line === '') {
-      if (current.length) {
-        paragraph = current.join(' ')
-        break
-      }
-      continue
-    }
-    if (/^(?:-{3,}|\*{3,}|_{3,})$/.test(line)) {
-      current = []
-      continue
-    }
-    if (/^(?:[#>|]|[-*+]\s|\d+\.\s)/.test(line)) {
-      current = []
-      continue
-    }
-    current.push(line)
-  }
-  if (!paragraph && current.length)
-    paragraph = current.join(' ')
-
-  return truncate(cleanInline(paragraph), 140)
-}
 
 function walk(dir: string): string[] {
   let entries: fs.Dirent[]
@@ -159,13 +52,11 @@ function loadPages(): PagePreview[] {
     .flatMap(dir => walk(path.join(rootDir, dir)))
     .map((file) => {
       const src = fs.readFileSync(file, 'utf-8')
-      const title = extractTitle(src)
-      if (!title)
-        return null
+      // Headingless archived files fall back to the filename in the sidebar; match it.
+      const title = extractTitle(src) ?? path.basename(file, '.md')
       const summary = frontmatterValue(src, 'summary') ?? extractSummary(src)
       return { path: toUrlPath(file), title, summary }
     })
-    .filter((x): x is PagePreview => x !== null)
 }
 
 export default {

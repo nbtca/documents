@@ -24,6 +24,26 @@
   }
 }
 
+/* Overlay scrollbars stay hidden until used, so a table wider than the column
+   looks finished at its right edge. Browsers only paint this where it scrolls. */
+.vp-doc table {
+  scrollbar-width: thin;
+  scrollbar-color: var(--vp-c-divider) transparent;
+}
+
+.vp-doc table::-webkit-scrollbar {
+  height: 8px;
+}
+
+.vp-doc table::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: var(--vp-c-divider);
+}
+
+.vp-doc table::-webkit-scrollbar-thumb:hover {
+  background: var(--vp-c-text-3);
+}
+
 .vp-doc table:has(input[type='checkbox']) th,
 .vp-doc table:has(input[type='checkbox']) td {
   white-space: nowrap;
@@ -195,6 +215,277 @@
 
 .nb-hub-back:hover {
   color: var(--vp-c-brand-1);
+}
+
+/* Archive provenance — framed so it reads as apparatus, not as the document. */
+/* An infobox: the record sits beside the article rather than on top of it, so
+   the title leads and the provenance needs no disclosure. It rides the right
+   rail where there is one, and falls back to a block above the title where the
+   rail is hidden. */
+.nb-archive-meta {
+  margin: 0 0 20px;
+  padding: 10px 14px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  background: var(--vp-c-bg-soft);
+}
+
+/* Collapsed by default: the rail belongs to the outline, and the full record
+   is long enough to push it off the screen. */
+.nb-archive-meta summary {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.nb-archive-meta summary::-webkit-details-marker {
+  display: none;
+}
+
+.nb-archive-meta-date {
+  flex: 1;
+  font-size: 13px;
+  color: var(--vp-c-text-2);
+}
+
+.nb-archive-meta-caret {
+  color: var(--vp-c-text-3);
+  transition: transform 0.15s ease;
+}
+
+.nb-archive-meta details[open] .nb-archive-meta-caret {
+  transform: rotate(90deg);
+}
+
+.nb-archive-meta summary:hover .nb-archive-meta-caret {
+  color: var(--vp-c-text-2);
+}
+
+.nb-archive-meta-aside {
+  display: none;
+}
+
+/* The breakpoint VitePress uses to show the outline rail. */
+@media (min-width: 1280px) {
+  .nb-archive-meta-inline {
+    display: none;
+  }
+
+  .nb-archive-meta-aside {
+    display: block;
+    margin: 0 0 24px;
+  }
+}
+
+.nb-archive-meta a {
+  color: var(--vp-c-text-2);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.nb-archive-meta-linknote {
+  margin: 8px 0 0;
+  padding-top: 8px;
+  border-top: 1px dashed var(--vp-c-divider);
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--vp-c-text-3);
+}
+
+.nb-archive-meta-linknote a {
+  color: var(--vp-c-text-2);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.nb-archive-meta-tag {
+  font-family: var(--nb-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--vp-c-text-3);
+  text-transform: uppercase;
+}
+
+.nb-archive-meta dl {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 6px 12px;
+  margin: 10px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--vp-c-divider);
+}
+
+/* The rail is too narrow for a label column beside each value. */
+.nb-archive-meta-aside dl {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+}
+
+.nb-archive-meta-aside dt:not(:first-of-type) {
+  margin-top: 8px;
+}
+
+.nb-archive-meta dt {
+  font-family: var(--nb-mono);
+  font-size: 12px;
+  color: var(--vp-c-text-3);
+  white-space: nowrap;
+}
+
+.nb-archive-meta dd {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--vp-c-text-2);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+  .nb-archive-meta dl {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+
+  .nb-archive-meta dt {
+    margin-top: 8px;
+  }
+}
+
+/* Who to ask about this page. Declared in frontmatter so the shape cannot
+   drift the way the hand-kept tables did. */
+.nb-maintainers {
+  margin: 32px 0 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--vp-c-divider);
+  font-size: 13px;
+}
+
+.nb-maintainers-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+}
+
+.nb-maintainers-row + .nb-maintainers-row {
+  margin-top: 6px;
+}
+
+.nb-maintainers-label {
+  font-family: var(--nb-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--vp-c-text-3);
+  text-transform: uppercase;
+}
+
+.nb-maintainers ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nb-maintainers li {
+  margin: 0;
+}
+
+.nb-maintainers a {
+  color: var(--vp-c-text-2);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.nb-maintainers-dim {
+  margin-left: 6px;
+  color: var(--vp-c-text-3);
+}
+
+.nb-history-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--vp-c-text-2);
+  font: inherit;
+  cursor: pointer;
+}
+
+.nb-history-toggle:hover {
+  color: var(--vp-c-text-1);
+}
+
+.nb-history-avatar {
+  border-radius: 50%;
+  background: var(--vp-c-bg-soft);
+}
+
+.nb-history-caret {
+  color: var(--vp-c-text-3);
+  transition: transform 0.15s ease;
+}
+
+.nb-history-caret.is-open {
+  transform: rotate(90deg);
+}
+
+.nb-history {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--vp-c-divider);
+}
+
+.nb-history ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nb-history li {
+  margin: 0;
+}
+
+.nb-history-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  color: var(--vp-c-text-2);
+  text-decoration: none;
+}
+
+.nb-history-item:hover .nb-history-msg {
+  color: var(--vp-c-text-1);
+}
+
+.nb-history-who {
+  flex: none;
+}
+
+.nb-history-msg {
+  flex: 1;
+  overflow: hidden;
+  color: var(--vp-c-text-3);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nb-history-note {
+  margin: 8px 0 0;
+  color: var(--vp-c-text-3);
+}
+
+@media (max-width: 640px) {
+  /* The subject line is the first thing to give up its room on a phone. */
+  .nb-history-msg {
+    display: none;
+  }
 }
 
 /* Figures — photos carry a provenance stamp, same discipline as prose. */
@@ -566,12 +857,27 @@
   border: 1px solid var(--vp-c-divider);
   border-radius: 10px;
   overflow: hidden;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(var(--nb-fact-cols, 3), minmax(0, 1fr));
 }
 
 .nb-fact {
+  grid-column: span var(--nb-fact-span, 1);
   padding: 14px 16px;
   background: var(--vp-c-bg);
+}
+
+@media (max-width: 640px) {
+  .vp-doc .nb-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .nb-fact {
+    grid-column: auto;
+  }
+
+  .nb-fact:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
 }
 
 .vp-doc .nb-facts dt {
@@ -750,6 +1056,117 @@
 .dark .vp-doc .nb-figure img:hover,
 .dark .vp-doc p > img:hover {
   filter: none;
+}
+
+/* A flagged gap, so a reader never mistakes it for an assertion. */
+/* The editor's voice, not the document's. Quiet on purpose: an archived page
+   can carry a dozen of these, and a loud callout would drown the original. */
+.vp-doc .nb-note {
+  margin: 24px 0;
+  padding: 30px 18px 14px;
+  border-left: 2px solid var(--vp-c-divider);
+  border-radius: 4px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+  font-size: 15px;
+  position: relative;
+}
+
+.vp-doc .nb-note.is-pending {
+  border-left-color: var(--vp-c-warning-1);
+  background: var(--vp-c-warning-soft);
+}
+
+.vp-doc .nb-note::before {
+  content: attr(data-label);
+  position: absolute;
+  top: 11px;
+  left: 18px;
+  font-family: var(--nb-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--vp-c-text-3);
+}
+
+/* The frame already sets the block apart; interior spacing should read as one
+   note rather than a stack of separate ones. */
+.vp-doc .nb-note > :first-child {
+  margin-top: 0;
+}
+
+.vp-doc .nb-note > :last-child {
+  margin-bottom: 0;
+}
+
+.vp-doc .nb-pending {
+  border-radius: 3px;
+  background: var(--vp-c-warning-soft);
+  padding: 0.1em 0.4em;
+  box-decoration-break: clone;
+}
+
+.vp-doc .nb-pending-label {
+  font-family: var(--nb-mono);
+  font-size: 0.82em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--vp-c-text-2);
+}
+
+/* Click to enlarge. */
+.vp-doc img[data-zoomable] {
+  cursor: zoom-in;
+}
+
+.vp-doc img[data-zoomable]:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 3px;
+}
+
+.nb-zoom {
+  max-width: 100vw;
+  max-height: 100vh;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  overflow: hidden;
+}
+
+/* Only when open, so the closed dialog keeps its display: none. */
+.nb-zoom[open] {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.nb-zoom::backdrop {
+  background: rgb(0 0 0 / 82%);
+  backdrop-filter: blur(2px);
+}
+
+.nb-zoom img {
+  min-height: 0;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+  cursor: zoom-out;
+}
+
+.nb-zoom-alt {
+  flex-shrink: 0;
+  max-width: 68ch;
+  margin: 0;
+  color: rgb(255 255 255 / 78%);
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+  text-wrap: balance;
 }
 
 /* Hover preview card. */

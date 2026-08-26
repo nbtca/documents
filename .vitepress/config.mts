@@ -1,11 +1,14 @@
+import { fileURLToPath, URL } from 'node:url'
 import { withMermaid } from 'vitepress-plugin-mermaid'
 import { sidebar as sidebarAbout } from '../about/sidebar'
 import { sidebar as sidebarArchived } from '../archived/sidebar'
 import { sidebar as sidebarGuide } from '../tutorial/sidebar'
+import { noteRanges } from '../utils/editorial-note'
+import { lastCommitFor } from '../utils/git-history'
 
+const siteUrl = 'https://docs.nbtca.space'
 const siteDescription = '浙大宁波理工学院计算机协会（NBTCA）的公开文档站：认识社团、上手指南、流程手册与维修日资料。'
 
-// https://vitepress.dev/reference/site-config
 export default withMermaid({
   lang: 'zh-CN',
   title: '计算机协会文档',
@@ -19,14 +22,19 @@ export default withMermaid({
     ['meta', { property: 'og:site_name', content: '计算机协会文档' }],
     ['meta', { property: 'og:title', content: '计算机协会文档' }],
     ['meta', { property: 'og:description', content: siteDescription }],
-    ['meta', { name: 'twitter:card', content: 'summary' }],
+    ['meta', { property: 'og:url', content: `${siteUrl}/` }],
+    ['meta', { property: 'og:image', content: `${siteUrl}/og-card.png` }],
+    ['meta', { property: 'og:image:width', content: '1200' }],
+    ['meta', { property: 'og:image:height', content: '630' }],
+    ['meta', { property: 'og:image:alt', content: '计算机协会文档 · NBTCA Documents' }],
+    ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
   ],
   themeConfig: {
-    // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: '关于', link: '/about/' },
       { text: '指南', link: '/tutorial/' },
       { text: '维修', link: '/repair/' },
+      { text: '协会主页', link: 'https://nbtca.space' },
     ],
     search: {
       provider: 'local',
@@ -79,12 +87,13 @@ export default withMermaid({
         },
       },
     },
+    // repair and concepts are absent on purpose: they use a hub + inline-link
+    // + search model and carry no full sidebar.
     sidebar: {
       '/about/': sidebarAbout,
       // Guide = tutorial + process; one shared sidebar mounted on both paths.
       '/tutorial/': sidebarGuide,
       '/process/': sidebarGuide,
-      // repair and concepts use a hub + inline-link + search model; no full sidebar.
       '/archived': sidebarArchived,
     },
     outline: {
@@ -94,9 +103,7 @@ export default withMermaid({
       prev: '上一页',
       next: '下一页',
     },
-    lastUpdated: {
-      text: '最后更新于',
-    },
+    lastUpdatedText: '最后更新于',
     darkModeSwitchLabel: '主题',
     lightModeSwitchTitle: '切换到浅色模式',
     darkModeSwitchTitle: '切换到深色模式',
@@ -122,12 +129,95 @@ export default withMermaid({
       // Screenshots dominate page weight; defer offscreen ones.
       lazyLoading: true,
     },
+    // 〔待核实〕/〔待补充〕 mark a gap the site refuses to guess at; styling them
+    // here keeps authors writing plain text.
+    config: (md) => {
+      // A whole paragraph in 〔〕 reads exactly like the document it comments on.
+      // Frame those; notes inside a sentence already read as an aside.
+      md.core.ruler.push('editorial_note', (state) => {
+        const tokens = state.tokens
+        const blocks: Array<{ type: string, text: string, open: number, close: number }> = []
+        let depth = 0
+
+        for (let i = 0; i < tokens.length; i++) {
+          const token = tokens[i]
+          if (token.nesting === 1) {
+            if (depth === 0)
+              blocks.push({ type: token.type, text: '', open: i, close: i })
+            depth++
+          }
+          else if (token.nesting === -1) {
+            depth--
+            if (depth === 0 && blocks.length)
+              blocks[blocks.length - 1].close = i
+          }
+          else if (depth === 1 && token.type === 'inline' && blocks.length) {
+            blocks[blocks.length - 1].text += token.content
+          }
+        }
+
+        const textChild = (start: number, end: number, last: boolean) => {
+          for (let i = last ? end : start; last ? i >= start : i <= end; last ? i-- : i++) {
+            const children = tokens[i].type === 'inline' ? tokens[i].children ?? [] : []
+            const texts = children.filter(child => child.type === 'text')
+            if (texts.length)
+              return last ? texts[texts.length - 1] : texts[0]
+          }
+          return undefined
+        }
+
+        // Wrapped, not marked per block: a note can enclose a list or a table.
+        for (const [from, to] of noteRanges(blocks).reverse()) {
+          const head = textChild(blocks[from].open, blocks[from].close, false)
+          const tail = textChild(blocks[to].open, blocks[to].close, true)
+          const pending = head?.content.match(/^〔(待核实|待补充|待补)[：:]?/)
+
+          // The frame and its label say what 〔〕 was standing in for.
+          if (head)
+            head.content = head.content.replace(pending ? pending[0] : '〔', '')
+          if (tail)
+            tail.content = tail.content.replace(/〕(?=[^〕]*$)/, '')
+
+          const after = new state.Token('html_block', '', 0)
+          after.content = '</aside>\n'
+          tokens.splice(blocks[to].close + 1, 0, after)
+
+          const before = new state.Token('html_block', '', 0)
+          before.content = pending
+            ? `<aside class="nb-note is-pending" data-label="${pending[1]}">\n`
+            : '<aside class="nb-note" data-label="编者">\n'
+          tokens.splice(blocks[from].open, 0, before)
+        }
+      })
+
+      const renderText = md.renderer.rules.text
+        ?? ((tokens, idx) => md.utils.escapeHtml(tokens[idx].content))
+
+      md.renderer.rules.text = (tokens, idx, options, env, self) => {
+        return renderText(tokens, idx, options, env, self).replace(
+          /〔(待核实|待补充|待补)([^〕]*)〕/g,
+          (_, label, rest) =>
+            `<span class="nb-pending"><span class="nb-pending-label">${label}</span>${rest}</span>`,
+        )
+      }
+    },
+  },
+  // The stock component leaves <time> empty until hydration formats it, so a
+  // page whose script does not run shows the label with no date.
+  vite: {
+    resolve: {
+      alias: [{
+        find: /^.*\/VPDocFooterLastUpdated\.vue$/,
+        replacement: fileURLToPath(new URL('./theme/LastUpdated.vue', import.meta.url)),
+      }],
+    },
   },
   // Split page metadata out of app.js so content-only edits keep its hash.
   metaChunk: true,
-  // katex/wardley chunks are modulepreloaded on every page although only
-  // mermaid diagrams may dynamically import them; drop the eager hint.
-  shouldPreload: link => !/katex|wardley/i.test(link),
+  // mermaid dynamically imports one chunk per diagram type, and the build
+  // preloads all of them on every page — ~940 KB on a page with no diagram at
+  // all. Drop the eager hint; the chunks still load when a diagram needs them.
+  shouldPreload: link => !/diagram|-definition-|dagre-|cose-bilkent|cytoscape|katex|wardley|mermaid/i.test(link),
   // Asset URLs in props of our own components are plain strings to the
   // compiler; without this they ship unhashed and 404 in production. This map
   // replaces Vue's defaults wholesale, so the built-in tags are repeated here.
@@ -149,15 +239,23 @@ export default withMermaid({
   },
   ignoreDeadLinks: [
     /^https?:\/\//,
+    // Downloadable paperwork served from public/; not site routes. The link
+    // contract in utils/site.test.ts checks these against the files on disk.
+    /^\/templates\//,
   ],
-  // Repo-governance docs are tracked in git but must not be published as
-  // site pages (they would otherwise leak into search and the sitemap as
-  // orphan pages with no navigation entry).
+  // Tracked in git, but not site pages: publishing them would add orphans to
+  // search and the sitemap.
   srcExclude: [
     'README.md',
     'CONTRIBUTING.md',
-    'docs/**',
   ],
   lastUpdated: true,
-  sitemap: { hostname: 'https://docs.nbtca.space' },
+  sitemap: { hostname: siteUrl },
+  // Read here so the footer costs no request: the API allows 60 an hour per
+  // address, and a campus shares one.
+  transformPageData(pageData) {
+    const commit = lastCommitFor(pageData.filePath)
+    if (commit)
+      pageData.frontmatter.lastCommit = commit
+  },
 })

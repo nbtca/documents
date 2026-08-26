@@ -1,18 +1,11 @@
 <script setup lang="ts">
-// Photo with a provenance stamp. The stamp reuses the site's monospace
-// "machine voice" so an image carries the same sourcing discipline as prose.
 defineProps<{
   src: string
   alt: string
-  /** Caption prose. Omit for images that speak for themselves. */
   caption?: string
-  /** When the photo was taken, e.g. "2025-12". */
   date?: string
-  /** Where it came from, e.g. "协会照片档案". */
   source?: string
-  /** Break out of the prose column. */
   wide?: boolean
-  /** Portrait images: cap the height instead of the width. */
   tall?: boolean
 }>()
 </script>

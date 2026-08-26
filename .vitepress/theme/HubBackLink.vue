@@ -2,8 +2,7 @@
 import { useRoute } from 'vitepress'
 import { computed } from 'vue'
 
-// On the no-sidebar hub sections, a deep page has no sibling nav — offer one
-// light "back to hub" anchor. The hub pages themselves show nothing.
+// Hub sections have no sidebar, so a deep page has no sibling nav.
 const hubs: Array<{ prefix: string, text: string, link: string }> = [
   { prefix: '/repair/', text: '维修', link: '/repair/' },
   { prefix: '/concepts/', text: '概念库', link: '/concepts/' },
