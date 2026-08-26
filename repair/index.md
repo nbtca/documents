@@ -2,10 +2,13 @@
 title: 维修
 aside: false
 summary: 维修队面向全校师生提供免费的电脑维修，一年办十次左右。
+maintainers:
+  - user: m1ngsama
+    since: 2026-07
 ---
 
 <PageHero
-  src="./assets/repair-outdoor.jpg"
+  src="./assets/repair-outdoor.webp"
   alt="树荫下几张长桌拼成工位，队员与同学围坐着检修笔记本，一名志愿者在旁等候"
   title="维修"
   lede="电脑坏了可以找我们，不收钱。一年办十次左右，全校师生都能来。"
@@ -13,7 +16,7 @@ summary: 维修队面向全校师生提供免费的电脑维修，一年办十�
   scrim="strong"
 />
 
-这一栏把「怎么修、怎么办维修日、报修怎么走、用什么工具」收在一处——顺着读，需要深入的地方点进去就好。
+这一栏把“怎么修、怎么办维修日、报修怎么走、用什么工具”收在一处——顺着读，需要深入的地方点进去就好。
 
 ## 维修日：我们的招牌
 
@@ -25,7 +28,11 @@ summary: 维修队面向全校师生提供免费的电脑维修，一年办十�
 
 ## 报修与工单
 
-校内任何人都可以通过[微信小程序「NBT电脑维修」](/concepts/repair-miniprogram)发起报修。维修事件会同步到 GitHub，由队员用 `@nbtca-bot` 接单、提交、审核，并按 `size:` 标签折算志愿者时长。系统怎么运转，见 [工单系统](./weekend)。
+电脑坏了，去协会主页的[预约维修](https://nbtca.space/repair/create-ticket)建单，之后在[维修记录](https://nbtca.space/repair/history)里看进度。队员那一侧是[维修管理](https://nbtca.space/repair/admin)，需要登录。
+
+队员在面板上接单、提交维修描述、由管理员审核结单，工作量按 `size` 分档折算[志愿者时长](/concepts/volunteer-hours)。系统怎么运转，见 [工单系统](./weekend)。
+
+早年还有[微信小程序“NBT电脑维修”](/concepts/repair-miniprogram)和 repair.nbtca.space 两个入口，都已不再维护、计划下线，报修请走上面那条。
 
 ## 工具、镜像与软件
 
@@ -33,12 +40,4 @@ summary: 维修队面向全校师生提供免费的电脑维修，一年办十�
 
 ## 更深的老手册
 
-维修常用的深入手册——[计算机硬件系统的搭建与维护](/tutorial/manual/hardware-establish)、[从零开始安装 Windows](/tutorial/manual/windows-from-scratch)、[操作系统技能](/tutorial/manual/os-skills)——已整理进教程栏，仍在按编辑标准逐步重写完善，欢迎来补。
-
-:::info 维护信息
-
-| 维护人                                   | 时间          |
-| ---------------------------------------- | ------------- |
-| [@m1ngsama](https://github.com/m1ngsama) | 2026.07 - Now |
-
-:::
+维修常用的深入手册——[计算机硬件系统的搭建与维护](/tutorial/manual/hardware-establish)、[从零开始安装 Windows](/tutorial/manual/windows-from-scratch)、[操作系统技能](/tutorial/manual/os-skills)——已整理进教程栏，仍在逐步重写完善，欢迎来补。

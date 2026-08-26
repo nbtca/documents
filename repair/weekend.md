@@ -1,6 +1,21 @@
+---
+maintainers:
+  - user: wen-templari
+    since: 2025-04
+---
+
 # 维修工单系统 (weekend)
 
-维修工单系统（内部代号 weekend）是 NBTCA 自建的报修与维修协作系统：校内任何人可以通过微信小程序发起报修，维修事件在后端与 GitHub 之间同步，队员用机器人命令接单、提交、审核，并据此统计[志愿者时长](/concepts/volunteer-hours)。
+维修工单系统（内部代号 weekend）是 NBTCA 自建的报修与维修协作系统：校内任何人可以通过报修入口发起报修，维修事件在后端与 GitHub 之间同步，队员用机器人命令接单、提交、审核，并据此统计[志愿者时长](/concepts/volunteer-hours)。
+
+::: warning 两处已与现状不符
+本文记录的是这套系统设计成型时的样子。有两件事后来变了：
+
+- **报修与工单管理都收敛到了协会主页的 [/repair](https://nbtca.space/repair)**。本文写作时的入口——[微信小程序](/concepts/repair-miniprogram)与 repair.nbtca.space——都已不再维护（[Roadmap#64](https://github.com/nbtca/Roadmap/issues/64)）。
+- **工单不再走 GitHub Issue**。下文“在 Github 上处理维修”整节所描述的做法（`@nbtca-bot` 命令、用标签记工作量）目前没有在跑，队员改在主页的维修面板上接单与结单。
+
+其余部分——事件状态机、角色权限——仍是这套系统的骨架。〔待核实：下文的 `size` 分档与时长上限是否照旧，以及在维修面板上怎么记工作量。〕**最后核对：2026-08**。
+:::
 
 ## 总览
 
@@ -19,13 +34,13 @@ flowchart LR
 
 ```
 
-| 地址                                 | 仓库                                                | 描述                       |
-| ------------------------------------ | --------------------------------------------------- | -------------------------- |
-| <https://repair.nbtca.space/api>     | [nbtca/saturday](https://github.com/nbtca/saturday) | 后端                       |
-| <https://repair.nbtca.space>         | [nbtca/sunday](https://github.com/nbtca/sunday)     | 管理页面                   |
-| NA                                   | [nbtca/hawaii](https://github.com/nbtca/hawaii)     | 微信小程序，用于报修       |
-| <https://auth-admin.app.nbtca.space> | [logto-io/logto](https://github.com/logto-io/logto) | 鉴权                       |
-| NA                                   | [nsqio/nsq](https://github.com/nsqio/nsq)           | 消息队列，用于推送维修事件 |
+| 地址                                 | 仓库                                                    | 描述                       |
+| ------------------------------------ | ------------------------------------------------------- | -------------------------- |
+| <https://repair.nbtca.space/api>     | [nbtca/saturday](https://github.com/nbtca/saturday)     | 后端                       |
+| <https://repair.nbtca.space>         | [nbtca/sunday](https://github.com/nbtca/sunday)         | 管理页面                   |
+| NA                                   | [nbtca/Hawaii](https://github.com/nbtca/Hawaii)（私有） | 微信小程序，用于报修       |
+| <https://auth-admin.app.nbtca.space> | [logto-io/logto](https://github.com/logto-io/logto)     | 鉴权                       |
+| NA                                   | [nsqio/nsq](https://github.com/nsqio/nsq)               | 消息队列，用于推送维修事件 |
 
 ## 角色
 
@@ -96,7 +111,13 @@ sequenceDiagram
 
 ```
 
-目前，新的维修事件会同步到 [Github Issue](https://github.com/nbtca/repair-tickets/issues) 中。成员可以在Github Issue中处理维修事件。
+::: info 这一节的做法已经停用
+自动建单的量被 GitHub 判定为滥用，[repair-tickets](https://github.com/nbtca/repair-tickets) 的 issue 随之受限，邮件申诉未能恢复，工单管理因此迁回协会主页的[维修面板](https://nbtca.space/repair/admin)。同步逻辑仍留在 [Saturday](https://github.com/nbtca/Saturday) 的代码里（`util/github.go`），只是没有在跑。
+
+这一节留作记录：它说明了当初为什么选 GitHub Issue，也留下了把工单托管在外部平台会遇到什么。**最后核对：2026-08**。
+:::
+
+这套做法运行时，新的维修事件会同步到 [Github Issue](https://github.com/nbtca/repair-tickets/issues) 中。成员可以在Github Issue中处理维修事件。
 
 ### 为什么要使用Github Issue来管理维修？
 
@@ -200,7 +221,7 @@ console.log('Calculated time:', time) // Output: 5
 | 2333333333 | 123456 | size:s |
 | 2333333333 | 123456 | size:m |
 
-计算后时长为 min(8， 2 + 1 + 2) = 5。
+计算后时长为 min(8，2 + 1 + 2) = 5。
 
 #### 使用Saturday API导出时长为excel
 
@@ -218,15 +239,7 @@ Authorization: {{bearer_token}}
 ##### 示例
 
 ```bash
-curl -X GET "http://repair.nbtca.space/api/events/xlsx?start_time=2025-01-01&end_time=2025-05-31" \
+curl -X GET "https://repair.nbtca.space/api/events/xlsx?start_time=2025-01-01&end_time=2025-05-31" \
   -H "Authorization:  {{bearer_token}}" \
   -OJ
 ```
-
-:::info 维护信息
-
-| 维护人                                           | 时间            |
-| ------------------------------------------------ | --------------- |
-| [@wen-templari](https://github.com/wen-templari) | 2025.4.21 - Now |
-
-:::

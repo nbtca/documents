@@ -1,4 +1,12 @@
+---
+maintainers:
+  - user: m1ngsama
+    since: 2025-10
+---
+
 # 从零开始安装 Windows
+
+这份文档把一台空白电脑装成可用的 Windows：怎么选版本、从哪拿到干净镜像、怎么烧录启动盘，以及装完之后网络、驱动与常用软件怎么配齐。
 
 ## 选择 Windows 版本
 
@@ -7,11 +15,11 @@
 - **Win 10 还是 Win 11**：硬件较新（支持 TPM 2.0、安全启动、较新 CPU）选 Windows 11；老设备不满足 Win 11 门槛就选 Windows 10，更稳妥。
 - **家庭版还是专业版**：普通办公、上网用 Home 足够；需要远程桌面、Hyper-V、加入域等，选 Pro。
 
-无论哪个版本，**务必从微软官方或可信渠道获取纯净原版 ISO，并用 SHA-256 校验**，不要用来路不明的「魔改」镜像。下面几节讲怎么下载、烧录、安装。
+无论哪个版本，**务必从微软官方或可信渠道获取纯净原版 ISO，并用 SHA-256 校验**，不要用来路不明的“魔改”镜像。下面几节讲怎么下载、烧录、安装。
 
-## 获取Windows
+## 获取 Windows
 
-上一节讲了版本怎么选，这里具体说怎么把 ISO 镜像下载到本地，并列出官方 / 可信的镜像来源。
+下面是把 ISO 镜像下载到本地的几条官方与可信途径。
 
 ### 方法一：微软官网直接下载 ISO
 
@@ -70,7 +78,7 @@ Get-FileHash "C:\路径\你的镜像.iso" -Algorithm SHA256
 
 ## 烧录安装介质
 
-拿到 ISO 镜像后，需要将其写入 U 盘，制作可启动的安装介质。以下是几种常用方法。
+拿到 ISO 后要把它写入 U 盘，做成可启动的安装介质。
 
 :::info 准备工作
 
@@ -86,7 +94,7 @@ Rufus 是一款免费、开源、轻量的 USB 启动盘制作工具，支持 UE
 1. 下载 Rufus：<https://rufus.ie/zh/>（建议下载便携版，免安装）。
 2. 插入 U 盘，运行 Rufus。
 3. **设备**：选择你的 U 盘。
-4. **引导类型选择**：点击「选择」，找到下载好的 Windows ISO 文件。
+4. **引导类型选择**：点击“选择”，找到下载好的 Windows ISO 文件。
 5. **分区类型**：
    - 如果你的电脑支持 UEFI 启动（绝大多数 2015 年后的电脑），选择 **GPT**。
    - 如果是较老的电脑只支持传统 BIOS，选择 **MBR**。
@@ -115,7 +123,7 @@ Ventoy 的优势在于你可以在同一个 U 盘中同时放入 Windows 10、Wi
 
 ### 方法三：Media Creation Tool 直接写入
 
-如果你在上一步「获取 Windows」中使用了 Media Creation Tool，可以直接选择写入 U 盘，无需额外工具。具体操作见上一节。
+如果你在上一步“获取 Windows”中使用了 Media Creation Tool，可以直接选择写入 U 盘，无需额外工具。具体操作见上一节。
 
 ### 验证启动盘
 
@@ -125,7 +133,7 @@ Ventoy 的优势在于你可以在同一个 U 盘中同时放入 Windows 10、Wi
 2. 对于 UEFI 启动盘（GPT 分区），U 盘中应有 `EFI` 文件夹。
 3. 如果有条件，可以在虚拟机中测试 U 盘是否能正常启动。
 
-## 安装Windows
+## 安装 Windows
 
 制作好启动 U 盘后，就可以进入安装流程。整个过程分为三个阶段：进入 BIOS 设置启动顺序、执行安装、完成初始设置（OOBE）。
 
@@ -166,7 +174,7 @@ Ventoy 的优势在于你可以在同一个 U 盘中同时放入 Windows 10、Wi
 分区操作会导致数据丢失，请确认已备份重要数据！如果是多硬盘电脑，请仔细辨认目标硬盘，不要误操作。
 :::
 
-**全新安装（推荐）：**
+**全新安装（推荐）**：
 
 1. 在磁盘分区界面，选中目标硬盘上的所有分区，逐个点击 **"删除"**。
 2. 删除完成后，选中 **"未分配的空间"**，点击 **"新建"**。
@@ -174,7 +182,7 @@ Ventoy 的优势在于你可以在同一个 U 盘中同时放入 Windows 10、Wi
 4. Windows 会自动创建 EFI 系统分区、MSR 保留分区等必要分区。
 5. 选中刚创建的主分区（通常是最大的那个），点击 **"下一步"**。
 
-**保留其他分区的安装：**
+**保留其他分区的安装**：
 
 如果硬盘上有 D 盘等数据分区不想丢失，只需删除原来的系统分区（通常是 C 盘和相关的 EFI / 恢复分区），在释放出的未分配空间上新建分区并安装即可。
 
@@ -217,7 +225,7 @@ oobe\bypassnro
 
 ## 构建网络环境
 
-全新安装的 Windows 可能无法直接联网，尤其是台式机或部分笔记本缺少网卡驱动的情况。这一步帮助你让电脑先连上网，为后续安装驱动和软件做准备。
+全新安装的 Windows 常常没有网卡驱动，台式机和部分笔记本尤其如此——装驱动要联网，联网又要驱动。先解开这个循环。
 
 ### 检查网络状态
 
@@ -281,15 +289,15 @@ oobe\bypassnro
 
 这是最安全、最可靠的方式。前往电脑品牌的官方支持页面，输入你的机型或序列号，下载对应的驱动包。
 
-| 品牌 | 驱动下载页面                              |
-| ---- | ----------------------------------------- |
-| 联想 | <https://support.lenovo.com/>             |
-| 华硕 | <https://www.asus.com.cn/support/>        |
-| 惠普 | <https://support.hp.com/cn-zh/drivers>    |
-| 戴尔 | <https://www.dell.com/support/home/zh-cn> |
-| 宏碁 | <https://www.acer.com.cn/support.html>    |
-| 华为 | <https://consumer.huawei.com/cn/support/> |
-| 小米 | <https://www.mi.com/service/bijiben>      |
+| 品牌 | 驱动下载页面                                  |
+| ---- | --------------------------------------------- |
+| 联想 | <https://support.lenovo.com/>                 |
+| 华硕 | <https://www.asus.com.cn/support/>            |
+| 惠普 | <https://support.hp.com/cn-zh/drivers>        |
+| 戴尔 | <https://www.dell.com/support/home/zh-cn>     |
+| 宏碁 | <https://www.acer.com.cn/support.html?type=1> |
+| 华为 | <https://consumer.huawei.com/cn/support/>     |
+| 小米 | <https://www.mi.com/service/bijiben>          |
 
 重点安装以下驱动（按优先级排序）：
 
@@ -412,16 +420,16 @@ JetBrains 全家桶（IntelliJ IDEA、PyCharm、WebStorm 等）对在校学生�
 
 ### 实用工具
 
-| 软件                 | 说明                        | 下载地址                                             |
-| -------------------- | --------------------------- | ---------------------------------------------------- |
-| **Everything**       | 极速文件搜索工具            | <https://www.voidtools.com/zh-cn/>                   |
-| **Snipaste**         | 截图和贴图工具              | <https://www.snipaste.com/>                          |
-| **PotPlayer**        | 功能强大的视频播放器        | <https://potplayer.daum.net/>                        |
-| **Geek Uninstaller** | 干净卸载软件，清理残留      | <https://geekuninstaller.com/>                       |
-| **Dism++**           | 系统优化和清理工具          | <https://github.com/Chuyu-Team/Dism-Multi-language>  |
-| **Bitwarden**        | 开源密码管理器              | <https://bitwarden.com/>                             |
-| **Clash Verge Rev**  | 网络代理工具                | <https://github.com/clash-verge-rev/clash-verge-rev> |
-| **TrafficMonitor**   | 任务栏网速 / CPU / 内存监控 | <https://github.com/zhongyang219/TrafficMonitor>     |
+| 软件                 | 说明                                                 | 下载地址                                             |
+| -------------------- | ---------------------------------------------------- | ---------------------------------------------------- |
+| **Everything**       | 极速文件搜索工具                                     | <https://www.voidtools.com/zh-cn/>                   |
+| **Snipaste**         | 截图和贴图工具                                       | <https://www.snipaste.com/>                          |
+| **PotPlayer**        | 功能强大的视频播放器（官网在境外，校园网可能打不开） | <https://potplayer.daum.net/>                        |
+| **Geek Uninstaller** | 干净卸载软件，清理残留                               | <https://geekuninstaller.com/>                       |
+| **Dism++**           | 系统优化和清理工具                                   | <https://github.com/Chuyu-Team/Dism-Multi-language>  |
+| **Bitwarden**        | 开源密码管理器                                       | <https://bitwarden.com/>                             |
+| **Clash Verge Rev**  | 网络代理工具                                         | <https://github.com/clash-verge-rev/clash-verge-rev> |
+| **TrafficMonitor**   | 任务栏网速 / CPU / 内存监控                          | <https://github.com/zhongyang219/TrafficMonitor>     |
 
 ### 安装软件的注意事项
 
@@ -435,7 +443,7 @@ JetBrains 全家桶（IntelliJ IDEA、PyCharm、WebStorm 等）对在校学生�
 
 ## 个性化配置
 
-系统装好、驱动和软件安装完毕后，可以进行一些个性化配置来提升日常使用体验。
+系统、驱动和软件都就位之后，剩下的是把机器调成自己顺手的样子。
 
 ### 任务栏和开始菜单
 
@@ -473,13 +481,13 @@ gpedit.msc
 
 合理的电源设置可以在性能和续航之间取得平衡。
 
-**笔记本用户：**
+**笔记本用户**：
 
 1. 打开 `设置` → `系统` → `电源和电池`（Win11）或 `电源和睡眠`（Win10）。
 2. **插电时**：电源模式设为"最佳性能"；屏幕关闭时间根据个人喜好设置（建议 10~15 分钟）。
 3. **使用电池时**：电源模式设为"平衡"或"最佳能效"；屏幕关闭时间设为 5 分钟。
 
-**台式机用户：**
+**台式机用户**：
 
 1. 打开 `控制面板` → `硬件和声音` → `电源选项`。
 2. 选择 **"高性能"** 电源计划。
@@ -536,12 +544,4 @@ Windows 自带微软拼音输入法，基本够用。如果你习惯使用第三
 
 :::tip 微软拼音小技巧
 微软拼音输入法按 `Ctrl + Shift + B` 可以快速打开 Emoji 面板；按 `Win + .`（句号）也可以打开表情符号面板。按 `Ctrl + Shift + F` 可以切换简繁体输入。
-:::
-
-:::info 维护信息
-
-| 维护人                                   | 时间             |
-| ---------------------------------------- | ---------------- |
-| [@m1ngsama](https://github.com/m1ngsama) | 2025.10.13 - Now |
-
 :::

@@ -1,0 +1,91 @@
+---
+summary: 开发组规划：外网主页给出公网备案、海外服务器、静态托管三种方案，内网主页用 Vue3 + TypeScript + Ionic，主页后端要显示服务器磁盘、内存与网络占用。
+archive:
+  date: "2023-10"
+  source: "协会自有记录，随本仓库保存"
+  transcriber: "m1ngsama"
+  transcribed: "2023.10"
+---
+
+# 开发组规划
+
+〔原件用“列表项 + 标题符号”表达层级（如 `- # 外网主页前端开发`），渲染后各节不进页面目录。此处按原件的嵌套关系还原为标题层级，标题文字未改。〕
+
+## 外网主页前端开发 (待定)
+
+`/home`
+前端 vue3 或 react
+
+- 前置条件：
+  - 方案一: 阿里云/腾讯云/...公网服务器到位 + ICP 备案
+  - 方案二: 海外服务器到位，搭建
+  - 方案三：`Cloudflare pages`或`GitHub pages`静态托管
+
+## 内网主页前端开发
+
+`/welcome`
+
+- vue3 + typescript + ionic
+- NAS 页面设计
+
+### 部分信息后端
+
+- 主页后端 <https://github.com/MephistoSolsist/win-panel>
+- 主页显示服务器磁盘信息、内存占用、网络占用
+- 语言：Rust
+
+### 内网额外功能待办
+
+#### 多人在线协作文档搭建
+
+- 基于 [OnlyOffice](https://www.onlyoffice.com/)
+- 前置条件: NAS 完成升级
+
+#### 聊天室
+
+- 前端 vue3 + typescript
+- 后端 待定
+
+#### 内网文件互传系统
+
+- 参考 [airportal](https://airportal.cn/)
+- 前端 vue3 + typescript
+- 后端 待定
+
+#### 内网测速系统
+
+- 参考 HomeBox (<https://github.com/XGHeaven/homebox>)
+- 前端 react
+- 后端 待定
+
+## 原 `Weekend` 项目
+
+### 维修报修后端
+
+- 从学长那里迁移服务器和数据
+- 前置条件：阿里云/腾讯云/...公网服务器到位？或者内网 frp？
+
+### 维修队管理接单页面
+
+`repair.nbtca.space`
+
+- 维护
+
+### 维修报修小程序
+
+- 维护
+
+### 维修电子报表
+
+## QQ 机器人
+
+- 项目特殊性，可能暂时搁置
+- 重构 (C#)
+  - 项目 `huaji-bot-dotnet`
+  - <https://github.com/nbtca/huaji-bot-dotnet>
+- 旧版维护 (GoCQ，上游协议已被疼逊打压，可能要动大刀)
+  - `huaji-bot`
+  - <https://github.com/nbtca/huaji-bot>
+- 待实现功能
+  - 同步日历
+  - 获取

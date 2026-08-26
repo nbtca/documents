@@ -1,7 +1,5 @@
 import { group, pageInGroup, pageInSection } from '../utils/navigation'
 
-// 「指南」= 教程（学技术）+ 流程（办社务）高内聚合并为一栏，同一份边栏同时挂在
-// /tutorial/ 与 /process/ 下。发现内容还有 ⌘K 搜索与站内 wiki 内链兜底。
 export const sidebar = [
   pageInSection('指南', 'tutorial', 'index'),
   group({
@@ -13,7 +11,7 @@ export const sidebar = [
       pageInGroup('申请第二课堂学分', 'apply-for-credits'),
       pageInGroup('报销流程', 'reimbursement-process'),
       pageInGroup('撰写并发布你的第一篇 NBTCA 博客', 'nbtca-post'),
-      pageInGroup('活动组织（待完善）', 'event-organization'),
+      pageInGroup('活动组织', 'event-organization'),
     ],
   }),
   group({

@@ -1,3 +1,9 @@
+---
+maintainers:
+  - user: Yuna-Celisse
+    since: 2025-12
+---
+
 # GitHub Education 认证指南
 
 GitHub Education 面向在校学生提供 [GitHub Student Developer Pack](https://education.github.com/pack)——免费的 GitHub Pro、Copilot、Codespaces，以及一批合作厂商的开发工具与云资源。用[教育邮箱](/tutorial/2025/edu-email)完成学生身份认证即可领取。本文讲怎么通过这个认证。
@@ -35,15 +41,17 @@ GitHub 会用申请时的网络位置核对你是否真的在学校所在地，�
 :::
 
 - 类型选 `Student`，选择你的学校，按提示共享位置
-- **先看你有没有学校开的材料。** GitHub 官方接受的是学校出具的证明：带在读日期的学生证、课表、成绩单，或学籍 / 在读证明信（见 [GitHub 官方说明](https://docs.github.com/en/education/about-github-education/github-education-for-students/apply-to-github-education-as-a-student)）。有这些就直接用，通过率最高。
+- **先看你有没有学校开的材料**。GitHub 官方接受的是学校出具的证明：带在读日期的学生证、课表、成绩单，或学籍 / 在读证明信（见 [GitHub 官方说明](https://docs.github.com/en/education/about-github-education/github-education-for-students/apply-to-github-education-as-a-student)）。有这些就直接用，通过率最高。
 - 手头没有的时候，社区里流传的做法是在一张白纸上工整写下在读信息再拍照上传（注意大小写）：
 
-        Student Verification Report
-        Name: Your Name
-        School: Your School
-        Student Number: Your Student Number
-        Study Form: Full-time
-        Graduation date: Your Graduation Date
+  ```text
+  Student Verification Report
+  Name: Your Name
+  School: Your School
+  Student Number: Your Student Number
+  Study Form: Full-time
+  Graduation date: Your Graduation Date
+  ```
 
   〔这个格式不是 GitHub 规定的，是往届同学试出来的写法，能否通过取决于当次审核。〕内容必须是你真实的学籍信息，并与付款信息中的姓名一致——审核会拿两处比对，对不上即拒。对于 2024 级学生，Graduation date 为 2028.6。
 
@@ -56,11 +64,3 @@ GitHub 会用申请时的网络位置核对你是否真的在学校所在地，�
 - 姓名在证明材料、账单信息两处不一致
 - 材料不清晰或缺关键信息（校名、姓名、在读状态、毕业时间）
 - 上传的是截图或与此前重复的文件
-
-:::info 维护信息
-
-| 维护人                                           | 时间             |
-| ------------------------------------------------ | ---------------- |
-| [@Yuna-Celisse](https://github.com/Yuna-Celisse) | 2025.12.26 - Now |
-
-:::

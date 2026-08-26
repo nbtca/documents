@@ -6,11 +6,20 @@
       "domain": "process",
       "purpose": "event-template-download",
       "canonical": true,
-      "compatibilityNote": "Canonical process templates referenced as a collection from process/index.md.",
+      "compatibilityNote": "Archived copies of the event paperwork, served from public/ so the process pages can link them. The authoritative version each term comes from 素拓部 / 社团部.",
       "assets": [
-        "process/assets/event-templates/活动策划书.docx",
-        "process/assets/event-templates/第二课堂申报表.doc",
-        "process/assets/event-templates/计算机协会 志愿者招募.docx"
+        {
+          "path": "public/templates/event/activity-proposal.docx",
+          "title": "活动策划书"
+        },
+        {
+          "path": "public/templates/event/second-classroom-form.doc",
+          "title": "第二课堂申报表"
+        },
+        {
+          "path": "public/templates/event/volunteer-recruitment.docx",
+          "title": "计算机协会志愿者招募表"
+        }
       ]
     },
     {
@@ -18,29 +27,84 @@
       "domain": "process",
       "purpose": "repair-day-template-download",
       "canonical": true,
-      "compatibilityNote": "Canonical repair-day template set. Legacy Chinese paths mirror these files for compatibility and should not be used by new links.",
+      "compatibilityNote": "Archived copies of the repair-day volunteer paperwork, served from public/. The authoritative version each term comes from the college.",
       "assets": [
-        "process/assets/repair-day-templates/理工维修日志愿者活动总结表.docx",
-        "process/assets/repair-day-templates/注意事项.docx",
-        "process/assets/repair-day-templates/202X.X.X理工维修日签到表.xlsx",
-        "process/assets/repair-day-templates/202X.X.X理工维修日.xlsx",
-        "process/assets/repair-day-templates/理工维修日志愿者活动申请表.docx",
-        "process/assets/repair-day-templates/组织委员会议/1.个人申报志愿者活动材料/志愿者活动总结表.docx",
-        "process/assets/repair-day-templates/组织委员会议/1.个人申报志愿者活动材料/活动名称+时长.xlsx",
-        "process/assets/repair-day-templates/组织委员会议/1.个人申报志愿者活动材料/注意事项.docx",
-        "process/assets/repair-day-templates/组织委员会议/1.个人申报志愿者活动材料/志愿者活动申请表.docx",
-        "process/assets/repair-day-templates/组织委员会议/2.班级申报志愿者活动材料/xx班级-xx志愿者活动志愿者情况汇总表.xlsx",
-        "process/assets/repair-day-templates/组织委员会议/2.班级申报志愿者活动材料/数据学院班级志愿者活动申报表.docx",
-        "process/assets/repair-day-templates/组织委员会议/2.班级申报志愿者活动材料/数据学院班级自主申报志愿者活动方案（试行）.docx",
-        "process/assets/repair-day-templates/组织委员会议/3.社团及实验室申报志愿者活动材料/社团及实验室自主申报志愿者活动材料/数据学院各类社团及实验室志愿者时长管理细则.docx",
-        "process/assets/repair-day-templates/组织委员会议/3.社团及实验室申报志愿者活动材料/社团及实验室自主申报志愿者活动材料/数据学院社团及实验室志愿者活动申报表.docx",
-        "process/assets/repair-day-templates/组织委员会议/3.社团及实验室申报志愿者活动材料/社团及实验室自主申报志愿者活动材料/活动相关情况记录.xlsx",
-        "process/assets/repair-day-templates/组织委员会议/4.志愿者时长统计材料/数据学院青年志愿者协会志愿时长线上认证规定.docx",
-        "process/assets/repair-day-templates/组织委员会议/4.志愿者时长统计材料/xxx班-志愿时长汇总材料/xxx班-志愿者时长汇总表.xlsx",
-        "process/assets/repair-day-templates/组织委员会议/4.志愿者时长统计材料/xxx班-志愿时长汇总材料/个人志愿者时长汇总材料/应佩钰-志愿者时长汇总材料/志愿时长汇总表.xlsx",
-        "process/assets/repair-day-templates/组织委员会议/4.志愿者时长统计材料/xxx班-志愿时长汇总材料/个人志愿者时长汇总材料/应佩钰-志愿者时长汇总材料/时长证明材料汇总/2020.10.7-我爱微积分活动.png",
-        "process/assets/repair-day-templates/组织委员会议/4.志愿者时长统计材料/xxx班-志愿时长汇总材料/个人志愿者时长汇总材料/张三-志愿者时长汇总材料/张三-志愿时长认证.xlsx",
-        "process/assets/repair-day-templates/组织委员会议/5.组织委员大会内容重点摘要.docx"
+        {
+          "path": "public/templates/repair-day/volunteer-summary.docx",
+          "title": "理工维修日志愿者活动总结表"
+        },
+        {
+          "path": "public/templates/repair-day/notes.docx",
+          "title": "维修日注意事项"
+        },
+        {
+          "path": "public/templates/repair-day/signin-sheet.xlsx",
+          "title": "理工维修日签到表"
+        },
+        {
+          "path": "public/templates/repair-day/schedule.xlsx",
+          "title": "理工维修日排期表"
+        },
+        {
+          "path": "public/templates/repair-day/volunteer-application.docx",
+          "title": "理工维修日志愿者活动申请表"
+        },
+        {
+          "path": "public/templates/repair-day/committee/1-individual/summary.docx",
+          "title": "个人申报：志愿者活动总结表"
+        },
+        {
+          "path": "public/templates/repair-day/committee/1-individual/activity-hours.xlsx",
+          "title": "个人申报：活动名称与时长"
+        },
+        {
+          "path": "public/templates/repair-day/committee/1-individual/notes.docx",
+          "title": "个人申报：注意事项"
+        },
+        {
+          "path": "public/templates/repair-day/committee/1-individual/application.docx",
+          "title": "个人申报：志愿者活动申请表"
+        },
+        {
+          "path": "public/templates/repair-day/committee/2-class/roster.xlsx",
+          "title": "班级申报：志愿者情况汇总表"
+        },
+        {
+          "path": "public/templates/repair-day/committee/2-class/application.docx",
+          "title": "班级申报：志愿者活动申报表"
+        },
+        {
+          "path": "public/templates/repair-day/committee/2-class/self-application-scheme.docx",
+          "title": "班级自主申报志愿者活动方案（试行）"
+        },
+        {
+          "path": "public/templates/repair-day/committee/3-club-lab/hours-rules.docx",
+          "title": "社团及实验室志愿者时长管理细则"
+        },
+        {
+          "path": "public/templates/repair-day/committee/3-club-lab/application.docx",
+          "title": "社团及实验室申报：志愿者活动申报表"
+        },
+        {
+          "path": "public/templates/repair-day/committee/3-club-lab/activity-record.xlsx",
+          "title": "社团及实验室申报：活动相关情况记录"
+        },
+        {
+          "path": "public/templates/repair-day/committee/4-hours-tally/online-certification-rules.docx",
+          "title": "志愿时长线上认证规定"
+        },
+        {
+          "path": "public/templates/repair-day/committee/4-hours-tally/class-summary.xlsx",
+          "title": "班级志愿者时长汇总表"
+        },
+        {
+          "path": "public/templates/repair-day/committee/4-hours-tally/sample-certification.xlsx",
+          "title": "个人志愿时长认证（示例）"
+        },
+        {
+          "path": "public/templates/repair-day/committee/meeting-summary.docx",
+          "title": "组织委员大会内容重点摘要"
+        }
       ]
     },
     {
@@ -92,7 +156,701 @@
       "canonical": true,
       "compatibilityNote": "Historical workbook retained as an archived record; not a reusable template.",
       "assets": [
-        "archived/2017/2017~2018星级评定评分汇总.xlsx"
+        "archived/2017/2017-2018-star-rating.xlsx"
+      ]
+    },
+    {
+      "id": "about-photographs",
+      "domain": "about",
+      "purpose": "photograph",
+      "canonical": true,
+      "compatibilityNote": "Photographs from the club archive, recompressed for the web. Frames carrying personal information or identifiable notice boards were excluded.",
+      "assets": [
+        {
+          "path": "about/assets/building.webp",
+          "title": "CA102 讲座的录制与直播现场",
+          "notes": "A member logging the session while the laptop and tripod camera record and live-stream it — not, as an earlier caption guessed, someone taking notes beside a dev board."
+        },
+        {
+          "path": "about/assets/community.webp",
+          "title": "2023 年主要成员的团聚合影",
+          "notes": "A 2023 gathering of the core members; confirmed by a participant."
+        },
+        {
+          "path": "about/assets/gathering.webp",
+          "title": "活动结束后的烧烤小聚",
+          "notes": "Members eating out after an event; confirmed by a participant."
+        },
+        {
+          "path": "about/assets/general-assembly.webp",
+          "title": "2023 年秋季迎新大会",
+          "notes": "The welcome assembly, confirmed by a participant as roughly September–October 2023; the exact date is not recorded."
+        },
+        "about/assets/lecture.webp",
+        {
+          "path": "about/assets/meeting.webp",
+          "title": "例会现场",
+          "notes": "A routine meeting on club business; confirmed by a participant."
+        },
+        "about/assets/repair-toolkit.webp",
+        {
+          "path": "about/assets/service-day-2010.webp",
+          "title": "2010 年暑期社会实践合影",
+          "notes": "Date read off the camera metadata and the banner text is legible; which activity it was and who appears in it are not recorded in the archive."
+        }
+      ]
+    },
+    {
+      "id": "concepts-photographs",
+      "domain": "concepts",
+      "purpose": "photograph",
+      "canonical": true,
+      "compatibilityNote": "Real photographs from the club archive illustrating the CA lecture and tech-talk concept entries.",
+      "assets": [
+        "concepts/assets/ca-lecture-audience.webp",
+        "concepts/assets/tech-talk-session.webp",
+        {
+          "path": "concepts/assets/ca102-android-ios-2023.webp",
+          "title": "CA102「安卓 ROOT 及 iOS 高阶用法」标题页",
+          "notes": "Shot 2023-12-09 18:31 per EXIF; the slide itself carries the title, the club name and 2023.12. From 计算机协会档案袋/2023-2024/CA102 安卓ROOT及iOS高阶用法/DSCF2629.JPG."
+        },
+        {
+          "path": "concepts/assets/ca102-android-versions.webp",
+          "title": "CA102 讲到安卓版本演进",
+          "notes": "Shot 2023-12-09 18:38 per EXIF. From the same archive folder, DSCF2645.JPG."
+        },
+        {
+          "path": "concepts/assets/club-fair-2024.webp",
+          "title": "2024 年百团大战的协会摊位",
+          "notes": "EXIF 2024-09-25 10:00, matching the date already recorded from the 2024.09.14 meeting minutes. From 计算机协会档案袋/2024-2025/24百团大战/DSCF7332.JPG."
+        },
+        {
+          "path": "concepts/assets/welcome-party-cake.webp",
+          "title": "2024 迎新会的蛋糕",
+          "notes": "EXIF 2024-10-13 14:48. From 计算机协会档案袋/2024-2025/24迎新会/DSCF7789.JPG."
+        },
+        {
+          "path": "concepts/assets/welcome-party-switches.webp",
+          "title": "2024 迎新会上传看的键盘轴体",
+          "notes": "EXIF 2024-10-13 15:35; the same-day meeting minutes call it 今天活动. From 计算机协会档案袋/2024-2025/24迎新会/DSCF7821.JPG."
+        }
+      ]
+    },
+    {
+      "id": "repair-photographs",
+      "domain": "repair",
+      "purpose": "photograph",
+      "canonical": true,
+      "compatibilityNote": "Real photographs of repair days and teardown work, kept separate from the repair screenshots because they carry provenance and privacy decisions. Shot dates are recorded only to the month; the 2025 folder name and the camera metadata disagree on the day.",
+      "assets": [
+        "repair/assets/ca-lecture-c-drive.webp",
+        "repair/assets/ca-lecture-partition.webp",
+        "repair/assets/repair-craft.webp",
+        "repair/assets/repair-day-booking-board.webp",
+        "repair/assets/repair-day-cart.webp",
+        "repair/assets/repair-onsite.webp",
+        "repair/assets/repair-outdoor.webp",
+        "repair/assets/repair-teardown.webp"
+      ]
+    },
+    {
+      "id": "site-shell-assets",
+      "domain": "public",
+      "purpose": "site-shell",
+      "canonical": true,
+      "compatibilityNote": "Assets the site itself serves: the Open Graph card used for link previews.",
+      "assets": [
+        "public/og-card.png"
+      ]
+    },
+    {
+      "id": "archive-photos",
+      "domain": "archived",
+      "purpose": "illustrate-archived-records",
+      "canonical": true,
+      "compatibilityNote": "Photographs from the club archive, downsized and stored locally so pages do not hotlink the archive service. Each is used on the page for the activity it shows.",
+      "assets": [
+        {
+          "path": "archived/assets/robot-contest-2008.webp",
+          "title": "2008 虚拟机器人大赛决赛现场"
+        },
+        {
+          "path": "archived/assets/buying-guide-lecture-2014.webp",
+          "title": "2014 电子产品导购与维修讲座现场"
+        },
+        {
+          "path": "archived/assets/knowledge-contest-5th-2012.webp",
+          "title": "第五届计算机知识竞赛现场"
+        },
+        {
+          "path": "archived/assets/summer-practice-prep-2010.webp",
+          "title": "2010 暑期社会实践出发前的准备"
+        },
+        {
+          "path": "archived/assets/summer-practice-community-class.webp",
+          "title": "2010 暑期社会实践：社区里给孩子上课"
+        },
+        {
+          "path": "archived/assets/cable-making-2012.webp",
+          "title": "2012 协会内部网线制作练习"
+        },
+        {
+          "path": "archived/assets/repair-day-2023-04-22.webp",
+          "title": "2023.04.22 维修日现场"
+        },
+        {
+          "path": "archived/assets/ca103-2023-06-02.webp",
+          "title": "2023.06.02 CA103 讲座听众"
+        },
+        {
+          "path": "archived/assets/phone-storm-2017.webp",
+          "title": "2017 手机知识科普风暴现场"
+        },
+        {
+          "path": "archived/assets/7th-contest-awards.webp",
+          "title": "第七届计算机知识竞赛颁奖"
+        },
+        {
+          "path": "archived/assets/light-cube-teaching.webp",
+          "title": "光立方教学现场"
+        },
+        {
+          "path": "archived/assets/ncre-registration-form.webp",
+          "title": "全国计算机等级考试网上报名示例截图"
+        },
+        {
+          "path": "archived/assets/service-day-2018.webp",
+          "title": "2018 理工服务日露天广场现场"
+        },
+        {
+          "path": "archived/assets/system-install-teaching-2015.webp",
+          "title": "2015 装系统教学"
+        },
+        {
+          "path": "archived/assets/company-visit-2015.webp",
+          "title": "2014—2015 参观三合电子公司"
+        },
+        {
+          "path": "archived/assets/net-civility-2017.webp",
+          "title": "2017 文明上网宣传活动现场"
+        },
+        {
+          "path": "archived/assets/robot-contest-banner-2008.webp",
+          "title": "2008 虚拟机器人大赛报名横幅"
+        },
+        {
+          "path": "archived/assets/org-chart-2013.webp",
+          "title": "2013 手绘「协会下学期人事安排」"
+        },
+        {
+          "path": "archived/assets/internal-class-2008.webp",
+          "title": "2008 内部课堂：围着一台机箱"
+        },
+        {
+          "path": "archived/assets/internal-class-case-2008.webp",
+          "title": "2008 内部课堂用的开盖台式机"
+        },
+        {
+          "path": "archived/assets/laptop-teardown-open-2010.webp",
+          "title": "2010 暑期实践：笔记本拆开后盖"
+        },
+        {
+          "path": "archived/assets/laptop-teardown-brush-2010.webp",
+          "title": "2010 暑期实践：用板刷给风扇清灰"
+        },
+        {
+          "path": "archived/assets/laptop-teardown-tape-2010.webp",
+          "title": "2010 暑期实践：揭主板上的胶带"
+        },
+        {
+          "path": "archived/assets/laptop-teardown-photographing-2010.webp",
+          "title": "2010 暑期实践：用功能机拍下拆机过程"
+        },
+        {
+          "path": "archived/assets/club-registration-2013.webp",
+          "title": "2013 学生社团登记证书扫描件"
+        },
+        {
+          "path": "archived/assets/club-logo-legacy.webp",
+          "title": "档案袋里的协会标识（无日期）"
+        },
+        {
+          "path": "archived/assets/service-day-flyer-2013.webp",
+          "title": "2013 理工服务日宣传单"
+        },
+        {
+          "path": "archived/assets/service-day-banner-2013.webp",
+          "title": "2013 理工服务日横幅印刷稿"
+        },
+        {
+          "path": "archived/assets/repair-team-badge.webp",
+          "title": "维修技术部工作证空白版式"
+        },
+        {
+          "path": "archived/assets/office-answering-questions.webp",
+          "title": "协会办公室里为同学解答（无日期）"
+        },
+        {
+          "path": "archived/assets/sp2009-repair-floor.webp",
+          "title": "2009 暑期实践：在村民家中修台式机"
+        },
+        {
+          "path": "archived/assets/sp2009-banner-wandi.webp",
+          "title": "2009 暑期实践：在湾底村挂横幅"
+        },
+        {
+          "path": "archived/assets/sp2009-memory-game.webp",
+          "title": "2009 暑期实践：沙村支教用的记忆配对游戏"
+        },
+        {
+          "path": "archived/assets/sp2009-dam-tangxi.webp",
+          "title": "2009 暑期实践：塘溪水库大坝"
+        },
+        {
+          "path": "archived/assets/sp2009-service-forms.webp",
+          "title": "2009 计算机服务记录单"
+        },
+        {
+          "path": "archived/assets/ca-logo-seal.webp",
+          "title": "协会现行圆形标识（CA-logo.svg 渲染）"
+        },
+        {
+          "path": "archived/assets/ca-logo-repair-team.webp",
+          "title": "圆徽的维修队版本（弃用稿）"
+        },
+        {
+          "path": "archived/assets/ca-logo-draft-triangle.webp",
+          "title": "协会标识弃稿：三角形"
+        },
+        {
+          "path": "archived/assets/ca-logo-draft-eagle.webp",
+          "title": "协会标识弃稿：鹰"
+        },
+        {
+          "path": "archived/assets/repair-day-2025-03-poster.webp",
+          "title": "2025.03.22 理工维修日海报"
+        },
+        {
+          "path": "archived/assets/repair-day-2025-03-toolkit.webp",
+          "title": "2025.03.22 维修日现场的工具箱"
+        },
+        {
+          "path": "archived/assets/repair-day-2025-03-welcome.webp",
+          "title": "2025.03.22 维修日：白板上手画的协会标识"
+        },
+        {
+          "path": "archived/assets/ca101-2024-09-hall.webp",
+          "title": "2024.09.21 CA101 讲座现场"
+        },
+        {
+          "path": "archived/assets/welcome-party-2024-cake.webp",
+          "title": "2024 迎新会：印着协会标识的蛋糕"
+        },
+        {
+          "path": "archived/assets/welcome-party-2024-group.webp",
+          "title": "2024 迎新会合影"
+        },
+        {
+          "path": "archived/assets/ca-badge-consult.webp",
+          "title": "分项徽章：Consult"
+        },
+        {
+          "path": "archived/assets/ca-badge-dev.webp",
+          "title": "分项徽章：Dev"
+        },
+        {
+          "path": "archived/assets/ca-badge-repair.webp",
+          "title": "分项徽章：Repair"
+        },
+        {
+          "path": "archived/assets/ca-badge-minecraft.webp",
+          "title": "分项徽章：Minecraft"
+        },
+        {
+          "path": "archived/assets/wifi-session-2016-room.webp",
+          "title": "2016 解密无线网络：现场"
+        },
+        {
+          "path": "archived/assets/wifi-session-2016-slide.webp",
+          "title": "2016 解密无线网络：讲解中的幻灯"
+        },
+        {
+          "path": "archived/assets/serviceday-2014-booth.webp",
+          "title": "2014 理工服务日：摊位与排队"
+        },
+        {
+          "path": "archived/assets/serviceday-2014-teardown.webp",
+          "title": "2014 理工服务日：拆到主板的笔记本"
+        },
+        {
+          "path": "archived/assets/club-board-2014.webp",
+          "title": "协会简介 KT 展板实物（2014 年服务日现场）"
+        },
+        {
+          "path": "archived/assets/contest7-2014-awards.webp",
+          "title": "第七届计算机知识竞赛：颁奖"
+        },
+        {
+          "path": "archived/assets/contest7-2014-lab.webp",
+          "title": "第七届计算机知识竞赛：机房答题"
+        },
+        {
+          "path": "archived/assets/sysclass-2014-group.webp",
+          "title": "2014 装系统教学：分组围看"
+        },
+        {
+          "path": "archived/assets/sysclass-2014-room.webp",
+          "title": "2014 装系统教学：机房现场"
+        },
+        {
+          "path": "archived/assets/serviceday-2018-banner.webp",
+          "title": "2018 理工服务日：现场易拉宝"
+        },
+        {
+          "path": "archived/assets/serviceday-2018-repair.webp",
+          "title": "2018 理工服务日：拆机清灰"
+        }
+      ]
+    },
+    {
+      "id": "archive-document-figures",
+      "domain": "archived",
+      "purpose": "illustrate-transcribed-documents",
+      "canonical": true,
+      "compatibilityNote": "Figures extracted from the original archived documents themselves, not from the photo archive. Each sits at the position it occupied in the source file, so a transcription reads as the original did.",
+      "assets": [
+        {
+          "path": "archived/assets/lightcube-mcu.webp",
+          "title": "光立方教学：STC12C5A60S2 单片机"
+        },
+        {
+          "path": "archived/assets/lightcube-pcb-front.webp",
+          "title": "光立方教学：PCB 板正面"
+        },
+        {
+          "path": "archived/assets/lightcube-pcb-back.webp",
+          "title": "光立方教学：PCB 板背面焊盘标号"
+        },
+        {
+          "path": "archived/assets/lightcube-led.webp",
+          "title": "光立方教学：白发蓝 LED"
+        },
+        {
+          "path": "archived/assets/lightcube-schematic.webp",
+          "title": "光立方教学：电路原理图"
+        },
+        {
+          "path": "archived/assets/lightcube-kit.webp",
+          "title": "光立方教学：点亮的成品"
+        },
+        {
+          "path": "archived/assets/lightcube-mainboard.webp",
+          "title": "光立方教学：焊好的主板"
+        },
+        {
+          "path": "archived/assets/lightcube-header-cut.webp",
+          "title": "光立方教学：剪成单针的 40P 圆排母"
+        },
+        {
+          "path": "archived/assets/lightcube-header-trim.webp",
+          "title": "光立方教学：剥去塑料座的圆孔针"
+        },
+        {
+          "path": "archived/assets/lightcube-pin-header.webp",
+          "title": "光立方教学：圆孔针焊上主板"
+        },
+        {
+          "path": "archived/assets/lightcube-led-bend.webp",
+          "title": "光立方教学：整形后的 LED"
+        },
+        {
+          "path": "archived/assets/lightcube-led-jig.webp",
+          "title": "光立方教学：固定 LED 的万用板夹具"
+        },
+        {
+          "path": "archived/assets/lightcube-led-array.webp",
+          "title": "光立方教学：焊成一面的 16 颗 LED"
+        },
+        {
+          "path": "archived/assets/lightcube-column-wiring.webp",
+          "title": "光立方教学：束的接线标注图"
+        },
+        {
+          "path": "archived/assets/lightcube-layer-detail.webp",
+          "title": "光立方教学：层的编号标注图"
+        },
+        {
+          "path": "archived/assets/lightcube-layer-wiring.webp",
+          "title": "光立方教学：接好的层控制线"
+        },
+        {
+          "path": "archived/assets/netcable-repeater.webp",
+          "title": "网线制作讲义：中继器的连接方式"
+        },
+        {
+          "path": "archived/assets/netcable-hub.webp",
+          "title": "网线制作讲义：集线器的连接方式"
+        },
+        {
+          "path": "archived/assets/netcable-bridge.webp",
+          "title": "网线制作讲义：网桥的连接方式"
+        },
+        {
+          "path": "archived/assets/netcable-router.webp",
+          "title": "网线制作讲义：路由器的连接方式"
+        },
+        {
+          "path": "archived/assets/netcable-cable.webp",
+          "title": "网线制作讲义：超五类线"
+        },
+        {
+          "path": "archived/assets/netcable-crimper.webp",
+          "title": "网线制作讲义：压线钳"
+        },
+        {
+          "path": "archived/assets/netcable-plug.webp",
+          "title": "网线制作讲义：水晶头"
+        },
+        {
+          "path": "archived/assets/netcable-tester.webp",
+          "title": "网线制作讲义：测线仪"
+        },
+        {
+          "path": "archived/assets/netcable-pinout-chart.webp",
+          "title": "网线制作讲义：T568A/T568B 色序对照表"
+        },
+        {
+          "path": "archived/assets/netcable-step-order.webp",
+          "title": "网线制作讲义：排列芯线线序"
+        },
+        {
+          "path": "archived/assets/netcable-step-insert.webp",
+          "title": "网线制作讲义：芯线插入水晶头"
+        },
+        {
+          "path": "archived/assets/netcable-step-crimp.webp",
+          "title": "网线制作讲义：压线钳压接"
+        },
+        {
+          "path": "archived/assets/netcable-step-done.webp",
+          "title": "网线制作讲义：压好的线头"
+        },
+        {
+          "path": "archived/assets/cable-workshop-2018-lecture.webp",
+          "title": "2018 网线制作教学：讲双绞线的种类"
+        },
+        {
+          "path": "archived/assets/cable-workshop-2018-benches.webp",
+          "title": "2018 网线制作教学：动手环节"
+        },
+        {
+          "path": "archived/assets/cable-workshop-2018-hands.webp",
+          "title": "2018 网线制作教学：现场指导"
+        },
+        {
+          "path": "archived/assets/cable-workshop-2018-group.webp",
+          "title": "2018 网线制作教学：合影"
+        },
+        {
+          "path": "archived/assets/phone-storm-2017-speaker.webp",
+          "title": "2017 手机知识科普风暴：主讲人"
+        },
+        {
+          "path": "archived/assets/mirage-box.webp",
+          "title": "联想 Mirage AR 套装：展台上的整套设备"
+        },
+        {
+          "path": "archived/assets/mirage-duel.webp",
+          "title": "联想 Mirage AR 套装：光剑对战"
+        },
+        {
+          "path": "archived/assets/mirage-play.webp",
+          "title": "联想 Mirage AR 套装：手机驱动的体验"
+        },
+        {
+          "path": "archived/assets/mirage-room.webp",
+          "title": "联想 Mirage AR 套装：两天体验活动现场"
+        },
+        {
+          "path": "archived/assets/briefing-2013-collage.webp",
+          "title": "2013 新生宣讲：活动照片拼贴"
+        },
+        {
+          "path": "archived/assets/briefing-2013-practice.webp",
+          "title": "2013 新生宣讲：暑期社会实践照片拼贴"
+        },
+        {
+          "path": "archived/assets/osinstall-laomaotao.webp",
+          "title": "装系统教学：老毛桃 U 盘启动制作工具"
+        },
+        {
+          "path": "archived/assets/osinstall-pe-desktop.webp",
+          "title": "装系统教学：PE 桌面上的工具"
+        },
+        {
+          "path": "archived/assets/osinstall-diskgenius.webp",
+          "title": "装系统教学：DiskGenius 格式化分区"
+        },
+        {
+          "path": "archived/assets/osinstall-quick-setup.webp",
+          "title": "装系统教学：老毛桃智能快速装机"
+        },
+        {
+          "path": "archived/assets/osinstall-winntsetup.webp",
+          "title": "装系统教学：WinNTSetup"
+        },
+        {
+          "path": "archived/assets/osinstall-win7-setup.webp",
+          "title": "装系统教学：Windows 7 安装程序首屏"
+        },
+        {
+          "path": "archived/assets/osinstall-win7-edition.webp",
+          "title": "装系统教学：选择要安装的版本"
+        },
+        {
+          "path": "archived/assets/osinstall-win7-type.webp",
+          "title": "装系统教学：选择安装类型"
+        },
+        {
+          "path": "archived/assets/osinstall-ubuntu-welcome.webp",
+          "title": "装系统教学：Ubuntu 安装欢迎页"
+        },
+        {
+          "path": "archived/assets/osinstall-ubuntu-prepare.webp",
+          "title": "装系统教学：Ubuntu 安装前检查"
+        },
+        {
+          "path": "archived/assets/osinstall-ubuntu-type.webp",
+          "title": "装系统教学：Ubuntu 安装类型与分区旁白"
+        },
+        {
+          "path": "archived/assets/osinstall-ubuntu-timezone.webp",
+          "title": "装系统教学：Ubuntu 选时区"
+        },
+        {
+          "path": "archived/assets/osinstall-ubuntu-keyboard.webp",
+          "title": "装系统教学：Ubuntu 选键盘布局"
+        },
+        {
+          "path": "archived/assets/sysclass-2014-shen.webp",
+          "title": "2014 装系统教学：第一组组长沈佳明"
+        },
+        {
+          "path": "archived/assets/sysclass-2014-zhu.webp",
+          "title": "2014 装系统教学：第二组组长朱可"
+        },
+        {
+          "path": "archived/assets/sysclass-2014-wei.webp",
+          "title": "2014 装系统教学：第三组组长韦帅"
+        },
+        {
+          "path": "archived/assets/sysclass-2014-miao.webp",
+          "title": "2014 装系统教学：第四组组长缪毛威"
+        },
+        {
+          "path": "archived/assets/recruit2016-mao.webp",
+          "title": "2016 纳新宣讲：硬件部副会长毛唯丞"
+        },
+        {
+          "path": "archived/assets/recruit2016-wei.webp",
+          "title": "2016 纳新宣讲：软件部长卫超越"
+        },
+        {
+          "path": "archived/assets/recruit2016-wangshuang.webp",
+          "title": "2016 纳新宣讲：软件副部王爽"
+        },
+        {
+          "path": "archived/assets/recruit2016-chen.webp",
+          "title": "2016 纳新宣讲：软件副部陈旭贞"
+        },
+        {
+          "path": "archived/assets/recruit2016-zhang.webp",
+          "title": "2016 纳新宣讲：组织部长张哲宇"
+        },
+        {
+          "path": "archived/assets/recruit2016-lin.webp",
+          "title": "2016 纳新宣讲：组织部副部林君明"
+        },
+        {
+          "path": "archived/assets/recruit2016-wangjingfeng.webp",
+          "title": "2016 纳新宣讲：组织部副部王警锋"
+        },
+        {
+          "path": "archived/assets/recruit2016-zhukequan.webp",
+          "title": "2016 纳新宣讲：硬件部长朱柯权"
+        },
+        {
+          "path": "archived/assets/recruit2016-zhoulei.webp",
+          "title": "2016 纳新宣讲：硬件部副部周磊"
+        },
+        {
+          "path": "archived/assets/recruit2016-zhuxiaoxiong.webp",
+          "title": "2016 纳新宣讲：硬件部副部朱枭雄"
+        },
+        {
+          "path": "archived/assets/recruit2016-wangzhongda.webp",
+          "title": "2016 纳新宣讲：硬件部副部王仲达"
+        },
+        {
+          "path": "archived/assets/bgcourse-ludashi-2011.webp",
+          "title": "导购与维护课堂：鲁大师验机截图（2011 版）"
+        },
+        {
+          "path": "archived/assets/bgcourse-serial-label.webp",
+          "title": "导购与维护课堂：笔记本底部的序列号标签"
+        },
+        {
+          "path": "archived/assets/bgcourse-hdd-bay.webp",
+          "title": "导购与维护课堂：笔记本硬盘仓"
+        },
+        {
+          "path": "archived/assets/bgcourse-cpu-ladder.webp",
+          "title": "导购与维护课堂：CPU 性能天梯图（2013.12）"
+        },
+        {
+          "path": "archived/assets/bgcourse-gpu-ladder.webp",
+          "title": "导购与维护课堂：2014 年显卡性能天梯图"
+        },
+        {
+          "path": "archived/assets/bgcourse-ludashi-2014.webp",
+          "title": "导购与维护课堂：鲁大师验机截图（2014 版）"
+        },
+        {
+          "path": "archived/assets/bgcourse-hdd-inside.webp",
+          "title": "导购与维护课堂：机械硬盘内部结构"
+        },
+        {
+          "path": "archived/assets/bgcourse-cooling.webp",
+          "title": "导购与维护课堂：笔记本散热系统"
+        },
+        {
+          "path": "archived/assets/bgcourse-powerbank-listings.webp",
+          "title": "导购与维护课堂：淘宝移动电源商品截图"
+        },
+        {
+          "path": "archived/assets/bgcourse-cell-listings-1.webp",
+          "title": "导购与维护课堂：18650 电池商品截图（一）"
+        },
+        {
+          "path": "archived/assets/bgcourse-cell-listings-2.webp",
+          "title": "导购与维护课堂：18650 电池商品截图（二）"
+        },
+        {
+          "path": "archived/assets/bgcourse-nfc-tag.webp",
+          "title": "导购与维护课堂：现场发的 NFC 标签"
+        },
+        {
+          "path": "archived/assets/club-registration-2016.webp",
+          "title": "2016 年学生社团登记证书"
+        },
+        {
+          "path": "archived/assets/bathtub-curve-2011.webp",
+          "title": "故障处理讲座：硬件故障的浴盆曲线"
+        },
+        {
+          "path": "archived/assets/nitrsa-logo.webp",
+          "title": "无线电运动协会会徽"
+        }
       ]
     }
   ]

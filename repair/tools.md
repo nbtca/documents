@@ -1,3 +1,9 @@
+---
+maintainers:
+  - user: A1exe1A-1123
+    since: 2025-03
+---
+
 # 软件仓库（校内镜像站）
 
 软件仓库是 NBTCA 的**校内镜像服务器**（[i.nbtca.space](https://i.nbtca.space/)），为校内人员集中提供常用的软件、文件和操作系统镜像等资源。目前**仅在校园网内网可用**。
@@ -5,6 +11,8 @@
 下面每个软件标题上的超链接都指向内网地址，访问前需先完成[校园网认证](/concepts/campus-network-auth)（无需购买校园网即可使用）。
 
 更多信息，请访问我们的主页：[主页内网访问](https://i.nbtca.space/)
+
+〔下面的软件清单与链接随镜像站内容变动，**最后核对：2026-08**。发现失效或缺漏，欢迎直接来补。〕
 
 ## 📦 软件（Software）
 
@@ -26,7 +34,7 @@
 
 ### 💽 操作系统 （Operating Systems）
 
-- Windows： 各种版本的Windows系统镜像。
+- Windows：各种版本的Windows系统镜像。
   - [Win10 22H2](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Windows%E7%B3%BB%E7%BB%9F%E9%95%9C%E5%83%8F/Win10_22H2) MS Windows 10 22H2
   - [Win11 23H2](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Windows%E7%B3%BB%E7%BB%9F%E9%95%9C%E5%83%8F/Win11_23H2) MS Windows 11 23H2 **由于微软的 Windows 更新策略，官网已不支持该版本的获取与下载**
   - [Win11 24H2](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Windows%E7%B3%BB%E7%BB%9F%E9%95%9C%E5%83%8F/Win11_24H2) MS Windows 11 24H2
@@ -91,7 +99,7 @@
 - [Win11 修改器](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/Win11%E4%BF%AE%E6%94%B9%E5%99%A8___Windows11%E8%BD%BB%E6%9D%BE%E8%AE%BE%E7%BD%AEV1.03.rar) ➡️ [123云盘下载](https://www.123pan.com/s/1Zj8Vv-8bbcv.html) 提取码8888 ，用于优化 Windows 系统功能 _仅适用于 win11_ [教程视频](https://www.bilibili.com/video/BV1Va4y1D7hu/?spm_id_from=333.337.search-card.all.click&vd_source=bafe401b08cc34b81934117dfac40b1d)
 - [MS Store](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/%E5%BE%AE%E8%BD%AF%E5%95%86%E5%BA%97%E5%AE%89%E8%A3%85___LTSC-Add-MicrosoftStore-2019.zip) 用于给 WIN sever 2019 系统下载缺失的微软应用商店
 - [MS Store](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/%E5%BE%AE%E8%BD%AF%E5%95%86%E5%BA%97%E5%AE%89%E8%A3%85___LTSC-Add-MicrosoftStore-master.zip) 用于给最新 WIN sever 系统下载缺失的微软应用商店
-- [MS Store](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/%E5%BE%AE%E8%BD%AF%E5%95%86%E5%BA%97%E5%AE%89%E8%A3%85___LTSC-Add-MicrosoftStore.zip) 用于给 WIN sever 系统下载缺失的微软应用商店，**请根据列表中的描述选择系统对应的版本下载！**
+- [MS Store](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/%E5%BE%AE%E8%BD%AF%E5%95%86%E5%BA%97%E5%AE%89%E8%A3%85___LTSC-Add-MicrosoftStore.zip) 用于给 WIN sever 系统下载缺失的微软应用商店，**请根据列表中的描述选择系统对应的版本下载**！
 - [Locale.Emulator](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/%E5%BF%AB%E9%80%9F%E8%BD%AC%E5%8C%BA___Locale.Emulator.2.5.0.1.rar) 用于快速更换系统 Unicode 语言/地区
 - [IObit-unlocker](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/%E6%97%A0%E6%9D%83%E9%99%90%E6%96%87%E4%BB%B6%E5%88%A0%E9%99%A4_____IObit-unlocker-setup.exe) 解锁提示无管理员权限的文件
 - [BoosterX](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/%E7%B3%BB%E7%BB%9F%E7%B2%BE%E7%AE%80___BoosterX.exe) 电竞职业选手常用系统精简工具 **小白慎用**
@@ -140,11 +148,3 @@
 - 🐧 QQ群：906370401
 
 感谢您的访问，祝您使用愉快！😊
-
-:::info 维护信息
-
-| 维护人                                           | 时间            |
-| ------------------------------------------------ | --------------- |
-| [@A1exe1A-1123](https://github.com/A1exe1A-1123) | 2025.3.19 - Now |
-
-:::

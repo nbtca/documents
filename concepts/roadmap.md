@@ -1,3 +1,9 @@
+---
+maintainers:
+  - user: m1ngsama
+    since: 2026-07
+---
+
 # NBTCA Roadmap
 
 NBTCA Roadmap 是协会在 GitHub Projects 上维护的公开事务看板，用来跟踪跨人协作的活动和任务的负责人、进度与状态。
@@ -9,11 +15,3 @@ NBTCA Roadmap 是协会在 GitHub Projects 上维护的公开事务看板，用�
 ## 位置
 
 [NBTCA Roadmap · GitHub Projects](https://github.com/orgs/nbtca/projects/5)。
-
-:::info 维护信息
-
-| 维护人                                   | 时间          |
-| ---------------------------------------- | ------------- |
-| [@m1ngsama](https://github.com/m1ngsama) | 2026.07 - Now |
-
-:::
