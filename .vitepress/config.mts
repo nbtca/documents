@@ -1,7 +1,7 @@
 import { fileURLToPath, URL } from 'node:url'
 import { withMermaid } from 'vitepress-plugin-mermaid'
 import { noteRanges } from '../utils/editorial-note'
-import { lastCommitFor } from '../utils/git-history'
+import { recentCommitsFor } from '../utils/git-history'
 import { devEditor } from './dev-editor.mjs'
 import { sidebar as sidebarAbout } from './sidebars/about'
 import { sidebar as sidebarArchived } from './sidebars/archived'
@@ -253,11 +253,9 @@ export default withMermaid({
   ],
   lastUpdated: true,
   sitemap: { hostname: siteUrl },
-  // Read here so the footer costs no request: the API allows 60 an hour per
-  // address, and a campus shares one.
   transformPageData(pageData) {
-    const commit = lastCommitFor(pageData.filePath)
-    if (commit)
-      pageData.frontmatter.lastCommit = commit
+    const commits = recentCommitsFor(pageData.filePath)
+    if (commits.length)
+      pageData.frontmatter.commits = commits
   },
 })
