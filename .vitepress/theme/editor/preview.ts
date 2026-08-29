@@ -10,7 +10,10 @@ export interface Preview {
 
 const DOC = '.vp-doc'
 
-export async function openPreview(markdown: string): Promise<Preview | undefined> {
+export async function openPreview(
+  markdown: string,
+  pending: Map<string, string> = new Map(),
+): Promise<Preview | undefined> {
   const article = document.querySelector<HTMLElement>(DOC)
   if (!article)
     return undefined
@@ -27,9 +30,17 @@ export async function openPreview(markdown: string): Promise<Preview | undefined
 
   let app: App | undefined
 
+  // Images added in this session are not on disk until the change is submitted.
+  const withPending = (html: string) => {
+    let out = html
+    for (const [path, url] of pending)
+      out = out.replaceAll(`"${path}"`, `"${url}"`)
+    return out
+  }
+
   const render = (source: string) => {
     app?.unmount()
-    const { code } = compile(`<div>${renderMarkdown(stripFrontmatter(source))}</div>`, {
+    const { code } = compile(`<div>${withPending(renderMarkdown(stripFrontmatter(source)))}</div>`, {
       mode: 'function',
       hoistStatic: true,
       onError: () => {},
