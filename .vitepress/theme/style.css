@@ -331,39 +331,53 @@
   text-decoration: none;
 }
 
-.nb-history-item {
-  display: grid;
-  grid-template-columns: max-content minmax(0, 1fr) max-content;
-  gap: 0 8px;
-  align-items: center;
-  padding: 4px 0;
-  text-decoration: none;
+.nb-history {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
 }
 
-.nb-history-item .nb-history-avatar {
-  grid-column: 1;
-  grid-row: 1;
+.nb-history li {
+  margin: 0;
+}
+
+/* Name and date share a line; the subject gets the full width below, because
+   the subject is what a reader opened this for. */
+.nb-history-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  gap: 0 8px;
+  padding: 5px 0;
+}
+
+.nb-history-item + .nb-history-item,
+.nb-history li + li .nb-history-item {
+  border-top: 1px dashed var(--vp-c-divider);
 }
 
 .nb-history-who {
-  grid-column: 2;
-}
-
-.nb-history-msg {
-  grid-column: 2;
   overflow: hidden;
-  color: var(--vp-c-text-3);
+  color: var(--vp-c-text-2);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.nb-history-item time {
-  grid-column: 3;
-  grid-row: 1;
+.nb-history-subject {
+  display: -webkit-box;
+  overflow: hidden;
+  grid-column: 1 / -1;
+  color: var(--vp-c-text-3);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
-.nb-history-note {
-  margin: 8px 0 0;
+.nb-history-item:hover .nb-history-subject {
+  color: var(--vp-c-text-2);
+}
+
+.nb-history-more {
+  padding-top: 6px;
+  border-top: 1px dashed var(--vp-c-divider);
   color: var(--vp-c-text-3);
 }
 
