@@ -59,7 +59,6 @@ const archiveRows = computed(() => {
   if (!record)
     return []
   const rows: Array<{ label: string, value: string }> = []
-  // Left out, the transcriber is the only name here and reads as the author.
   rows.push({ label: '原件撰写', value: record.author || '原件未署名' })
   if (record.source)
     rows.push({ label: '出处', value: record.source })
@@ -81,7 +80,6 @@ const hasContent = computed(() =>
   isDocument.value && (maintainers.value.length > 0 || Boolean(lastCommit.value) || Boolean(archive.value)),
 )
 
-// Only pages that actually carry a dead link need to say so.
 const hasOutboundLink = ref(false)
 
 function detectOutboundLink() {
@@ -96,8 +94,7 @@ watch(() => route.path, () => nextTick(detectOutboundLink))
 const open = ref(false)
 const record = ref(false)
 
-// git reports the author's offset, the API reports UTC; a commit made before
-// 08:00 here would otherwise show two different days.
+// git reports the author's offset; pin the zone or dates shift by a day.
 const DAY = new Intl.DateTimeFormat('en-CA', { dateStyle: 'short', timeZone: 'Asia/Shanghai' })
 const day = (iso: string) => DAY.format(new Date(iso))
 </script>

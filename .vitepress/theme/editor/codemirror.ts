@@ -25,8 +25,7 @@ const dimLine = Decoration.line({ class: 'cm-nb-dim' })
 const linkText = Decoration.mark({ class: 'cm-nb-link' })
 const linkUrl = Decoration.mark({ class: 'cm-nb-url' })
 
-// Lezer does not parse frontmatter or VitePress containers; both are
-// line-shaped, so a scan is enough and costs nothing on a page-sized doc.
+// Lezer parses neither frontmatter nor ::: containers.
 function dimNonProseLines(state: EditorState, ranges: Range<Decoration>[]) {
   const total = state.doc.lines
   let line = 1
@@ -57,8 +56,6 @@ function linesWithCursor(state: EditorState): Set<number> {
   return lines
 }
 
-// View-only: the document stays exactly the markdown that gets saved. Markers
-// show on the line being edited so the syntax stays learnable.
 function styleDoc(state: EditorState): DecorationSet {
   const ranges: Range<Decoration>[] = []
   const active = linesWithCursor(state)

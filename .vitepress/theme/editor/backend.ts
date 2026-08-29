@@ -3,8 +3,6 @@ import { currentMember, editorConfigured, githubToken, NotLinkedError } from './
 
 const REPO = { owner: 'nbtca', name: 'documents' }
 
-// Locally the editor writes the file it is showing, so a save re-renders
-// through HMR. Deployed, it opens a pull request instead.
 export const localMode = import.meta.env.DEV && !editorConfigured
 
 export const editorAvailable = editorConfigured || localMode

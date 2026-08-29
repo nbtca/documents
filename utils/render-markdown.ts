@@ -4,9 +4,6 @@ import anchor from 'markdown-it-anchor'
 import container from 'markdown-it-container'
 import { applyEditorialRules } from './markdown-pipeline'
 
-// The preview reconstructs only markdown -> HTML; components and styles are
-// the site's own. checks/preview-fidelity.test.ts diffs this against the real
-// build on every feature the content uses, so it cannot drift unnoticed.
 const CONTAINERS = ['tip', 'warning', 'info', 'danger', 'details'] as const
 
 const DEFAULT_TITLE: Record<string, string> = {
@@ -23,7 +20,6 @@ function slugify(text: string): string {
   return String(text).trim().toLowerCase().replace(/\s+/g, '-')
 }
 
-// Matches VitePress: a space, then a zero-width link labelled with the heading.
 function permalink(slug: string, _opts: unknown, state: any, index: number): void {
   const title = state.tokens[index + 1]?.content ?? ''
   const space = new state.Token('text', '', 0)
@@ -43,8 +39,7 @@ function permalink(slug: string, _opts: unknown, state: any, index: number): voi
 function create(): MarkdownIt {
   const md = MarkdownItCtor({ html: true, linkify: true, breaks: false })
 
-  // VitePress leaves CJK anchors and hrefs unencoded; percent-encoding them
-  // here would break every in-page link the preview shows.
+  // Encoding CJK hrefs here breaks every in-page anchor.
   md.normalizeLink = url => url
   md.normalizeLinkText = text => text
 

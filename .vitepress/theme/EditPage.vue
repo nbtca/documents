@@ -4,7 +4,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { isSignedIn, signIn } from './editor/auth'
 import { load, localMode, submit as send, whoAmI } from './editor/backend'
 
-type Stage = 'closed' | 'loading' | 'editing' | 'submitting' | 'failed'
+type Stage = 'closed' | 'loading' | 'editing' | 'previewing' | 'submitting' | 'failed'
 
 const { page } = useData()
 
@@ -19,11 +19,11 @@ const problem = ref('')
 const result = ref<{ label: string, url?: string } | undefined>()
 const host = ref<HTMLElement>()
 let editor: { destroy: () => void } | undefined
+let preview: { update: (md: string) => void, close: () => void } | undefined
 
 const changed = computed(() => draft.value !== original.value && draft.value.trim().length > 0)
 const canSubmit = computed(() => changed.value && summary.value.trim().length > 0)
 
-// CodeMirror only loads when someone actually opens the editor.
 watch([() => stage.value, host], async ([current, element]) => {
   if (current !== 'editing' || !element || editor)
     return
@@ -39,6 +39,21 @@ watch([() => stage.value, host], async ([current, element]) => {
 function teardown() {
   editor?.destroy()
   editor = undefined
+  preview?.close()
+  preview = undefined
+}
+
+async function showPreview() {
+  const { openPreview } = await import('./editor/preview')
+  preview = await openPreview(draft.value)
+  if (preview)
+    stage.value = 'previewing'
+}
+
+function backToEditing() {
+  preview?.close()
+  preview = undefined
+  stage.value = 'editing'
 }
 
 onBeforeUnmount(teardown)
@@ -107,10 +122,9 @@ function close() {
       {{ signedIn ? '在本页编辑' : '登录后在本页编辑' }}
     </button>
 
-    <!-- The card lives in the outline rail, whose containing block traps a
-         fixed overlay; the sheet has to leave it to cover the viewport. -->
+    <!-- The rail's containing block traps position: fixed. -->
     <Teleport to="body">
-      <div v-if="stage !== 'closed'" class="nb-edit-sheet" role="dialog" aria-label="编辑页面">
+      <div v-if="stage !== 'closed' && stage !== 'previewing'" class="nb-edit-sheet" role="dialog" aria-label="编辑页面">
         <div class="nb-edit-inner">
           <header class="nb-edit-head">
             <div>
@@ -135,6 +149,9 @@ function close() {
                 placeholder="这次改了什么？一句话"
                 :disabled="stage === 'submitting'"
               >
+              <button type="button" class="nb-edit-ghost" :disabled="!changed" @click="showPreview">
+                预览
+              </button>
               <button
                 type="button"
                 class="nb-edit-submit"
@@ -156,6 +173,17 @@ function close() {
           </p>
         </div>
       </div>
+
+      <div v-if="stage === 'previewing'" class="nb-preview-bar">
+        <span class="nb-preview-tag">预览中</span>
+        <span class="nb-preview-note">这就是提交后读者看到的样子</span>
+        <button type="button" class="nb-edit-ghost" @click="backToEditing">
+          继续编辑
+        </button>
+        <button type="button" class="nb-edit-submit" :disabled="!canSubmit" @click="submit">
+          {{ localMode ? '保存到本地' : '提交修改' }}
+        </button>
+      </div>
     </Teleport>
   </div>
 </template>
@@ -173,8 +201,6 @@ function close() {
   color: var(--vp-c-text-3);
 }
 
-/* The card's one action. A dotted underline means internal link on this
-   site, and this is not one. */
 .nb-edit-open {
   color: var(--vp-c-brand-1);
   font: inherit;
@@ -271,8 +297,50 @@ function close() {
   transition: opacity 0.2s;
 }
 
-.nb-edit-submit:disabled {
+.nb-edit-submit:disabled,
+.nb-edit-ghost:disabled {
   opacity: 0.4;
+}
+
+.nb-edit-ghost {
+  padding: 8px 16px;
+  font-size: 14px;
+  color: var(--vp-c-text-2);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 4px;
+}
+
+.nb-edit-ghost:hover:not(:disabled) {
+  color: var(--vp-c-text-1);
+  border-color: var(--vp-c-text-3);
+}
+
+.nb-preview-bar {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 60;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 13px;
+  align-items: center;
+  padding: 13px 21px;
+  border-top: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg);
+}
+
+.nb-preview-tag {
+  font-family: var(--nb-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--vp-c-brand-1);
+  text-transform: uppercase;
+}
+
+.nb-preview-note {
+  flex: 1;
+  font-size: 13px;
+  color: var(--vp-c-text-3);
 }
 
 .nb-edit-note {

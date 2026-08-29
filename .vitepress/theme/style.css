@@ -217,8 +217,6 @@
   color: var(--vp-c-brand-1);
 }
 
-/* A colophon: who keeps this page, who last touched it, where an archived
-   original came from, and the way in to change it. Apparatus, not document. */
 .nb-page-card {
   margin: 0 0 20px;
   padding: 12px 14px;
@@ -237,7 +235,6 @@
   margin: 0;
 }
 
-/* Values wrap under themselves, never under the term. */
 .nb-page-card dt {
   font-family: var(--nb-mono);
   font-size: 10px;
@@ -255,7 +252,6 @@
   color: var(--vp-c-text-2);
 }
 
-/* Only the archive rows carry strings long enough to need breaking. */
 .nb-page-card-archive dd {
   overflow-wrap: anywhere;
 }
@@ -270,7 +266,6 @@
   color: var(--vp-c-text-1);
 }
 
-/* Dates line up in a column, so they are set as figures, not as prose. */
 .nb-page-card time {
   font-variant-numeric: tabular-nums;
   color: var(--vp-c-text-3);
@@ -341,8 +336,6 @@
   margin: 0;
 }
 
-/* Name and date share a line; the subject gets the full width below, because
-   the subject is what a reader opened this for. */
 .nb-history-item {
   display: grid;
   grid-template-columns: minmax(0, 1fr) max-content;
@@ -381,8 +374,6 @@
   color: var(--vp-c-text-3);
 }
 
-/* The action is a different kind of thing from the record, so it gets the
-   card's only rule. */
 .nb-page-card .nb-edit {
   margin-top: 12px;
   padding-top: 10px;

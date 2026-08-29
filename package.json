@@ -36,6 +36,7 @@
     "@codemirror/view": "^6.43.9",
     "@logto/browser": "^3.0.13",
     "@types/node": "^22.15.32",
+    "@vue/compiler-dom": "^3.5.42",
     "cytoscape": "^3.33.2",
     "cytoscape-cose-bilkent": "^4.1.0",
     "dayjs": "^1.11.13",

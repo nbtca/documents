@@ -43,7 +43,7 @@ async function call<T>(token: string, path: string, init?: RequestInit): Promise
   return response.json() as Promise<T>
 }
 
-// btoa is byte-oriented; markdown here is full-width CJK.
+// btoa is byte-oriented; this markdown is CJK.
 export function encodeContent(text: string): string {
   const bytes = new TextEncoder().encode(text)
   let binary = ''
@@ -58,7 +58,7 @@ export function decodeContent(base64: string): string {
   return new TextDecoder().decode(bytes)
 }
 
-// Flattened, so an all-CJK filename cannot leave an empty ref component.
+// Flattened: an all-CJK filename would leave an empty ref component.
 export function branchNameFor(path: string, now = new Date()): string {
   const slug = path
     .replace(/\.md$/, '')
