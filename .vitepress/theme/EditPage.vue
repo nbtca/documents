@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { useData } from 'vitepress'
 import { computed, onMounted, ref } from 'vue'
-import { branchNameFor, canPush, getFile, openPullRequest } from '../../utils/github'
-import { currentMember, editorConfigured, githubToken, isSignedIn, NotLinkedError, signIn } from './editor/auth'
+import { isSignedIn, signIn } from './editor/auth'
+import { load, localMode, submit as send, whoAmI } from './editor/backend'
 
 type Stage = 'closed' | 'loading' | 'editing' | 'submitting' | 'done' | 'failed'
-
-const REPO = { owner: 'nbtca', name: 'documents' }
 
 const { page } = useData()
 
@@ -18,17 +16,15 @@ const original = ref('')
 const blobSha = ref('')
 const summary = ref('')
 const problem = ref('')
-const pull = ref<{ number: number, url: string } | undefined>()
+const result = ref<{ label: string, url?: string } | undefined>()
 
 const changed = computed(() => draft.value !== original.value && draft.value.trim().length > 0)
 const canSubmit = computed(() => changed.value && summary.value.trim().length > 0)
 
 onMounted(async () => {
-  if (!editorConfigured)
-    return
-  signedIn.value = await isSignedIn()
+  signedIn.value = localMode || await isSignedIn()
   if (signedIn.value)
-    memberName.value = (await currentMember())?.name ?? ''
+    memberName.value = await whoAmI()
 })
 
 async function open() {
@@ -40,13 +36,7 @@ async function open() {
   stage.value = 'loading'
   problem.value = ''
   try {
-    const token = await githubToken()
-    if (!(await canPush(token, REPO))) {
-      problem.value = '你的 GitHub 账号还没有本仓库的写入权限，请联系社长加入协作者。'
-      stage.value = 'failed'
-      return
-    }
-    const file = await getFile(token, REPO, page.value.filePath)
+    const file = await load(page.value.filePath)
     original.value = file.content
     draft.value = file.content
     blobSha.value = file.sha
@@ -54,9 +44,7 @@ async function open() {
     stage.value = 'editing'
   }
   catch (error) {
-    problem.value = error instanceof NotLinkedError
-      ? '登录时没有授权 GitHub。请退出后重新登录，并选择「Continue with GitHub」。'
-      : `读取原文失败：${(error as Error).message}`
+    problem.value = (error as Error).message
     stage.value = 'failed'
   }
 }
@@ -64,14 +52,11 @@ async function open() {
 async function submit() {
   stage.value = 'submitting'
   try {
-    const token = await githubToken()
-    pull.value = await openPullRequest(token, REPO, {
-      path: page.value.filePath,
+    result.value = await send(page.value.filePath, {
       content: draft.value,
       sha: blobSha.value,
-      title: `docs: ${summary.value.trim()}`,
-      body: `${summary.value.trim()}\n\n由 ${memberName.value} 在 docs.nbtca.space 上编辑。`,
-      branch: branchNameFor(page.value.filePath),
+      summary: summary.value.trim(),
+      author: memberName.value,
     })
     stage.value = 'done'
   }
@@ -83,12 +68,12 @@ async function submit() {
 
 function close() {
   stage.value = 'closed'
-  pull.value = undefined
+  result.value = undefined
 }
 </script>
 
 <template>
-  <div v-if="editorConfigured" class="nb-edit">
+  <div class="nb-edit">
     <button type="button" class="nb-edit-open" @click="open">
       {{ signedIn ? '在本页编辑' : '登录后在本页编辑' }}
     </button>
@@ -129,7 +114,7 @@ function close() {
               :disabled="!canSubmit || stage === 'submitting'"
               @click="submit"
             >
-              {{ stage === 'submitting' ? '提交中……' : '提交修改' }}
+              {{ stage === 'submitting' ? '提交中……' : (localMode ? '保存到本地' : '提交修改') }}
             </button>
           </div>
           <p class="nb-edit-note">
