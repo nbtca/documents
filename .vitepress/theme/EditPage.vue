@@ -22,6 +22,9 @@ const host = ref<HTMLElement>()
 let editor: { destroy: () => void } | undefined
 let preview: { update: (md: string) => void, close: () => void } | undefined
 let insertAt: ((snippet: string) => void) | undefined
+let showDiff: ((original: string | undefined) => void) | undefined
+
+const diffing = ref(false)
 
 const images = ref<PendingImage[]>([])
 const picker = ref<HTMLInputElement>()
@@ -40,6 +43,8 @@ watch([() => stage.value, host], async ([current, element]) => {
     if (canSubmit.value)
       submit()
   })
+  const { setDiff } = await import('./editor/codemirror')
+  showDiff = original => setDiff(view, original)
   insertAt = (snippet) => {
     const at = view.state.selection.main.head
     view.dispatch({ changes: { from: at, insert: snippet }, selection: { anchor: at + snippet.length } })
@@ -53,6 +58,11 @@ function teardown() {
   editor = undefined
   preview?.close()
   preview = undefined
+}
+
+function toggleDiff() {
+  diffing.value = !diffing.value
+  showDiff?.(diffing.value ? original.value : undefined)
 }
 
 function pickImage() {
@@ -199,7 +209,16 @@ function close() {
               <button type="button" class="nb-edit-ghost" :disabled="stage === 'submitting'" @click="pickImage">
                 插图
               </button>
-              <button type="button" class="nb-edit-ghost" :disabled="!changed" @click="showPreview">
+              <button
+                type="button"
+                class="nb-edit-ghost"
+                :class="{ 'is-on': diffing }"
+                :disabled="!changed"
+                @click="toggleDiff"
+              >
+                改动
+              </button>
+              <button type="button" class="nb-edit-ghost" :disabled="stage === 'submitting'" @click="showPreview">
                 预览
               </button>
               <button
@@ -391,6 +410,11 @@ function close() {
 .nb-edit-ghost:hover:not(:disabled) {
   color: var(--vp-c-text-1);
   border-color: var(--vp-c-text-3);
+}
+
+.nb-edit-ghost.is-on {
+  color: var(--vp-c-brand-1);
+  border-color: var(--vp-c-brand-1);
 }
 
 .nb-preview-bar {

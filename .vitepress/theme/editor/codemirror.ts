@@ -3,7 +3,7 @@ import type { DecorationSet, ViewUpdate } from '@codemirror/view'
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
 import { syntaxTree } from '@codemirror/language'
-import { EditorState, RangeSet } from '@codemirror/state'
+import { Compartment, EditorState, RangeSet } from '@codemirror/state'
 import { Decoration, EditorView, keymap, ViewPlugin } from '@codemirror/view'
 
 const HEADING = /^ATXHeading([1-6])$/
@@ -149,6 +149,9 @@ const theme = EditorView.theme({
   '.cm-nb-strong': { fontWeight: '700' },
   '.cm-nb-em': { fontStyle: 'italic' },
   '.cm-nb-strike': { textDecoration: 'line-through' },
+  '.cm-deletedChunk': { backgroundColor: 'color-mix(in srgb, var(--vp-c-danger-1) 12%, transparent)' },
+  '.cm-changedLine': { backgroundColor: 'color-mix(in srgb, var(--vp-c-brand-1) 8%, transparent)' },
+  '.cm-changedText': { backgroundColor: 'color-mix(in srgb, var(--vp-c-brand-1) 18%, transparent)' },
   '.cm-nb-code': {
     fontFamily: 'var(--nb-mono)',
     fontSize: '0.9em',
@@ -157,6 +160,19 @@ const theme = EditorView.theme({
     backgroundColor: 'var(--vp-c-bg-soft)',
   },
 })
+
+const diffing = new Compartment()
+
+export async function setDiff(view: EditorView, original: string | undefined): Promise<void> {
+  const extension = original === undefined
+    ? []
+    : (await import('@codemirror/merge')).unifiedMergeView({
+        original,
+        mergeControls: false,
+        gutter: true,
+      })
+  view.dispatch({ effects: diffing.reconfigure(extension) })
+}
 
 export function mountEditor(
   parent: HTMLElement,
@@ -181,6 +197,7 @@ export function mountEditor(
     markdown({ base: markdownLanguage }),
     EditorView.lineWrapping,
     liveStyling,
+    diffing.of([]),
     theme,
     EditorView.updateListener.of((update) => {
       if (update.docChanged)
