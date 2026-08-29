@@ -2,6 +2,7 @@
 import DefaultTheme from 'vitepress/theme'
 import ArchiveMeta from './ArchiveMeta.vue'
 import ConceptPreview from './ConceptPreview.vue'
+import EditPage from './EditPage.vue'
 import HubBackLink from './HubBackLink.vue'
 import ImageZoom from './ImageZoom.vue'
 import Maintainers from './Maintainers.vue'
@@ -24,6 +25,7 @@ const { Layout } = DefaultTheme
          article rather than under the edit link. -->
     <template #doc-footer-before>
       <Maintainers />
+      <EditPage />
     </template>
     <template #layout-bottom>
       <ConceptPreview />

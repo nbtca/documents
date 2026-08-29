@@ -8,6 +8,7 @@ import Layout from './Layout.vue'
 import LinkCard from './LinkCard.vue'
 import LinkCards from './LinkCards.vue'
 import PageHero from './PageHero.vue'
+import SignInCallback from './SignInCallback.vue'
 import Split from './Split.vue'
 import Timeline from './Timeline.vue'
 import TimelineEntry from './TimelineEntry.vue'
@@ -35,6 +36,7 @@ export default {
     app.component('LinkCard', LinkCard)
     app.component('LinkCards', LinkCards)
     app.component('PageHero', PageHero)
+    app.component('SignInCallback', SignInCallback)
     app.component('Split', Split)
     app.component('Timeline', Timeline)
     app.component('TimelineEntry', TimelineEntry)

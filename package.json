@@ -29,6 +29,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^6.2.0",
     "@braintree/sanitize-url": "^7.1.2",
+    "@logto/browser": "^3.0.13",
     "@types/node": "^22.15.32",
     "cytoscape": "^3.33.2",
     "cytoscape-cose-bilkent": "^4.1.0",
