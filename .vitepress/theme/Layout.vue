@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import DefaultTheme from 'vitepress/theme'
+import { defineAsyncComponent } from 'vue'
 import ArchiveMeta from './ArchiveMeta.vue'
 import ConceptPreview from './ConceptPreview.vue'
-import EditPage from './EditPage.vue'
+import { editorAvailable } from './editor/backend'
 import HubBackLink from './HubBackLink.vue'
 import ImageZoom from './ImageZoom.vue'
 import Maintainers from './Maintainers.vue'
 
 const { Layout } = DefaultTheme
+
+// Only fetched where the editor is switched on; readers never download it.
+const EditPage = defineAsyncComponent(() => import('./EditPage.vue'))
 </script>
 
 <template>
@@ -25,7 +29,7 @@ const { Layout } = DefaultTheme
          article rather than under the edit link. -->
     <template #doc-footer-before>
       <Maintainers />
-      <EditPage />
+      <EditPage v-if="editorAvailable" />
     </template>
     <template #layout-bottom>
       <ConceptPreview />

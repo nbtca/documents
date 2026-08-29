@@ -2,6 +2,7 @@ import { fileURLToPath, URL } from 'node:url'
 import { withMermaid } from 'vitepress-plugin-mermaid'
 import { noteRanges } from '../utils/editorial-note'
 import { lastCommitFor } from '../utils/git-history'
+import { devEditor } from './dev-editor.mjs'
 import { sidebar as sidebarAbout } from './sidebars/about'
 import { sidebar as sidebarArchived } from './sidebars/archived'
 import { sidebar as sidebarGuide } from './sidebars/guide'
@@ -205,6 +206,7 @@ export default withMermaid({
   // The stock component leaves <time> empty until hydration formats it, so a
   // page whose script does not run shows the label with no date.
   vite: {
+    plugins: [devEditor()],
     resolve: {
       alias: [{
         find: /^.*\/VPDocFooterLastUpdated\.vue$/,
