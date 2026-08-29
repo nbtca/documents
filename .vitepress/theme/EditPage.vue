@@ -107,52 +107,56 @@ function close() {
       {{ signedIn ? '在本页编辑' : '登录后在本页编辑' }}
     </button>
 
-    <div v-if="stage !== 'closed'" class="nb-edit-sheet" role="dialog" aria-label="编辑页面">
-      <div class="nb-edit-inner">
-        <header class="nb-edit-head">
-          <div>
-            <span class="nb-edit-title">{{ page.title }}</span>
-            <span class="nb-edit-path">{{ page.filePath }}</span>
-          </div>
-          <button type="button" class="nb-edit-close" aria-label="关闭" @click="close">
-            ✕
-          </button>
-        </header>
-
-        <p v-if="stage === 'loading'" class="nb-edit-note">
-          正在读取原文……
-        </p>
-
-        <template v-if="stage === 'editing' || stage === 'submitting'">
-          <div ref="host" class="nb-edit-area" :class="{ 'is-busy': stage === 'submitting' }" />
-          <div class="nb-edit-foot">
-            <input
-              v-model="summary"
-              class="nb-edit-summary"
-              placeholder="这次改了什么？一句话"
-              :disabled="stage === 'submitting'"
-            >
-            <button
-              type="button"
-              class="nb-edit-submit"
-              :disabled="!canSubmit || stage === 'submitting'"
-              @click="submit"
-            >
-              {{ stage === 'submitting' ? '提交中……' : (localMode ? '保存到本地' : '提交修改') }}
+    <!-- The card lives in the outline rail, whose containing block traps a
+         fixed overlay; the sheet has to leave it to cover the viewport. -->
+    <Teleport to="body">
+      <div v-if="stage !== 'closed'" class="nb-edit-sheet" role="dialog" aria-label="编辑页面">
+        <div class="nb-edit-inner">
+          <header class="nb-edit-head">
+            <div>
+              <span class="nb-edit-title">{{ page.title }}</span>
+              <span class="nb-edit-path">{{ page.filePath }}</span>
+            </div>
+            <button type="button" class="nb-edit-close" aria-label="关闭" @click="close">
+              ✕
             </button>
-          </div>
-          <p class="nb-edit-note">
-            {{ localMode
-              ? '本地开发：保存会直接写入这个 markdown 文件。'
-              : '提交会开一个 PR，交由维护者审阅后合并。不会直接改动线上页面。' }}
-          </p>
-        </template>
+          </header>
 
-        <p v-if="stage === 'failed'" class="nb-edit-note nb-edit-problem">
-          {{ problem }}
-        </p>
+          <p v-if="stage === 'loading'" class="nb-edit-note">
+            正在读取原文……
+          </p>
+
+          <template v-if="stage === 'editing' || stage === 'submitting'">
+            <div ref="host" class="nb-edit-area" :class="{ 'is-busy': stage === 'submitting' }" />
+            <div class="nb-edit-foot">
+              <input
+                v-model="summary"
+                class="nb-edit-summary"
+                placeholder="这次改了什么？一句话"
+                :disabled="stage === 'submitting'"
+              >
+              <button
+                type="button"
+                class="nb-edit-submit"
+                :disabled="!canSubmit || stage === 'submitting'"
+                @click="submit"
+              >
+                {{ stage === 'submitting' ? '提交中……' : (localMode ? '保存到本地' : '提交修改') }}
+              </button>
+            </div>
+            <p class="nb-edit-note">
+              {{ localMode
+                ? '本地开发：保存会直接写入这个 markdown 文件。'
+                : '提交会开一个 PR，交由维护者审阅后合并。不会直接改动线上页面。' }}
+            </p>
+          </template>
+
+          <p v-if="stage === 'failed'" class="nb-edit-note nb-edit-problem">
+            {{ problem }}
+          </p>
+        </div>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
