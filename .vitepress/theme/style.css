@@ -217,47 +217,162 @@
   color: var(--vp-c-brand-1);
 }
 
-/* One infobox per page: who keeps it, who touched it last, where an archived
+/* A colophon: who keeps this page, who last touched it, where an archived
    original came from, and the way in to change it. Apparatus, not document. */
 .nb-page-card {
   margin: 0 0 20px;
-  padding: 10px 14px;
+  padding: 12px 14px;
   border: 1px solid var(--vp-c-divider);
   border-radius: 8px;
   background: var(--vp-c-bg-soft);
+  font-size: 12.5px;
+  line-height: 1.6;
 }
 
-/* Collapsed by default: the rail belongs to the outline, and the full record
-   is long enough to push it off the screen. */
-.nb-page-card summary {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  cursor: pointer;
-  list-style: none;
+.nb-page-card-record,
+.nb-page-card-archive {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 7px 10px;
+  margin: 0;
 }
 
-.nb-page-card summary::-webkit-details-marker {
-  display: none;
+/* Values wrap under themselves, never under the term. */
+.nb-page-card dt {
+  font-family: var(--nb-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  line-height: 1.9;
+  color: var(--vp-c-text-3);
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
-.nb-archive-meta-date {
-  flex: 1;
-  font-size: 13px;
+.nb-page-card dd {
+  margin: 0;
+  min-width: 0;
   color: var(--vp-c-text-2);
 }
 
-.nb-archive-meta-caret {
+/* Only the archive rows carry strings long enough to need breaking. */
+.nb-page-card-archive dd {
+  overflow-wrap: anywhere;
+}
+
+.nb-page-card a {
+  color: var(--vp-c-text-2);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.nb-page-card a:hover {
+  color: var(--vp-c-text-1);
+}
+
+/* Dates line up in a column, so they are set as figures, not as prose. */
+.nb-page-card time {
+  font-variant-numeric: tabular-nums;
+  color: var(--vp-c-text-3);
+  white-space: nowrap;
+}
+
+.nb-page-card-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.nb-page-card-toggle:hover {
+  color: var(--vp-c-text-1);
+}
+
+.nb-page-card-caret {
   color: var(--vp-c-text-3);
   transition: transform 0.15s ease;
 }
 
-.nb-page-card details[open] .nb-archive-meta-caret {
+.nb-page-card-caret.is-open {
   transform: rotate(90deg);
 }
 
-.nb-page-card summary:hover .nb-archive-meta-caret {
-  color: var(--vp-c-text-2);
+.nb-page-card-archive {
+  margin-top: 10px;
+}
+
+.nb-history-avatar {
+  border-radius: 50%;
+  background: var(--vp-c-bg);
+}
+
+.nb-history {
+  margin-top: 10px;
+}
+
+.nb-history ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nb-history li {
+  margin: 0;
+}
+
+.nb-page-card a.nb-history-item,
+.nb-page-card a.nb-history-item:hover {
+  text-decoration: none;
+}
+
+.nb-history-item {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr) max-content;
+  gap: 0 8px;
+  align-items: center;
+  padding: 4px 0;
+  text-decoration: none;
+}
+
+.nb-history-item .nb-history-avatar {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.nb-history-who {
+  grid-column: 2;
+}
+
+.nb-history-msg {
+  grid-column: 2;
+  overflow: hidden;
+  color: var(--vp-c-text-3);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nb-history-item time {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.nb-history-note {
+  margin: 8px 0 0;
+  color: var(--vp-c-text-3);
+}
+
+/* The action is a different kind of thing from the record, so it gets the
+   card's only rule. */
+.nb-page-card .nb-edit {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--vp-c-divider);
 }
 
 .nb-page-card-aside {
@@ -273,294 +388,6 @@
   .nb-page-card-aside {
     display: block;
     margin: 0 0 24px;
-  }
-}
-
-.nb-page-card a {
-  color: var(--vp-c-text-2);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.nb-archive-meta-linknote {
-  margin: 8px 0 0;
-  padding-top: 8px;
-  border-top: 1px dashed var(--vp-c-divider);
-  font-size: 13px;
-  line-height: 1.7;
-  color: var(--vp-c-text-3);
-}
-
-.nb-archive-meta-linknote a {
-  color: var(--vp-c-text-2);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.nb-page-card dl {
-  display: grid;
-  grid-template-columns: max-content minmax(0, 1fr);
-  gap: 6px 12px;
-  margin: 10px 0 0;
-  padding-top: 10px;
-  border-top: 1px solid var(--vp-c-divider);
-}
-
-/* The rail is too narrow for a label column beside each value. */
-.nb-page-card dl {
-  grid-template-columns: minmax(0, 1fr);
-  gap: 2px;
-}
-
-.nb-page-card dt:not(:first-of-type) {
-  margin-top: 8px;
-}
-
-.nb-page-card dt {
-  font-family: var(--nb-mono);
-  font-size: 12px;
-  color: var(--vp-c-text-3);
-  white-space: nowrap;
-}
-
-.nb-page-card dd {
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.6;
-  color: var(--vp-c-text-2);
-  overflow-wrap: anywhere;
-}
-
-@media (max-width: 480px) {
-  .nb-page-card dl {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 2px;
-  }
-
-  .nb-page-card dt {
-    margin-top: 8px;
-  }
-}
-
-/* Who to ask about this page. Declared in frontmatter so the shape cannot
-   drift the way the hand-kept tables did. */
-.nb-page-card-label {
-  margin: 0 0 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--vp-c-divider);
-  font-family: var(--nb-mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  color: var(--vp-c-text-3);
-  text-transform: uppercase;
-}
-
-.nb-page-card {
-  font-size: 13px;
-}
-
-.nb-page-card-archive {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px dashed var(--vp-c-divider);
-}
-
-/* The rail is ~200px: a label beside its value wraps the date mid-token, so
-   stack them the way the fact strip already does. */
-.nb-page-card .nb-maintainers-row {
-  display: block;
-}
-
-.nb-page-card .nb-maintainers-row + .nb-maintainers-row {
-  margin-top: 10px;
-}
-
-.nb-page-card .nb-maintainers-label {
-  display: block;
-  margin-bottom: 3px;
-}
-
-.nb-page-card .nb-maintainers-dim {
-  white-space: nowrap;
-}
-
-.nb-page-card .nb-edit {
-  margin-top: 12px;
-  padding-top: 10px;
-  border-top: 1px solid var(--vp-c-divider);
-}
-
-.nb-maintainers-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 12px;
-}
-
-.nb-maintainers-row + .nb-page-card-label {
-  margin: 0 0 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--vp-c-divider);
-  font-family: var(--nb-mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  color: var(--vp-c-text-3);
-  text-transform: uppercase;
-}
-
-.nb-page-card {
-  font-size: 13px;
-}
-
-.nb-page-card-archive {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px dashed var(--vp-c-divider);
-}
-
-/* The rail is ~200px: a label beside its value wraps the date mid-token, so
-   stack them the way the fact strip already does. */
-.nb-page-card .nb-maintainers-row {
-  display: block;
-}
-
-.nb-page-card .nb-maintainers-row + .nb-maintainers-row {
-  margin-top: 10px;
-}
-
-.nb-page-card .nb-maintainers-label {
-  display: block;
-  margin-bottom: 3px;
-}
-
-.nb-page-card .nb-maintainers-dim {
-  white-space: nowrap;
-}
-
-.nb-page-card .nb-edit {
-  margin-top: 12px;
-  padding-top: 10px;
-  border-top: 1px solid var(--vp-c-divider);
-}
-
-.nb-maintainers-row {
-  margin-top: 6px;
-}
-
-.nb-maintainers-label {
-  font-family: var(--nb-mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  color: var(--vp-c-text-3);
-  text-transform: uppercase;
-}
-
-.nb-maintainers ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 16px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.nb-maintainers li {
-  margin: 0;
-}
-
-.nb-maintainers a {
-  color: var(--vp-c-text-2);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.nb-maintainers-dim {
-  margin-left: 6px;
-  color: var(--vp-c-text-3);
-}
-
-.nb-history-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--vp-c-text-2);
-  font: inherit;
-  cursor: pointer;
-}
-
-.nb-history-toggle:hover {
-  color: var(--vp-c-text-1);
-}
-
-.nb-history-avatar {
-  border-radius: 50%;
-  background: var(--vp-c-bg-soft);
-}
-
-.nb-history-caret {
-  color: var(--vp-c-text-3);
-  transition: transform 0.15s ease;
-}
-
-.nb-history-caret.is-open {
-  transform: rotate(90deg);
-}
-
-.nb-history {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px dashed var(--vp-c-divider);
-}
-
-.nb-history ol {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.nb-history li {
-  margin: 0;
-}
-
-.nb-history-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 0;
-  color: var(--vp-c-text-2);
-  text-decoration: none;
-}
-
-.nb-history-item:hover .nb-history-msg {
-  color: var(--vp-c-text-1);
-}
-
-.nb-history-who {
-  flex: none;
-}
-
-.nb-history-msg {
-  flex: 1;
-  overflow: hidden;
-  color: var(--vp-c-text-3);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.nb-history-note {
-  margin: 8px 0 0;
-  color: var(--vp-c-text-3);
-}
-
-@media (max-width: 640px) {
-  /* The subject line is the first thing to give up its room on a phone. */
-  .nb-history-msg {
-    display: none;
   }
 }
 

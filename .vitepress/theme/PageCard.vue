@@ -93,6 +93,7 @@ onMounted(detectOutboundLink)
 watch(() => route.path, () => nextTick(detectOutboundLink))
 
 const open = ref(false)
+const record = ref(false)
 const history = ref<Commit[]>([])
 const state = ref<'idle' | 'loading' | 'ready' | 'failed'>('idle')
 
@@ -129,37 +130,38 @@ async function toggleHistory() {
 
 <template>
   <aside v-if="hasContent" class="nb-page-card" aria-label="页面信息">
-    <p class="nb-page-card-label">
-      这一页
-    </p>
+    <dl class="nb-page-card-record">
+      <template v-if="maintainers.length">
+        <dt>维护</dt>
+        <dd>
+          <span v-for="(m, i) in maintainers" :key="m.user">
+            <span v-if="i">、</span>
+            <a :href="`https://github.com/${m.user}`" target="_blank" rel="noreferrer">@{{ m.user }}</a>
+          </span>
+        </dd>
+      </template>
 
-    <div v-if="maintainers.length" class="nb-maintainers-row">
-      <span class="nb-maintainers-label">维护</span>
-      <ul>
-        <li v-for="m in maintainers" :key="m.user">
-          <a :href="`https://github.com/${m.user}`" target="_blank" rel="noreferrer">@{{ m.user }}</a>
-          <span v-if="m.since" class="nb-maintainers-dim">{{ m.since }} 起</span>
-        </li>
-      </ul>
-    </div>
+      <template v-if="lastCommit">
+        <dt>最近</dt>
+        <dd>
+          <button type="button" class="nb-page-card-toggle" :aria-expanded="open" @click="toggleHistory">
+            <span>{{ lastCommit.login ? `@${lastCommit.login}` : lastCommit.name }}</span>
+            <time :datetime="lastCommit.date">{{ day(lastCommit.date) }}</time>
+            <span class="nb-page-card-caret" :class="{ 'is-open': open }">›</span>
+          </button>
+        </dd>
+      </template>
 
-    <div v-if="lastCommit" class="nb-maintainers-row">
-      <span class="nb-maintainers-label">最近</span>
-      <button type="button" class="nb-history-toggle" :aria-expanded="open" @click="toggleHistory">
-        <img
-          v-if="lastCommit.login"
-          class="nb-history-avatar"
-          :src="`https://github.com/${lastCommit.login}.png?size=40`"
-          :alt="`${lastCommit.login} 的头像`"
-          width="20"
-          height="20"
-          loading="lazy"
-        >
-        <span>{{ lastCommit.login ? `@${lastCommit.login}` : lastCommit.name }}</span>
-        <span class="nb-maintainers-dim">{{ day(lastCommit.date) }}</span>
-        <span class="nb-history-caret" :class="{ 'is-open': open }">›</span>
-      </button>
-    </div>
+      <template v-if="archive">
+        <dt>档案</dt>
+        <dd>
+          <button type="button" class="nb-page-card-toggle" :aria-expanded="record" @click="record = !record">
+            <span>{{ archive.date || '原件' }}</span>
+            <span class="nb-page-card-caret" :class="{ 'is-open': record }">›</span>
+          </button>
+        </dd>
+      </template>
+    </dl>
 
     <div v-if="open" class="nb-history">
       <p v-if="state === 'loading'" class="nb-history-note">
@@ -176,13 +178,13 @@ async function toggleHistory() {
               class="nb-history-avatar"
               :src="`https://github.com/${c.login}.png?size=40`"
               :alt="`${c.login} 的头像`"
-              width="20"
-              height="20"
+              width="18"
+              height="18"
               loading="lazy"
             >
             <span class="nb-history-who">{{ c.login ? `@${c.login}` : c.name }}</span>
             <span class="nb-history-msg">{{ c.message }}</span>
-            <span class="nb-maintainers-dim">{{ day(c.date) }}</span>
+            <time :datetime="c.date">{{ day(c.date) }}</time>
           </a>
         </li>
       </ol>
@@ -191,31 +193,25 @@ async function toggleHistory() {
       </p>
     </div>
 
-    <details v-if="archive" class="nb-page-card-archive">
-      <summary>
-        <span class="nb-maintainers-label">档案原件</span>
-        <span v-if="archive.date" class="nb-archive-meta-date">{{ archive.date }}</span>
-        <span class="nb-archive-meta-caret">›</span>
-      </summary>
-      <dl>
-        <template v-for="row in archiveRows" :key="row.label">
-          <dt>{{ row.label }}</dt>
-          <dd>{{ row.value }}</dd>
-        </template>
-        <template v-if="transcriber">
-          <dt>本站转写</dt>
-          <dd>
-            <a :href="`https://github.com/${transcriber.login}`" target="_blank" rel="noreferrer">@{{ transcriber.login }}</a>
-            <template v-if="transcriber.date">
-              · {{ transcriber.date }}
-            </template>
-          </dd>
-        </template>
-      </dl>
-      <p v-if="hasOutboundLink" class="nb-archive-meta-linknote">
-        站外网址照原件保留，打不开是正常的。
-      </p>
-    </details>
+    <dl v-if="record && archive" class="nb-page-card-archive">
+      <template v-for="row in archiveRows" :key="row.label">
+        <dt>{{ row.label }}</dt>
+        <dd>{{ row.value }}</dd>
+      </template>
+      <template v-if="transcriber">
+        <dt>转写</dt>
+        <dd>
+          <a :href="`https://github.com/${transcriber.login}`" target="_blank" rel="noreferrer">@{{ transcriber.login }}</a>
+          <template v-if="transcriber.date">
+            · {{ transcriber.date }}
+          </template>
+        </dd>
+      </template>
+      <template v-if="hasOutboundLink">
+        <dt>网址</dt>
+        <dd>照原件保留，打不开是正常的</dd>
+      </template>
+    </dl>
 
     <EditPage v-if="editorAvailable" />
   </aside>
