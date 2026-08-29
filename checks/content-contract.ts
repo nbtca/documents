@@ -146,8 +146,7 @@ export function resolveInternalLink(link: MarkdownLink, root = DEFAULT_ROOT): Li
 
   const decodedTargetPath = decodeLinkPath(targetPath)
   const sourceDir = path.posix.dirname(toPosixPath(link.sourceRelativePath))
-  // VitePress serves public/ from the site root, so /templates/x.doc on a page
-  // is public/templates/x.doc on disk.
+  // VitePress serves public/ from the site root.
   const candidatePaths = decodedTargetPath.startsWith('/')
     ? [path.join(root, decodedTargetPath), path.join(root, 'public', decodedTargetPath)]
     : [path.resolve(root, sourceDir, decodedTargetPath)]

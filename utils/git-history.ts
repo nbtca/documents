@@ -7,9 +7,7 @@ export interface LastCommit {
   name: string
 }
 
-// Keyed on the author name, not the address: only the API resolves an
-// arbitrary email, and the addresses themselves are personal contact details
-// the site strips everywhere else. Names are already published in the footer.
+// Keyed on the name: addresses are contact details the site strips elsewhere.
 const LOGIN_BY_NAME: Record<string, string> = {
   '小明': 'm1ngsama',
   'm1ng': 'm1ngsama',

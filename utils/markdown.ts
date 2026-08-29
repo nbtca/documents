@@ -87,8 +87,7 @@ function stripClosingHeadingMarkers(heading: string): string {
   return heading
 }
 
-// Removing a tag can splice a fresh one out of the text around it, and an
-// unterminated "<script" never matches at all.
+// Removing a tag can splice a fresh one out of the text around it.
 function stripTags(text: string): string {
   let previous: string
   let result = text
@@ -118,11 +117,9 @@ function truncate(text: string, limit: number): string {
 
 const MARKDOWN_DIRECTIVE = /^\[\[[a-z]+\]\]$/i
 const THEMATIC_BREAK = /^(?:-{3,}|\*{3,}|_{3,})$/
-// Chinese numbered lists omit the space after the marker; the lookahead keeps
-// decimals and dates ("2024.09") out.
+// Chinese lists omit the space after the marker; the lookahead spares dates.
 const BLOCK_MARKER = /^(?:[#>|]|[-*+](?:\s|$)|\d{1,2}[.、)](?!\d))/
 
-// A page opening with a component has no prose to quote; it sets `summary:`.
 export function extractSummary(source: string, limit = 140): string {
   const lines = stripFrontmatter(source).split(/\r?\n/)
   let inContainer = false
