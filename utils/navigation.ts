@@ -2,6 +2,7 @@ import type { DefaultTheme } from 'vitepress'
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { extractTitle, frontmatterValue } from './markdown'
 
 export type SidebarItem = DefaultTheme.SidebarItem
 
@@ -13,10 +14,6 @@ export interface MarkdownFile {
 
 export interface ListMarkdownOptions {
   includeIndex?: boolean
-}
-
-export interface ScanDirOptions extends ListMarkdownOptions {
-  linkBase?: string
 }
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -49,8 +46,7 @@ export function joinBasePath(basePath: string, ...segments: string[]): string {
 export function pageLink(basePath: string, filenameOrSlug: string): string {
   const base = normalizeBasePath(basePath)
   const stem = markdownStem(filenameOrSlug)
-  // An index page is served as its directory; linking it as .../index leaves
-  // the sidebar unable to recognise the page the reader is already on.
+  // Served as its directory; .../index would not match the current route.
   return stem === 'index' ? base : `${base}${stem}`
 }
 
@@ -122,24 +118,34 @@ export function listDirectories(dirname: string): string[] {
 
 export function getTitle(filepath: string): string {
   try {
-    const content = readFileSync(filepath, 'utf-8')
-    const match = content.match(/^# (.+)$/m)
-    if (match)
-      return match[1]
+    return extractTitle(readFileSync(filepath, 'utf-8')) ?? path.basename(filepath, '.md')
   }
-  catch {}
-
-  return path.basename(filepath, '.md')
+  catch {
+    return path.basename(filepath, '.md')
+  }
 }
 
-export function scanDir(
-  dirname: string,
-  options: ScanDirOptions = {},
-): Array<{ filename: string, link: string }> {
-  const linkBase = options.linkBase ?? normalizeBasePath(dirname)
+function getOrder(filepath: string): number {
+  try {
+    const declared = Number(frontmatterValue(readFileSync(filepath, 'utf-8'), 'order'))
+    return Number.isFinite(declared) ? declared : Number.MAX_SAFE_INTEGER
+  }
+  catch {
+    return Number.MAX_SAFE_INTEGER
+  }
+}
 
-  return listMarkdownFiles(dirname, options).map(({ filename }) => ({
-    filename,
-    link: pageLink(linkBase, filename),
-  }))
+// Scanned, so adding a page means adding a markdown file and nothing else.
+// `order:` in frontmatter places it; without one it sorts to the end by title.
+export function groupFromDir(text: string, dirname: string, collapsed = false): SidebarItem {
+  const items = listMarkdownFiles(dirname)
+    .map(file => ({
+      text: getTitle(file.filepath),
+      link: relativePageLink(file.filename),
+      order: getOrder(file.filepath),
+    }))
+    .sort((a, b) => a.order - b.order || a.text.localeCompare(b.text, 'zh'))
+    .map(({ text, link }) => ({ text, link }))
+
+  return { text, collapsed, base: normalizeBasePath(dirname), items }
 }

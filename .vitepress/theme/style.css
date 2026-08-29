@@ -217,228 +217,98 @@
   color: var(--vp-c-brand-1);
 }
 
-/* Archive provenance — framed so it reads as apparatus, not as the document. */
-/* An infobox: the record sits beside the article rather than on top of it, so
-   the title leads and the provenance needs no disclosure. It rides the right
-   rail where there is one, and falls back to a block above the title where the
-   rail is hidden. */
-.nb-archive-meta {
+.nb-page-card {
   margin: 0 0 20px;
-  padding: 10px 14px;
+  padding: 12px 14px;
   border: 1px solid var(--vp-c-divider);
   border-radius: 8px;
   background: var(--vp-c-bg-soft);
+  font-size: 12.5px;
+  line-height: 1.6;
 }
 
-/* Collapsed by default: the rail belongs to the outline, and the full record
-   is long enough to push it off the screen. */
-.nb-archive-meta summary {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  cursor: pointer;
-  list-style: none;
-}
-
-.nb-archive-meta summary::-webkit-details-marker {
-  display: none;
-}
-
-.nb-archive-meta-date {
-  flex: 1;
-  font-size: 13px;
-  color: var(--vp-c-text-2);
-}
-
-.nb-archive-meta-caret {
-  color: var(--vp-c-text-3);
-  transition: transform 0.15s ease;
-}
-
-.nb-archive-meta details[open] .nb-archive-meta-caret {
-  transform: rotate(90deg);
-}
-
-.nb-archive-meta summary:hover .nb-archive-meta-caret {
-  color: var(--vp-c-text-2);
-}
-
-.nb-archive-meta-aside {
-  display: none;
-}
-
-/* The breakpoint VitePress uses to show the outline rail. */
-@media (min-width: 1280px) {
-  .nb-archive-meta-inline {
-    display: none;
-  }
-
-  .nb-archive-meta-aside {
-    display: block;
-    margin: 0 0 24px;
-  }
-}
-
-.nb-archive-meta a {
-  color: var(--vp-c-text-2);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.nb-archive-meta-linknote {
-  margin: 8px 0 0;
-  padding-top: 8px;
-  border-top: 1px dashed var(--vp-c-divider);
-  font-size: 13px;
-  line-height: 1.7;
-  color: var(--vp-c-text-3);
-}
-
-.nb-archive-meta-linknote a {
-  color: var(--vp-c-text-2);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.nb-archive-meta-tag {
-  font-family: var(--nb-mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  color: var(--vp-c-text-3);
-  text-transform: uppercase;
-}
-
-.nb-archive-meta dl {
+.nb-page-card-record,
+.nb-page-card-archive {
   display: grid;
   grid-template-columns: max-content minmax(0, 1fr);
-  gap: 6px 12px;
-  margin: 10px 0 0;
-  padding-top: 10px;
-  border-top: 1px solid var(--vp-c-divider);
+  gap: 7px 10px;
+  margin: 0;
 }
 
-/* The rail is too narrow for a label column beside each value. */
-.nb-archive-meta-aside dl {
-  grid-template-columns: minmax(0, 1fr);
-  gap: 2px;
-}
-
-.nb-archive-meta-aside dt:not(:first-of-type) {
-  margin-top: 8px;
-}
-
-.nb-archive-meta dt {
+.nb-page-card dt {
   font-family: var(--nb-mono);
-  font-size: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  line-height: 1.9;
+  color: var(--vp-c-text-3);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.nb-page-card dd {
+  margin: 0;
+  min-width: 0;
+  color: var(--vp-c-text-2);
+}
+
+.nb-page-card-archive dd {
+  overflow-wrap: anywhere;
+}
+
+.nb-page-card a {
+  color: var(--vp-c-text-2);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.nb-page-card a:hover {
+  color: var(--vp-c-text-1);
+}
+
+.nb-page-card time {
+  font-variant-numeric: tabular-nums;
   color: var(--vp-c-text-3);
   white-space: nowrap;
 }
 
-.nb-archive-meta dd {
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.6;
-  color: var(--vp-c-text-2);
-  overflow-wrap: anywhere;
-}
-
-@media (max-width: 480px) {
-  .nb-archive-meta dl {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 2px;
-  }
-
-  .nb-archive-meta dt {
-    margin-top: 8px;
-  }
-}
-
-/* Who to ask about this page. Declared in frontmatter so the shape cannot
-   drift the way the hand-kept tables did. */
-.nb-maintainers {
-  margin: 32px 0 18px;
-  padding-top: 14px;
-  border-top: 1px solid var(--vp-c-divider);
-  font-size: 13px;
-}
-
-.nb-maintainers-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 12px;
-}
-
-.nb-maintainers-row + .nb-maintainers-row {
-  margin-top: 6px;
-}
-
-.nb-maintainers-label {
-  font-family: var(--nb-mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  color: var(--vp-c-text-3);
-  text-transform: uppercase;
-}
-
-.nb-maintainers ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 16px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.nb-maintainers li {
-  margin: 0;
-}
-
-.nb-maintainers a {
-  color: var(--vp-c-text-2);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.nb-maintainers-dim {
-  margin-left: 6px;
-  color: var(--vp-c-text-3);
-}
-
-.nb-history-toggle {
+.nb-page-card-toggle {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 0;
   border: 0;
   background: none;
-  color: var(--vp-c-text-2);
+  color: inherit;
   font: inherit;
+  text-align: left;
   cursor: pointer;
 }
 
-.nb-history-toggle:hover {
+.nb-page-card-toggle:hover {
   color: var(--vp-c-text-1);
 }
 
-.nb-history-avatar {
-  border-radius: 50%;
-  background: var(--vp-c-bg-soft);
-}
-
-.nb-history-caret {
+.nb-page-card-caret {
   color: var(--vp-c-text-3);
   transition: transform 0.15s ease;
 }
 
-.nb-history-caret.is-open {
+.nb-page-card-caret.is-open {
   transform: rotate(90deg);
 }
 
+.nb-page-card-archive {
+  margin-top: 10px;
+}
+
+.nb-history-avatar {
+  border-radius: 50%;
+  background: var(--vp-c-bg);
+}
+
 .nb-history {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px dashed var(--vp-c-divider);
+  margin-top: 10px;
 }
 
 .nb-history ol {
@@ -451,40 +321,78 @@
   margin: 0;
 }
 
-.nb-history-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 0;
-  color: var(--vp-c-text-2);
+.nb-page-card a.nb-history-item,
+.nb-page-card a.nb-history-item:hover {
   text-decoration: none;
 }
 
-.nb-history-item:hover .nb-history-msg {
-  color: var(--vp-c-text-1);
+.nb-history {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nb-history li {
+  margin: 0;
+}
+
+.nb-history-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  gap: 0 8px;
+  padding: 5px 0;
+}
+
+.nb-history-item + .nb-history-item,
+.nb-history li + li .nb-history-item {
+  border-top: 1px dashed var(--vp-c-divider);
 }
 
 .nb-history-who {
-  flex: none;
-}
-
-.nb-history-msg {
-  flex: 1;
   overflow: hidden;
-  color: var(--vp-c-text-3);
+  color: var(--vp-c-text-2);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.nb-history-note {
-  margin: 8px 0 0;
+.nb-history-subject {
+  display: -webkit-box;
+  overflow: hidden;
+  grid-column: 1 / -1;
+  color: var(--vp-c-text-3);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.nb-history-item:hover .nb-history-subject {
+  color: var(--vp-c-text-2);
+}
+
+.nb-history-more {
+  padding-top: 6px;
+  border-top: 1px dashed var(--vp-c-divider);
   color: var(--vp-c-text-3);
 }
 
-@media (max-width: 640px) {
-  /* The subject line is the first thing to give up its room on a phone. */
-  .nb-history-msg {
+.nb-page-card .nb-edit {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--vp-c-divider);
+}
+
+.nb-page-card-aside {
+  display: none;
+}
+
+/* The breakpoint VitePress uses to show the outline rail. */
+@media (min-width: 1280px) {
+  .nb-page-card-inline {
     display: none;
+  }
+
+  .nb-page-card-aside {
+    display: block;
+    margin: 0 0 24px;
   }
 }
 

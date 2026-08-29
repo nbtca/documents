@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { PagePreview } from './concepts.data'
 import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
-import { routeFromHref } from '../../utils/page-preview'
+import { routeFromHref } from '../../utils/markdown'
 import { data as pages } from './concepts.data'
 
 const map = new Map(pages.map(p => [p.path, p]))

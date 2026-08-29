@@ -133,7 +133,7 @@ sequenceDiagram
 
 在开始之前，你需要先关联你的Github账户。你可以前往 [MyId](https://myid.app.nbtca.space/account/connections) 关联你的Github账户。
 
-![link-github](./assets/link-github.png)
+![link-github](./assets/link-github.webp)
 
 ### 处理事件
 
@@ -145,11 +145,11 @@ sequenceDiagram
 - `@nbtca-bot reject` will send this ticket back to assignee
 - `@nbtca-bot close` will close this ticket as completed
 
-![issue-reply](./assets/issue-reply-example.png)
+![issue-reply](./assets/issue-reply-example.webp)
 
 ### 记录事件工作量
 
-![issue-label](./assets/issue-label.png)
+![issue-label](./assets/issue-label.webp)
 
 在Github Issue中，可以通过添加标签来记录工作量。标签的命名规则为 `size:xs`、`size:s`、`size:m`、`size:l`、`size:xl`，分别对应不同的工作量。工作量代表的是维修事件的复杂程度和所需时间。具体的工作量和对应的标签如下：
 
