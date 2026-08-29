@@ -90,65 +90,72 @@ function close() {
 <template>
   <div v-if="editorConfigured" class="nb-edit">
     <button type="button" class="nb-edit-open" @click="open">
-      {{ signedIn ? '编辑这一页' : '登录后编辑' }}
+      {{ signedIn ? '在本页编辑' : '登录后在本页编辑' }}
     </button>
 
     <div v-if="stage !== 'closed'" class="nb-edit-sheet" role="dialog" aria-label="编辑页面">
-      <header class="nb-edit-head">
-        <div>
-          <span class="nb-edit-title">{{ page.title }}</span>
-          <span class="nb-edit-path">{{ page.filePath }}</span>
-        </div>
-        <button type="button" class="nb-edit-close" aria-label="关闭" @click="close">
-          ✕
-        </button>
-      </header>
-
-      <p v-if="stage === 'loading'" class="nb-edit-note">
-        正在读取原文……
-      </p>
-
-      <template v-if="stage === 'editing' || stage === 'submitting'">
-        <textarea
-          v-model="draft"
-          class="nb-edit-area"
-          spellcheck="false"
-          :disabled="stage === 'submitting'"
-        />
-        <div class="nb-edit-foot">
-          <input
-            v-model="summary"
-            class="nb-edit-summary"
-            placeholder="这次改了什么？一句话"
-            :disabled="stage === 'submitting'"
-          >
-          <button
-            type="button"
-            class="nb-edit-submit"
-            :disabled="!canSubmit || stage === 'submitting'"
-            @click="submit"
-          >
-            {{ stage === 'submitting' ? '提交中……' : '提交修改' }}
+      <div class="nb-edit-inner">
+        <header class="nb-edit-head">
+          <div>
+            <span class="nb-edit-title">{{ page.title }}</span>
+            <span class="nb-edit-path">{{ page.filePath }}</span>
+          </div>
+          <button type="button" class="nb-edit-close" aria-label="关闭" @click="close">
+            ✕
           </button>
-        </div>
-        <p class="nb-edit-note">
-          提交会开一个 PR，交由维护者审阅后合并。不会直接改动线上页面。
+        </header>
+
+        <p v-if="stage === 'loading'" class="nb-edit-note">
+          正在读取原文……
         </p>
-      </template>
 
-      <p v-if="stage === 'done' && pull" class="nb-edit-note">
-        已提交 <a :href="pull.url" target="_blank" rel="noreferrer">#{{ pull.number }}</a>。
-        自动检查与渲染预览的结果会显示在这个 PR 上。
-      </p>
+        <template v-if="stage === 'editing' || stage === 'submitting'">
+          <textarea
+            v-model="draft"
+            class="nb-edit-area"
+            spellcheck="false"
+            :disabled="stage === 'submitting'"
+          />
+          <div class="nb-edit-foot">
+            <input
+              v-model="summary"
+              class="nb-edit-summary"
+              placeholder="这次改了什么？一句话"
+              :disabled="stage === 'submitting'"
+            >
+            <button
+              type="button"
+              class="nb-edit-submit"
+              :disabled="!canSubmit || stage === 'submitting'"
+              @click="submit"
+            >
+              {{ stage === 'submitting' ? '提交中……' : '提交修改' }}
+            </button>
+          </div>
+          <p class="nb-edit-note">
+            提交会开一个 PR，交由维护者审阅后合并。不会直接改动线上页面。
+          </p>
+        </template>
 
-      <p v-if="stage === 'failed'" class="nb-edit-note nb-edit-problem">
-        {{ problem }}
-      </p>
+        <p v-if="stage === 'done' && pull" class="nb-edit-note">
+          已提交 <a :href="pull.url" target="_blank" rel="noreferrer">#{{ pull.number }}</a>。
+          自动检查与渲染预览的结果会显示在这个 PR 上。
+        </p>
+
+        <p v-if="stage === 'failed'" class="nb-edit-note nb-edit-problem">
+          {{ problem }}
+        </p>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+.nb-edit {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .nb-edit-open {
   font-family: var(--nb-mono);
   font-size: 12px;
@@ -165,11 +172,18 @@ function close() {
   position: fixed;
   inset: 0;
   z-index: 60;
+  padding: 21px;
+  background: var(--vp-c-bg);
+}
+
+.nb-edit-inner {
   display: flex;
   flex-direction: column;
   gap: 13px;
-  padding: 21px;
-  background: var(--vp-c-bg);
+  width: 100%;
+  max-width: 76rem;
+  height: 100%;
+  margin: 0 auto;
 }
 
 .nb-edit-head {
