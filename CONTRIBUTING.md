@@ -11,10 +11,23 @@ pnpm install
 pnpm docs:dev
 ```
 
+## 仓库结构
+
+```text
+about/ concepts/ repair/ process/ tutorial/ archived/   content + assets/
+public/                                                 fixed URLs
+
+.vitepress/config.mts   site config
+.vitepress/sidebars/    sidebars
+.vitepress/theme/       components, styles
+utils/                  build-time modules
+checks/                 contracts, asset manifest, dist verifier
+```
+
 ## 内容放哪
 
-- **指南**（`tutorial/` 与 `process/`）：教程与社务流程，共用一份边栏。新增页面后更新 `tutorial/sidebar.ts`。
-- **关于**（`about/`）：有独立边栏（`about/sidebar.ts`），新增页面后同步更新。
+- **指南**（`tutorial/` 与 `process/`）：教程与社务流程，共用一份边栏。新增页面后更新 `.vitepress/sidebars/guide.ts`。
+- **关于**（`about/`）：有独立边栏（`.vitepress/sidebars/about.ts`），新增页面后同步更新。
 - **维修 / 概念库**（`repair/`、`concepts/`）：枢纽模型，不挂边栏——从对应栏目的首页链接过去即可，其余靠站内词条链接与搜索抵达。
 - **存档**（`archived/`）：历史材料，边栏自动扫描，通常无需改导航。保持历史原貌。
 
@@ -40,6 +53,7 @@ maintainers:
 pnpm run ci:lint
 pnpm test run
 pnpm docs:build
+pnpm run ci:verify
 ```
 
 提交信息用英文，遵循 Conventional Commits（`feat:` / `fix:` / `docs:` / `refactor:` 等）。源码注释用英文。

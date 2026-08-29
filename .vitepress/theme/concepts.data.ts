@@ -28,7 +28,6 @@ export default {
         const src = fs.readFileSync(path.join(rootDir, relativePath), 'utf-8')
         return {
           path: toUrlPath(relativePath),
-          // Headingless archived files fall back to the filename, as the sidebar does.
           title: extractTitle(src) ?? path.basename(relativePath, '.md'),
           summary: frontmatterValue(src, 'summary') ?? extractSummary(src),
         }

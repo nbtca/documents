@@ -72,7 +72,6 @@ export function extractH1(content: string): string | undefined {
   }
 }
 
-// A page whose heading lives in a <PageHero> has no H1 to read.
 export function extractTitle(content: string): string | undefined {
   return extractH1(content) ?? frontmatterValue(content, 'title')
 }
