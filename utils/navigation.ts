@@ -2,6 +2,7 @@ import type { DefaultTheme } from 'vitepress'
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { extractTitle } from './markdown'
 
 export type SidebarItem = DefaultTheme.SidebarItem
 
@@ -13,10 +14,6 @@ export interface MarkdownFile {
 
 export interface ListMarkdownOptions {
   includeIndex?: boolean
-}
-
-export interface ScanDirOptions extends ListMarkdownOptions {
-  linkBase?: string
 }
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -122,24 +119,9 @@ export function listDirectories(dirname: string): string[] {
 
 export function getTitle(filepath: string): string {
   try {
-    const content = readFileSync(filepath, 'utf-8')
-    const match = content.match(/^# (.+)$/m)
-    if (match)
-      return match[1]
+    return extractTitle(readFileSync(filepath, 'utf-8')) ?? path.basename(filepath, '.md')
   }
-  catch {}
-
-  return path.basename(filepath, '.md')
-}
-
-export function scanDir(
-  dirname: string,
-  options: ScanDirOptions = {},
-): Array<{ filename: string, link: string }> {
-  const linkBase = options.linkBase ?? normalizeBasePath(dirname)
-
-  return listMarkdownFiles(dirname, options).map(({ filename }) => ({
-    filename,
-    link: pageLink(linkBase, filename),
-  }))
+  catch {
+    return path.basename(filepath, '.md')
+  }
 }

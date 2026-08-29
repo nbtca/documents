@@ -51,6 +51,43 @@ export function frontmatterValue(source: string, key: string): string | undefine
   return value || undefined
 }
 
+export function isFenceMarker(trimmedStart: string): boolean {
+  return trimmedStart.startsWith('```') || trimmedStart.startsWith('~~~')
+}
+
+export function extractH1(content: string): string | undefined {
+  let inFence = false
+
+  for (const line of content.split(/\r?\n/)) {
+    if (isFenceMarker(line.trimStart())) {
+      inFence = !inFence
+      continue
+    }
+
+    if (!inFence && line.startsWith('# ')) {
+      const heading = stripClosingHeadingMarkers(line.slice(2).trim())
+      if (heading)
+        return heading
+    }
+  }
+}
+
+// A page whose heading lives in a <PageHero> has no H1 to read.
+export function extractTitle(content: string): string | undefined {
+  return extractH1(content) ?? frontmatterValue(content, 'title')
+}
+
+function stripClosingHeadingMarkers(heading: string): string {
+  let end = heading.length
+  while (end > 0 && heading[end - 1] === '#')
+    end -= 1
+
+  if (end < heading.length && end > 0 && /\s/.test(heading[end - 1]))
+    return heading.slice(0, end).trimEnd()
+
+  return heading
+}
+
 // Removing a tag can splice a fresh one out of the text around it, and an
 // unterminated "<script" never matches at all.
 function stripTags(text: string): string {
@@ -98,7 +135,7 @@ export function extractSummary(source: string, limit = 140): string {
   for (const raw of lines) {
     const line = raw.trim()
 
-    if (line.startsWith('```') || line.startsWith('~~~')) {
+    if (isFenceMarker(line)) {
       inFence = !inFence
       continue
     }

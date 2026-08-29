@@ -5,15 +5,13 @@ import {
   collectNavigationLinks,
   extractMarkdownLinks,
   findDuplicateRoutePaths,
-  listActiveDocs,
-  listArchivedDocs,
   listDocs,
   listRoutedDocs,
   resolveInternalLink,
   ROUTED_DOC_DIRS,
-} from '../utils/content-contract'
+} from './content-contract'
 
-const activeDocs = listActiveDocs()
+const activeDocs = listDocs(undefined, 'active')
 const routedDocs = listRoutedDocs()
 const navigationLinks = new Set(collectNavigationLinks(siteConfig))
 
@@ -68,7 +66,7 @@ describe('site content contract', () => {
 })
 
 describe('archive provenance', () => {
-  const originals = listArchivedDocs()
+  const originals = listDocs(undefined, 'archived')
     .filter(doc => !doc.relativePath.includes('manual/') && !doc.relativePath.endsWith('index.md'))
 
   it('states a date and a source for every archived document', () => {

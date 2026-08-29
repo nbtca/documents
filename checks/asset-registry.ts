@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { existsSync, readdirSync, readFileSync } from 'node:fs'
+import { existsSync, globSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 
 const repoRoot = path.resolve(__dirname, '..')
@@ -45,7 +45,7 @@ export interface AssetRegistryEntry {
 }
 
 export function loadAssetRegistry(rootDir = repoRoot): AssetRegistryManifest {
-  const registryPath = path.join(rootDir, 'assets/asset-registry.json')
+  const registryPath = path.join(rootDir, 'checks/asset-registry.json')
   return JSON.parse(readFileSync(registryPath, 'utf8')) as AssetRegistryManifest
 }
 
@@ -69,36 +69,18 @@ export function expandAssetRegistry(manifest = loadAssetRegistry()): AssetRegist
   })
 }
 
+// git is the source of truth: an asset staged for deletion must stop counting.
 export function listTargetBinaryAssets(rootDir = repoRoot): string[] {
-  const trackedAssets = listTrackedRepoFiles(rootDir)
+  const candidates = listTrackedRepoFiles(rootDir)
+    ?? globSync(`**/*{${[...targetAssetExtensions].join(',')}}`, {
+      cwd: rootDir,
+      exclude: repoPath => isIgnoredDirectory(repoPath),
+    })
 
-  if (trackedAssets) {
-    return trackedAssets
-      .filter(repoPath => targetAssetExtensions.has(path.extname(repoPath).toLowerCase()))
-      .filter(repoPath => !isIgnoredDirectory(repoPath))
-      .sort((a, b) => a.localeCompare(b))
-  }
-
-  const assets: string[] = []
-
-  function visit(directory: string) {
-    for (const entry of readdirSync(directory, { withFileTypes: true })) {
-      const absolutePath = path.join(directory, entry.name)
-      const repoPath = toRepoPath(absolutePath, rootDir)
-
-      if (entry.isDirectory()) {
-        if (!isIgnoredDirectory(repoPath))
-          visit(absolutePath)
-        continue
-      }
-
-      if (entry.isFile() && targetAssetExtensions.has(path.extname(entry.name).toLowerCase()))
-        assets.push(repoPath)
-    }
-  }
-
-  visit(rootDir)
-  return assets.sort((a, b) => a.localeCompare(b))
+  return candidates
+    .filter(repoPath => targetAssetExtensions.has(path.extname(repoPath).toLowerCase()))
+    .filter(repoPath => !isIgnoredDirectory(repoPath))
+    .sort((a, b) => a.localeCompare(b))
 }
 
 export function assetExists(assetPath: string, rootDir = repoRoot): boolean {
@@ -149,8 +131,4 @@ function listTrackedRepoFiles(rootDir: string): string[] | undefined {
   catch {
     return undefined
   }
-}
-
-function toRepoPath(absolutePath: string, rootDir: string): string {
-  return path.relative(rootDir, absolutePath).split(path.sep).join('/')
 }

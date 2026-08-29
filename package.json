@@ -20,7 +20,7 @@
     "ci:lint:markdown": "markdownlint-cli2  --config .markdownlint-cli2.jsonc",
     "ci:lint:eslint": "eslint",
     "ci:lint": "pnpm run '/^ci:lint:.*/'",
-    "ci:verify": "node scripts/verify-dist.mjs",
+    "ci:verify": "node checks/verify-dist.mjs",
     "prepare": "husky"
   },
   "dependencies": {

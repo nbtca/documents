@@ -1,4 +1,4 @@
-import { group, pageInGroup, pageInSection } from '../utils/navigation'
+import { group, pageInGroup, pageInSection } from '../../utils/navigation'
 
 export const sidebar = [
   pageInSection('指南', 'tutorial', 'index'),

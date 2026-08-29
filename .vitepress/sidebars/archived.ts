@@ -1,4 +1,4 @@
-import type { SidebarItem } from '../utils/navigation'
+import type { SidebarItem } from '../../utils/navigation'
 import path from 'node:path'
 import {
   contentDir,
@@ -9,7 +9,7 @@ import {
   pageInSection,
   pageLink,
   relativePageLink,
-} from '../utils/navigation'
+} from '../../utils/navigation'
 
 const SUBDIR_LABELS: Record<string, string> = {
   meetings: '会议纪要',

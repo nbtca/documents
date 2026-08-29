@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { extractSummary, frontmatterValue, routeFromHref } from './page-preview'
+import { extractH1, extractSummary, extractTitle, frontmatterValue, routeFromHref } from './markdown'
 
 const ORIGIN = 'https://docs.nbtca.space'
 
@@ -96,5 +96,34 @@ describe('page preview', () => {
     expect(frontmatterValue('---\ntitle: "什么是 NBTCA"\n---\n', 'title')).toBe('什么是 NBTCA')
     expect(frontmatterValue('---\naside: false\n---\n', 'title')).toBeUndefined()
     expect(frontmatterValue('没有 frontmatter', 'title')).toBeUndefined()
+  })
+})
+
+describe('page title', () => {
+  it('falls back to the frontmatter title when the heading lives in a hero', () => {
+    const hero = [
+      '---',
+      'title: 什么是 NBTCA',
+      'aside: false',
+      '---',
+      '',
+      '<PageHero title="什么是 NBTCA" />',
+    ].join('\n')
+
+    expect(extractH1(hero)).toBeUndefined()
+    expect(extractTitle(hero)).toBe('什么是 NBTCA')
+    expect(extractTitle('---\ntitle: Front\n---\n\n# Heading')).toBe('Heading')
+  })
+
+  it('extracts the first prose H1 and ignores fenced code', () => {
+    const title = extractH1([
+      '```sh',
+      '# not a heading',
+      '```',
+      '',
+      '# Real heading',
+    ].join('\n'))
+
+    expect(title).toBe('Real heading')
   })
 })

@@ -4,17 +4,13 @@ import path from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
   collectNavigationLinks,
-  extractH1,
   extractMarkdownLinks,
-  extractTitle,
   findDuplicateRoutePaths,
-  listActiveDocs,
-  listArchivedDocs,
-  listHubDocs,
+  listDocs,
   listRoutedDocs,
   resolveInternalLink,
   routePathFromRelativePath,
-} from '../utils/content-contract'
+} from './content-contract'
 
 let tempDir: string | undefined
 
@@ -34,48 +30,21 @@ describe('content contract', () => {
     writeFixture('repair/guide.md', '# Repair')
     writeFixture('archived/2025/meeting.md', '# Meeting')
 
-    expect(listActiveDocs(tempDir).map(doc => doc.relativePath)).toEqual([
+    expect(listDocs(tempDir, 'active').map(doc => doc.relativePath)).toEqual([
       'about/index.md',
       'process/2025/example.md',
       'tutorial/index.md',
     ])
-    expect(listHubDocs(tempDir).map(doc => doc.relativePath)).toEqual([
+    expect(listDocs(tempDir, 'hub').map(doc => doc.relativePath)).toEqual([
       'concepts/college.md',
       'repair/guide.md',
     ])
-    expect(listArchivedDocs(tempDir).map(doc => doc.relativePath)).toEqual([
+    expect(listDocs(tempDir, 'archived').map(doc => doc.relativePath)).toEqual([
       'archived/2025/meeting.md',
     ])
     expect(listRoutedDocs(tempDir).map(doc => doc.relativePath)).not.toContain(
       'archived/2025/meeting.md',
     )
-  })
-
-  it('falls back to the frontmatter title when the heading lives in a hero', () => {
-    const hero = [
-      '---',
-      'title: 什么是 NBTCA',
-      'aside: false',
-      '---',
-      '',
-      '<PageHero title="什么是 NBTCA" />',
-    ].join('\n')
-
-    expect(extractH1(hero)).toBeUndefined()
-    expect(extractTitle(hero)).toBe('什么是 NBTCA')
-    expect(extractTitle('---\ntitle: Front\n---\n\n# Heading')).toBe('Heading')
-  })
-
-  it('extracts the first prose H1 and ignores fenced code', () => {
-    const title = extractH1([
-      '```sh',
-      '# not a heading',
-      '```',
-      '',
-      '# Real heading',
-    ].join('\n'))
-
-    expect(title).toBe('Real heading')
   })
 
   it('generates stable VitePress route paths from markdown files', () => {

@@ -2,14 +2,13 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { sidebar as archivedSidebar } from '../archived/sidebar'
+import { sidebar as archivedSidebar } from '../.vitepress/sidebars/archived'
 import {
   getTitle,
   joinBasePath,
   listDirectories,
   listMarkdownFiles,
   pageLink,
-  scanDir,
 } from './navigation'
 
 let tempDir: string
@@ -26,30 +25,6 @@ beforeAll(() => {
 
 afterAll(() => {
   rmSync(tempDir, { recursive: true })
-})
-
-describe('scanDir', () => {
-  it('should return only markdown files with correct links', () => {
-    const res = scanDir(tempDir)
-    expect(res).toHaveLength(2)
-    res.forEach((item) => {
-      expect(item.filename).toMatch(/\.md$/)
-      expect(item.link).toMatch(/^\/.*\/test\d$/)
-    })
-  })
-
-  it('should strip .md extension from link', () => {
-    const res = scanDir(tempDir)
-    const item = res.find(r => r.filename === 'test1.md')!
-    expect(item.link).not.toContain('.md')
-  })
-
-  it('should return an empty array if no markdown files are found', () => {
-    const emptyDir = mkdtempSync(join(tmpdir(), 'empty-'))
-    const res = scanDir(emptyDir)
-    expect(res).toEqual([])
-    rmSync(emptyDir, { recursive: true })
-  })
 })
 
 describe('listMarkdownFiles', () => {

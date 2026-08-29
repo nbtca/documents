@@ -1,10 +1,10 @@
 import { fileURLToPath, URL } from 'node:url'
 import { withMermaid } from 'vitepress-plugin-mermaid'
-import { sidebar as sidebarAbout } from '../about/sidebar'
-import { sidebar as sidebarArchived } from '../archived/sidebar'
-import { sidebar as sidebarGuide } from '../tutorial/sidebar'
 import { noteRanges } from '../utils/editorial-note'
 import { lastCommitFor } from '../utils/git-history'
+import { sidebar as sidebarAbout } from './sidebars/about'
+import { sidebar as sidebarArchived } from './sidebars/archived'
+import { sidebar as sidebarGuide } from './sidebars/guide'
 
 const siteUrl = 'https://docs.nbtca.space'
 const siteDescription = '浙大宁波理工学院计算机协会（NBTCA）的公开文档站：认识社团、上手指南、流程手册与维修日资料。'

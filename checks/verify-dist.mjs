@@ -1,5 +1,5 @@
 // The vitest suite reads markdown; these defects only exist once it renders.
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
+import { existsSync, globSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 
@@ -13,13 +13,6 @@ if (!existsSync(distDir)) {
 
 const ENTITIES = { 'amp': '&', 'lt': '<', 'gt': '>', 'quot': '"', '#39': '\'', 'nbsp': ' ' }
 const ASSET = /\.(?:webp|png|jpe?g|svg|gif|ico|docx?|xlsx?|pdf|txt|xml|json|css|js|woff2?)$/i
-
-function walk(dir) {
-  return readdirSync(dir).flatMap((entry) => {
-    const full = path.join(dir, entry)
-    return statSync(full).isDirectory() ? walk(full) : [full]
-  })
-}
 
 function unescape(value) {
   return value.replace(/&(#\d+|[a-z]+);/gi, (whole, name) => {
@@ -68,9 +61,8 @@ function resolveTarget(page, rawPath) {
 }
 
 const pages = new Map(
-  walk(distDir)
-    .filter(file => file.endsWith('.html'))
-    .map(file => [`/${path.relative(distDir, file)}`, readFileSync(file, 'utf8')]),
+  globSync('**/*.html', { cwd: distDir })
+    .map(file => [`/${file}`, readFileSync(path.join(distDir, file), 'utf8')]),
 )
 
 const problems = []
