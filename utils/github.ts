@@ -16,6 +16,12 @@ export interface OpenedPull {
   branch: string
 }
 
+export interface FileChange {
+  path: string
+  content: string
+  base64?: boolean
+}
+
 export class GitHubError extends Error {
   constructor(readonly status: number, message: string) {
     super(message)
@@ -95,36 +101,43 @@ export async function canPush(token: string, repo: Repo): Promise<boolean> {
 export async function openPullRequest(
   token: string,
   repo: Repo,
-  edit: { path: string, content: string, sha: string, title: string, body: string, branch: string },
+  edit: { files: FileChange[], title: string, body: string, branch: string },
 ): Promise<OpenedPull> {
-  const base = await call<{ object: { sha: string } }>(
-    token,
-    `/repos/${repo.owner}/${repo.name}/git/ref/heads/main`,
-  )
+  const base = `/repos/${repo.owner}/${repo.name}`
+  const head = await call<{ object: { sha: string } }>(token, `${base}/git/ref/heads/main`)
+  const commit = await call<{ tree: { sha: string } }>(token, `${base}/git/commits/${head.object.sha}`)
 
-  await call(token, `/repos/${repo.owner}/${repo.name}/git/refs`, {
-    method: 'POST',
-    body: JSON.stringify({ ref: `refs/heads/${edit.branch}`, sha: base.object.sha }),
-  })
-
-  await call(token, `/repos/${repo.owner}/${repo.name}/contents/${encodeURI(edit.path)}`, {
-    method: 'PUT',
-    body: JSON.stringify({
-      message: edit.title,
-      content: encodeContent(edit.content),
-      sha: edit.sha,
-      branch: edit.branch,
-    }),
-  })
-
-  const pull = await call<{ number: number, html_url: string }>(
-    token,
-    `/repos/${repo.owner}/${repo.name}/pulls`,
-    {
+  const tree = await Promise.all(edit.files.map(async (file) => {
+    const blob = await call<{ sha: string }>(token, `${base}/git/blobs`, {
       method: 'POST',
-      body: JSON.stringify({ title: edit.title, head: edit.branch, base: 'main', body: edit.body }),
-    },
-  )
+      body: JSON.stringify(
+        file.base64
+          ? { content: file.content, encoding: 'base64' }
+          : { content: file.content, encoding: 'utf-8' },
+      ),
+    })
+    return { path: file.path, mode: '100644', type: 'blob', sha: blob.sha }
+  }))
+
+  const written = await call<{ sha: string }>(token, `${base}/git/trees`, {
+    method: 'POST',
+    body: JSON.stringify({ base_tree: commit.tree.sha, tree }),
+  })
+
+  const made = await call<{ sha: string }>(token, `${base}/git/commits`, {
+    method: 'POST',
+    body: JSON.stringify({ message: edit.title, tree: written.sha, parents: [head.object.sha] }),
+  })
+
+  await call(token, `${base}/git/refs`, {
+    method: 'POST',
+    body: JSON.stringify({ ref: `refs/heads/${edit.branch}`, sha: made.sha }),
+  })
+
+  const pull = await call<{ number: number, html_url: string }>(token, `${base}/pulls`, {
+    method: 'POST',
+    body: JSON.stringify({ title: edit.title, head: edit.branch, base: 'main', body: edit.body }),
+  })
 
   return { number: pull.number, url: pull.html_url, branch: edit.branch }
 }

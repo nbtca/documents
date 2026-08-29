@@ -1,7 +1,11 @@
+import type { Manifest } from '../../../utils/asset-manifest'
+import type { FileChange } from '../../../utils/github'
+import { addAsset } from '../../../utils/asset-manifest'
 import { branchNameFor, canPush, getFile, openPullRequest } from '../../../utils/github'
 import { currentMember, editorConfigured, githubToken, NotLinkedError } from './auth'
 
 const REPO = { owner: 'nbtca', name: 'documents' }
+const REGISTRY = 'checks/asset-registry.json'
 
 export const localMode = import.meta.env.DEV && !editorConfigured
 
@@ -15,6 +19,11 @@ export interface Loaded {
 export interface Submitted {
   label: string
   url?: string
+}
+
+export interface PendingImage {
+  path: string
+  base64: string
 }
 
 export class EditorError extends Error {}
@@ -52,23 +61,51 @@ export async function load(path: string): Promise<Loaded> {
   return getFile(token, REPO, path)
 }
 
+async function registryWith(token: string | undefined, images: PendingImage[]): Promise<FileChange> {
+  const raw = token
+    ? (await getFile(token, REPO, REGISTRY)).content
+    : (await local<Loaded>(`/__edit?path=${encodeURIComponent(REGISTRY)}`)).content
+
+  let manifest = JSON.parse(raw) as Manifest
+  for (const image of images)
+    manifest = addAsset(manifest, image.path)
+
+  return { path: REGISTRY, content: `${JSON.stringify(manifest, null, 2)}\n` }
+}
+
+function changesFor(
+  path: string,
+  content: string,
+  images: PendingImage[],
+  registry: FileChange | undefined,
+): FileChange[] {
+  const files: FileChange[] = [{ path, content }]
+  if (registry)
+    files.push(registry)
+  for (const image of images)
+    files.push({ path: image.path, content: image.base64, base64: true })
+  return files
+}
+
 export async function submit(
   path: string,
-  edit: { content: string, sha: string, summary: string, author: string },
+  edit: { content: string, summary: string, author: string, images: PendingImage[] },
 ): Promise<Submitted> {
   if (localMode) {
+    const registry = edit.images.length ? await registryWith(undefined, edit.images) : undefined
     await local(`/__edit`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ path, content: edit.content }),
+      body: JSON.stringify({ files: changesFor(path, edit.content, edit.images, registry) }),
     })
     return { label: '已写入本地文件，页面稍后自动刷新' }
   }
 
-  const pull = await openPullRequest(await githubToken(), REPO, {
-    path,
-    content: edit.content,
-    sha: edit.sha,
+  const token = await githubToken()
+  const registry = edit.images.length ? await registryWith(token, edit.images) : undefined
+
+  const pull = await openPullRequest(token, REPO, {
+    files: changesFor(path, edit.content, edit.images, registry),
     title: `docs: ${edit.summary}`,
     body: `${edit.summary}\n\n由 ${edit.author} 在 docs.nbtca.space 上编辑。`,
     branch: branchNameFor(path),
