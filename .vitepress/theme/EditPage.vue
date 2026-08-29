@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useData } from 'vitepress'
-import { computed, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { isSignedIn, signIn } from './editor/auth'
 import { load, localMode, submit as send, whoAmI } from './editor/backend'
 
@@ -17,9 +17,31 @@ const blobSha = ref('')
 const summary = ref('')
 const problem = ref('')
 const result = ref<{ label: string, url?: string } | undefined>()
+const host = ref<HTMLElement>()
+let editor: { destroy: () => void } | undefined
 
 const changed = computed(() => draft.value !== original.value && draft.value.trim().length > 0)
 const canSubmit = computed(() => changed.value && summary.value.trim().length > 0)
+
+// CodeMirror only loads when someone actually opens the editor.
+watch([() => stage.value, host], async ([current, element]) => {
+  if (current !== 'editing' || !element || editor)
+    return
+  await nextTick()
+  const { mountEditor } = await import('./editor/codemirror')
+  const view = mountEditor(element, draft.value, value => (draft.value = value), () => {
+    if (canSubmit.value)
+      submit()
+  })
+  editor = { destroy: () => view.destroy() }
+})
+
+function teardown() {
+  editor?.destroy()
+  editor = undefined
+}
+
+onBeforeUnmount(teardown)
 
 onMounted(async () => {
   signedIn.value = localMode || await isSignedIn()
@@ -59,6 +81,7 @@ async function submit() {
       summary: summary.value.trim(),
       author: memberName.value,
     })
+    teardown()
     stage.value = 'closed'
   }
   catch (error) {
@@ -68,6 +91,7 @@ async function submit() {
 }
 
 function close() {
+  teardown()
   stage.value = 'closed'
   result.value = undefined
 }
@@ -100,12 +124,7 @@ function close() {
         </p>
 
         <template v-if="stage === 'editing' || stage === 'submitting'">
-          <textarea
-            v-model="draft"
-            class="nb-edit-area"
-            spellcheck="false"
-            :disabled="stage === 'submitting'"
-          />
+          <div ref="host" class="nb-edit-area" :class="{ 'is-busy': stage === 'submitting' }" />
           <div class="nb-edit-foot">
             <input
               v-model="summary"
@@ -207,23 +226,16 @@ function close() {
 }
 
 .nb-edit-area {
+  overflow: hidden;
   flex: 1;
-  width: 100%;
-  padding: 13px;
-  font-family: var(--nb-mono);
-  font-size: 13px;
-  line-height: 1.8;
-  tab-size: 2;
-  color: var(--vp-c-text-1);
-  background: var(--vp-c-bg-soft);
+  min-height: 0;
   border: 1px solid var(--vp-c-divider);
   border-radius: 4px;
-  resize: none;
 }
 
-.nb-edit-area:focus {
-  border-color: var(--vp-c-brand-1);
-  outline: none;
+.nb-edit-area.is-busy {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .nb-edit-foot {
