@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { useData } from 'vitepress'
-import { computed, ref } from 'vue'
+import { useData, useRoute } from 'vitepress'
+import { computed, defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue'
+import { editorAvailable } from './editor/backend'
 
 interface Maintainer {
   user: string
@@ -15,9 +16,25 @@ interface Commit {
   message?: string
 }
 
+interface Archive {
+  date?: string
+  source?: string
+  author?: string
+  format?: string
+  redacted?: string
+  note?: string
+  transcriber?: string
+  transcribed?: string
+}
+
 const REPO = 'nbtca/documents'
 
+const route = useRoute()
 const { frontmatter, page } = useData()
+
+const EditPage = defineAsyncComponent(() => import('./EditPage.vue'))
+
+const isDocument = computed(() => frontmatter.value.layout !== 'home')
 
 const maintainers = computed<Maintainer[]>(() => {
   const raw = frontmatter.value.maintainers
@@ -26,6 +43,54 @@ const maintainers = computed<Maintainer[]>(() => {
 
 const lastCommit = computed<Commit | undefined>(() => frontmatter.value.lastCommit)
 const historyUrl = computed(() => `https://github.com/${REPO}/commits/main/${page.value.filePath}`)
+
+const archive = computed<Archive | null>(() => {
+  if (!route.path.startsWith('/archived/'))
+    return null
+  const record = frontmatter.value.archive as Archive | undefined
+  if (!record || (!record.date && !record.source))
+    return null
+  return record
+})
+
+const archiveRows = computed(() => {
+  const record = archive.value
+  if (!record)
+    return []
+  const rows: Array<{ label: string, value: string }> = []
+  // Left out, the transcriber is the only name here and reads as the author.
+  rows.push({ label: '原件撰写', value: record.author || '原件未署名' })
+  if (record.source)
+    rows.push({ label: '出处', value: record.source })
+  if (record.format)
+    rows.push({ label: '原件格式', value: record.format })
+  if (record.redacted)
+    rows.push({ label: '已略去', value: record.redacted })
+  if (record.note)
+    rows.push({ label: '处理', value: record.note })
+  return rows
+})
+
+const transcriber = computed(() => {
+  const login = archive.value?.transcriber
+  return login ? { login, date: archive.value?.transcribed } : null
+})
+
+const hasContent = computed(() =>
+  isDocument.value && (maintainers.value.length > 0 || Boolean(lastCommit.value) || Boolean(archive.value)),
+)
+
+// Only pages that actually carry a dead link need to say so.
+const hasOutboundLink = ref(false)
+
+function detectOutboundLink() {
+  if (typeof document === 'undefined' || !archive.value)
+    return
+  hasOutboundLink.value = !!document.querySelector('.vp-doc a[href^="http"]:not([href*="nbtca.space"])')
+}
+
+onMounted(detectOutboundLink)
+watch(() => route.path, () => nextTick(detectOutboundLink))
 
 const open = ref(false)
 const history = ref<Commit[]>([])
@@ -36,7 +101,7 @@ const state = ref<'idle' | 'loading' | 'ready' | 'failed'>('idle')
 const DAY = new Intl.DateTimeFormat('en-CA', { dateStyle: 'short', timeZone: 'Asia/Shanghai' })
 const day = (iso: string) => DAY.format(new Date(iso))
 
-async function toggle() {
+async function toggleHistory() {
   open.value = !open.value
   if (!open.value || state.value === 'ready' || state.value === 'loading')
     return
@@ -63,7 +128,11 @@ async function toggle() {
 </script>
 
 <template>
-  <aside v-if="maintainers.length || lastCommit" class="nb-maintainers" aria-label="维护信息">
+  <aside v-if="hasContent" class="nb-page-card" aria-label="页面信息">
+    <p class="nb-page-card-label">
+      这一页
+    </p>
+
     <div v-if="maintainers.length" class="nb-maintainers-row">
       <span class="nb-maintainers-label">维护</span>
       <ul>
@@ -75,13 +144,8 @@ async function toggle() {
     </div>
 
     <div v-if="lastCommit" class="nb-maintainers-row">
-      <span class="nb-maintainers-label">最近提交</span>
-      <button
-        type="button"
-        class="nb-history-toggle"
-        :aria-expanded="open"
-        @click="toggle"
-      >
+      <span class="nb-maintainers-label">最近</span>
+      <button type="button" class="nb-history-toggle" :aria-expanded="open" @click="toggleHistory">
         <img
           v-if="lastCommit.login"
           class="nb-history-avatar"
@@ -126,5 +190,33 @@ async function toggle() {
         <a :href="historyUrl" target="_blank" rel="noreferrer">在 GitHub 上查看完整历史</a>
       </p>
     </div>
+
+    <details v-if="archive" class="nb-page-card-archive">
+      <summary>
+        <span class="nb-maintainers-label">档案原件</span>
+        <span v-if="archive.date" class="nb-archive-meta-date">{{ archive.date }}</span>
+        <span class="nb-archive-meta-caret">›</span>
+      </summary>
+      <dl>
+        <template v-for="row in archiveRows" :key="row.label">
+          <dt>{{ row.label }}</dt>
+          <dd>{{ row.value }}</dd>
+        </template>
+        <template v-if="transcriber">
+          <dt>本站转写</dt>
+          <dd>
+            <a :href="`https://github.com/${transcriber.login}`" target="_blank" rel="noreferrer">@{{ transcriber.login }}</a>
+            <template v-if="transcriber.date">
+              · {{ transcriber.date }}
+            </template>
+          </dd>
+        </template>
+      </dl>
+      <p v-if="hasOutboundLink" class="nb-archive-meta-linknote">
+        站外网址照原件保留，打不开是正常的。
+      </p>
+    </details>
+
+    <EditPage v-if="editorAvailable" />
   </aside>
 </template>
