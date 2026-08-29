@@ -159,9 +159,9 @@ function close() {
 <style scoped>
 .nb-edit {
   display: flex;
-  gap: 13px;
+  flex-wrap: wrap;
+  gap: 4px 12px;
   align-items: baseline;
-  justify-content: flex-end;
 }
 
 .nb-edit-result {

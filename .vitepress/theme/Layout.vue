@@ -1,35 +1,23 @@
 <script setup lang="ts">
 import DefaultTheme from 'vitepress/theme'
-import { defineAsyncComponent } from 'vue'
-import ArchiveMeta from './ArchiveMeta.vue'
 import ConceptPreview from './ConceptPreview.vue'
-import { editorAvailable } from './editor/backend'
 import HubBackLink from './HubBackLink.vue'
 import ImageZoom from './ImageZoom.vue'
-import Maintainers from './Maintainers.vue'
+import PageCard from './PageCard.vue'
 
 const { Layout } = DefaultTheme
-
-// Only fetched where the editor is switched on; readers never download it.
-const EditPage = defineAsyncComponent(() => import('./EditPage.vue'))
 </script>
 
 <template>
   <Layout>
+    <!-- The card rides the right rail where there is one, and falls back to a
+         block above the title where the rail is hidden. -->
     <template #doc-before>
       <HubBackLink />
-      <ArchiveMeta class="nb-archive-meta-inline" />
+      <PageCard class="nb-page-card-inline" />
     </template>
-    <!-- Wide enough for the right rail: the record sits above the outline, so
-         the title and the prose keep their full width. -->
     <template #aside-outline-before>
-      <ArchiveMeta class="nb-archive-meta-aside" />
-    </template>
-    <!-- Before the footer, so the note about who keeps the page sits with the
-         article rather than under the edit link. -->
-    <template #doc-footer-before>
-      <Maintainers />
-      <EditPage v-if="editorAvailable" />
+      <PageCard class="nb-page-card-aside" />
     </template>
     <template #layout-bottom>
       <ConceptPreview />

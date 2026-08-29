@@ -217,12 +217,9 @@
   color: var(--vp-c-brand-1);
 }
 
-/* Archive provenance — framed so it reads as apparatus, not as the document. */
-/* An infobox: the record sits beside the article rather than on top of it, so
-   the title leads and the provenance needs no disclosure. It rides the right
-   rail where there is one, and falls back to a block above the title where the
-   rail is hidden. */
-.nb-archive-meta {
+/* One infobox per page: who keeps it, who touched it last, where an archived
+   original came from, and the way in to change it. Apparatus, not document. */
+.nb-page-card {
   margin: 0 0 20px;
   padding: 10px 14px;
   border: 1px solid var(--vp-c-divider);
@@ -232,7 +229,7 @@
 
 /* Collapsed by default: the rail belongs to the outline, and the full record
    is long enough to push it off the screen. */
-.nb-archive-meta summary {
+.nb-page-card summary {
   display: flex;
   align-items: baseline;
   gap: 8px;
@@ -240,7 +237,7 @@
   list-style: none;
 }
 
-.nb-archive-meta summary::-webkit-details-marker {
+.nb-page-card summary::-webkit-details-marker {
   display: none;
 }
 
@@ -255,31 +252,31 @@
   transition: transform 0.15s ease;
 }
 
-.nb-archive-meta details[open] .nb-archive-meta-caret {
+.nb-page-card details[open] .nb-archive-meta-caret {
   transform: rotate(90deg);
 }
 
-.nb-archive-meta summary:hover .nb-archive-meta-caret {
+.nb-page-card summary:hover .nb-archive-meta-caret {
   color: var(--vp-c-text-2);
 }
 
-.nb-archive-meta-aside {
+.nb-page-card-aside {
   display: none;
 }
 
 /* The breakpoint VitePress uses to show the outline rail. */
 @media (min-width: 1280px) {
-  .nb-archive-meta-inline {
+  .nb-page-card-inline {
     display: none;
   }
 
-  .nb-archive-meta-aside {
+  .nb-page-card-aside {
     display: block;
     margin: 0 0 24px;
   }
 }
 
-.nb-archive-meta a {
+.nb-page-card a {
   color: var(--vp-c-text-2);
   text-decoration: underline;
   text-underline-offset: 2px;
@@ -300,15 +297,7 @@
   text-underline-offset: 2px;
 }
 
-.nb-archive-meta-tag {
-  font-family: var(--nb-mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  color: var(--vp-c-text-3);
-  text-transform: uppercase;
-}
-
-.nb-archive-meta dl {
+.nb-page-card dl {
   display: grid;
   grid-template-columns: max-content minmax(0, 1fr);
   gap: 6px 12px;
@@ -318,23 +307,23 @@
 }
 
 /* The rail is too narrow for a label column beside each value. */
-.nb-archive-meta-aside dl {
+.nb-page-card dl {
   grid-template-columns: minmax(0, 1fr);
   gap: 2px;
 }
 
-.nb-archive-meta-aside dt:not(:first-of-type) {
+.nb-page-card dt:not(:first-of-type) {
   margin-top: 8px;
 }
 
-.nb-archive-meta dt {
+.nb-page-card dt {
   font-family: var(--nb-mono);
   font-size: 12px;
   color: var(--vp-c-text-3);
   white-space: nowrap;
 }
 
-.nb-archive-meta dd {
+.nb-page-card dd {
   margin: 0;
   font-size: 13px;
   line-height: 1.6;
@@ -343,23 +332,63 @@
 }
 
 @media (max-width: 480px) {
-  .nb-archive-meta dl {
+  .nb-page-card dl {
     grid-template-columns: minmax(0, 1fr);
     gap: 2px;
   }
 
-  .nb-archive-meta dt {
+  .nb-page-card dt {
     margin-top: 8px;
   }
 }
 
 /* Who to ask about this page. Declared in frontmatter so the shape cannot
    drift the way the hand-kept tables did. */
-.nb-maintainers {
-  margin: 32px 0 18px;
-  padding-top: 14px;
-  border-top: 1px solid var(--vp-c-divider);
+.nb-page-card-label {
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--vp-c-divider);
+  font-family: var(--nb-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--vp-c-text-3);
+  text-transform: uppercase;
+}
+
+.nb-page-card {
   font-size: 13px;
+}
+
+.nb-page-card-archive {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--vp-c-divider);
+}
+
+/* The rail is ~200px: a label beside its value wraps the date mid-token, so
+   stack them the way the fact strip already does. */
+.nb-page-card .nb-maintainers-row {
+  display: block;
+}
+
+.nb-page-card .nb-maintainers-row + .nb-maintainers-row {
+  margin-top: 10px;
+}
+
+.nb-page-card .nb-maintainers-label {
+  display: block;
+  margin-bottom: 3px;
+}
+
+.nb-page-card .nb-maintainers-dim {
+  white-space: nowrap;
+}
+
+.nb-page-card .nb-edit {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--vp-c-divider);
 }
 
 .nb-maintainers-row {
@@ -369,7 +398,54 @@
   gap: 4px 12px;
 }
 
-.nb-maintainers-row + .nb-maintainers-row {
+.nb-maintainers-row + .nb-page-card-label {
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--vp-c-divider);
+  font-family: var(--nb-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--vp-c-text-3);
+  text-transform: uppercase;
+}
+
+.nb-page-card {
+  font-size: 13px;
+}
+
+.nb-page-card-archive {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--vp-c-divider);
+}
+
+/* The rail is ~200px: a label beside its value wraps the date mid-token, so
+   stack them the way the fact strip already does. */
+.nb-page-card .nb-maintainers-row {
+  display: block;
+}
+
+.nb-page-card .nb-maintainers-row + .nb-maintainers-row {
+  margin-top: 10px;
+}
+
+.nb-page-card .nb-maintainers-label {
+  display: block;
+  margin-bottom: 3px;
+}
+
+.nb-page-card .nb-maintainers-dim {
+  white-space: nowrap;
+}
+
+.nb-page-card .nb-edit {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--vp-c-divider);
+}
+
+.nb-maintainers-row {
   margin-top: 6px;
 }
 
