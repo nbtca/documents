@@ -7,26 +7,31 @@ export interface LastCommit {
   name: string
 }
 
-// Only the API resolves an arbitrary email, and that request is what we avoid.
-const LOGIN_BY_EMAIL: Record<string, string> = {
-  'contact@m1ng.space': 'm1ngsama',
-  'miam1gh0st.ming@gmail.com': 'm1ngsama',
-  '1992584620@nbt.edu.cn': 'm1ngsama',
-  'clas.wen@icloud.com': 'wen-templari',
-  'q79142466@163.com': 'wen-templari',
-  'lazulikao233@outlook.com': 'LazuliKao',
-  'lwangluoab@163.com': 'gentlelyyli',
-  '29951517@qq.com': 'Yuna-Celisse',
-  '29951517@nbt.edu.cn': 'Yuna-Celisse',
+// Keyed on the author name, not the address: only the API resolves an
+// arbitrary email, and the addresses themselves are personal contact details
+// the site strips everywhere else. Names are already published in the footer.
+const LOGIN_BY_NAME: Record<string, string> = {
+  '小明': 'm1ngsama',
+  'm1ng': 'm1ngsama',
+  'm1ngsama': 'm1ngsama',
+  'miam1gh0st': 'm1ngsama',
+  'clas': 'wen-templari',
+  'clas wen': 'wen-templari',
+  'templari': 'wen-templari',
+  'lazulikao': 'LazuliKao',
+  'skillful li': 'gentlelyyli',
+  'ni jincheng': 'Yuna-Celisse',
+  'yuna celisse': 'Yuna-Celisse',
+  'yuna-celisse': 'Yuna-Celisse',
 }
 
 const NOREPLY = /^(?:\d+\+)?([\w-]+)@users\.noreply\.github\.com$/i
 
-export function loginFromEmail(email: string): string | undefined {
+export function loginFor(email: string, name: string): string | undefined {
   const noreply = email.match(NOREPLY)
   if (noreply)
     return noreply[1]
-  return LOGIN_BY_EMAIL[email.toLowerCase()]
+  return LOGIN_BY_NAME[name.trim().toLowerCase()]
 }
 
 export function lastCommitFor(file: string): LastCommit | undefined {
@@ -46,5 +51,5 @@ export function lastCommitFor(file: string): LastCommit | undefined {
     return undefined
 
   const [sha, name, email, date] = out.split('\0')
-  return { sha, name, date, login: loginFromEmail(email) }
+  return { sha, name, date, login: loginFor(email, name) }
 }
