@@ -25,7 +25,7 @@ GitHub Education 要求申请账号已开启两步验证：
 ### 3. 在账单信息中添加个人信息
 
 在[账单与付款信息](https://github.com/settings/billing/payment_information)中添加个人信息——审核会拿证明材料与这里的姓名比对，务必如实填写。此处以 `@nit.zju.edu.cn` 邮箱为例：
-![yes](../assets/Payment-information.png)
+![yes](../assets/Payment-information.webp)
 此邮箱对应的学校信息为浙江大学紫金港校区，如为`@nbt.edu.cn`邮箱,对应的是浙大宁波理工学院，请在这些区域如下填写：
 
 - Address: 1 Qianhu South Road, Ningbo Institute of Technology, Zhejiang University ,Ningbo ,Zhejiang Province

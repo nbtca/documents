@@ -114,9 +114,9 @@
       "canonical": true,
       "compatibilityNote": "Canonical screenshots used by repair/weekend.md.",
       "assets": [
-        "repair/assets/issue-label.png",
-        "repair/assets/issue-reply-example.png",
-        "repair/assets/link-github.png"
+        "repair/assets/issue-label.webp",
+        "repair/assets/issue-reply-example.webp",
+        "repair/assets/link-github.webp"
       ]
     },
     {
@@ -126,27 +126,27 @@
       "canonical": true,
       "compatibilityNote": "Canonical screenshots used by tutorial guides.",
       "assets": [
-        "tutorial/assets/Approve.png",
-        "tutorial/assets/Assignees.png",
-        "tutorial/assets/Auto-Merge.png",
-        "tutorial/assets/Branch.png",
-        "tutorial/assets/Commit.png",
-        "tutorial/assets/Create-PR.png",
-        "tutorial/assets/Edit.png",
-        "tutorial/assets/Label-Setup.png",
-        "tutorial/assets/Merge.png",
-        "tutorial/assets/Minecraft-Server-Management.png",
-        "tutorial/assets/Minecraft-Wiki-git.png",
-        "tutorial/assets/Minecraft-Wiki-gh.png",
-        "tutorial/assets/Minecraft-Wiki.png",
-        "tutorial/assets/PR-Reviewer.png",
-        "tutorial/assets/Payment-information.png",
-        "tutorial/assets/Reviewer-PR.png",
-        "tutorial/assets/Roadmap.png",
-        "tutorial/assets/Subs.png",
-        "tutorial/assets/Success.png",
-        "tutorial/assets/gh-issue-list.png",
-        "tutorial/assets/gh-issue-view.png"
+        "tutorial/assets/Approve.webp",
+        "tutorial/assets/Assignees.webp",
+        "tutorial/assets/Auto-Merge.webp",
+        "tutorial/assets/Branch.webp",
+        "tutorial/assets/Commit.webp",
+        "tutorial/assets/Create-PR.webp",
+        "tutorial/assets/Edit.webp",
+        "tutorial/assets/Label-Setup.webp",
+        "tutorial/assets/Merge.webp",
+        "tutorial/assets/Minecraft-Server-Management.webp",
+        "tutorial/assets/Minecraft-Wiki-git.webp",
+        "tutorial/assets/Minecraft-Wiki-gh.webp",
+        "tutorial/assets/Minecraft-Wiki.webp",
+        "tutorial/assets/PR-Reviewer.webp",
+        "tutorial/assets/Payment-information.webp",
+        "tutorial/assets/Reviewer-PR.webp",
+        "tutorial/assets/Roadmap.webp",
+        "tutorial/assets/Subs.webp",
+        "tutorial/assets/Success.webp",
+        "tutorial/assets/gh-issue-list.webp",
+        "tutorial/assets/gh-issue-view.webp"
       ]
     },
     {
