@@ -4,7 +4,7 @@ import { computed, onMounted, ref } from 'vue'
 import { isSignedIn, signIn } from './editor/auth'
 import { load, localMode, submit as send, whoAmI } from './editor/backend'
 
-type Stage = 'closed' | 'loading' | 'editing' | 'submitting' | 'done' | 'failed'
+type Stage = 'closed' | 'loading' | 'editing' | 'submitting' | 'failed'
 
 const { page } = useData()
 
@@ -35,6 +35,7 @@ async function open() {
 
   stage.value = 'loading'
   problem.value = ''
+  result.value = undefined
   try {
     const file = await load(page.value.filePath)
     original.value = file.content
@@ -58,7 +59,7 @@ async function submit() {
       summary: summary.value.trim(),
       author: memberName.value,
     })
-    stage.value = 'done'
+    stage.value = 'closed'
   }
   catch (error) {
     problem.value = `提交失败：${(error as Error).message}`
@@ -74,6 +75,10 @@ function close() {
 
 <template>
   <div class="nb-edit">
+    <p v-if="result" class="nb-edit-result">
+      <a v-if="result.url" :href="result.url" target="_blank" rel="noreferrer">{{ result.label }}</a>
+      <span v-else>{{ result.label }}</span>
+    </p>
     <button type="button" class="nb-edit-open" @click="open">
       {{ signedIn ? '在本页编辑' : '登录后在本页编辑' }}
     </button>
@@ -118,14 +123,11 @@ function close() {
             </button>
           </div>
           <p class="nb-edit-note">
-            提交会开一个 PR，交由维护者审阅后合并。不会直接改动线上页面。
+            {{ localMode
+              ? '本地开发：保存会直接写入这个 markdown 文件。'
+              : '提交会开一个 PR，交由维护者审阅后合并。不会直接改动线上页面。' }}
           </p>
         </template>
-
-        <p v-if="stage === 'done' && pull" class="nb-edit-note">
-          已提交 <a :href="pull.url" target="_blank" rel="noreferrer">#{{ pull.number }}</a>。
-          自动检查与渲染预览的结果会显示在这个 PR 上。
-        </p>
 
         <p v-if="stage === 'failed'" class="nb-edit-note nb-edit-problem">
           {{ problem }}
@@ -138,7 +140,14 @@ function close() {
 <style scoped>
 .nb-edit {
   display: flex;
+  gap: 13px;
+  align-items: baseline;
   justify-content: flex-end;
+}
+
+.nb-edit-result {
+  font-size: 13px;
+  color: var(--vp-c-text-3);
 }
 
 .nb-edit-open {
