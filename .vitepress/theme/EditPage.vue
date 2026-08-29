@@ -112,6 +112,14 @@ function backToEditing() {
   stage.value = 'editing'
 }
 
+function onKey(event: KeyboardEvent) {
+  if (event.key === 'Escape' && stage.value === 'previewing')
+    backToEditing()
+}
+
+onMounted(() => window.addEventListener('keydown', onKey))
+onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
+
 onBeforeUnmount(teardown)
 
 onMounted(async () => {
@@ -181,7 +189,13 @@ function close() {
 
     <!-- The rail's containing block traps position: fixed. -->
     <Teleport to="body">
-      <div v-if="stage !== 'closed' && stage !== 'previewing'" class="nb-edit-sheet" role="dialog" aria-label="编辑页面">
+      <div
+        v-if="stage !== 'closed'"
+        class="nb-edit-sheet"
+        :class="{ 'is-away': stage === 'previewing' }"
+        role="dialog"
+        aria-label="编辑页面"
+      >
         <div class="nb-edit-inner">
           <header class="nb-edit-head">
             <div>
@@ -197,7 +211,7 @@ function close() {
             正在读取原文……
           </p>
 
-          <template v-if="stage === 'editing' || stage === 'submitting'">
+          <template v-if="stage !== 'loading' && stage !== 'failed'">
             <div ref="host" class="nb-edit-area" :class="{ 'is-busy': stage === 'submitting' }" />
             <div class="nb-edit-foot">
               <input
@@ -296,6 +310,10 @@ function close() {
 
 .nb-edit-open:hover {
   color: var(--vp-c-brand-2);
+}
+
+.nb-edit-sheet.is-away {
+  display: none;
 }
 
 .nb-edit-sheet {
