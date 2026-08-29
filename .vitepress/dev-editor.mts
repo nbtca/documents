@@ -1,14 +1,16 @@
 import type { Plugin } from 'vite'
 import { Buffer } from 'node:buffer'
-import { readFile, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
 const ROOT = path.resolve(import.meta.dirname, '..')
 
 // Only markdown, only inside the repo: a dev server still answers the network.
+const WRITABLE = /\.(?:md|json|webp)$/
+
 function resolveInRepo(candidate: unknown): string {
-  if (typeof candidate !== 'string' || !candidate.endsWith('.md'))
-    throw new Error('not a markdown path')
+  if (typeof candidate !== 'string' || !WRITABLE.test(candidate))
+    throw new Error('not a writable path')
 
   const absolute = path.resolve(ROOT, candidate)
   if (absolute !== path.normalize(absolute) || !absolute.startsWith(`${ROOT}${path.sep}`))
@@ -47,7 +49,12 @@ export function devEditor(): Plugin {
 
           if (request.method === 'PUT') {
             const payload = JSON.parse(await body(request))
-            await writeFile(resolveInRepo(payload.path), payload.content, 'utf8')
+            const files = payload.files ?? [{ path: payload.path, content: payload.content }]
+            for (const file of files) {
+              const target = resolveInRepo(file.path)
+              await mkdir(path.dirname(target), { recursive: true })
+              await writeFile(target, file.base64 ? Buffer.from(file.content, 'base64') : file.content)
+            }
             send(200, { ok: true })
             return
           }

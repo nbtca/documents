@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { PendingImage } from './editor/backend'
 import { useData } from 'vitepress'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { isSignedIn, signIn } from './editor/auth'
@@ -20,6 +21,12 @@ const result = ref<{ label: string, url?: string } | undefined>()
 const host = ref<HTMLElement>()
 let editor: { destroy: () => void } | undefined
 let preview: { update: (md: string) => void, close: () => void } | undefined
+let insertAt: ((snippet: string) => void) | undefined
+
+const images = ref<PendingImage[]>([])
+const picker = ref<HTMLInputElement>()
+const pending = ref<{ file: File, alt: string, caption: string } | undefined>()
+const busy = ref(false)
 
 const changed = computed(() => draft.value !== original.value && draft.value.trim().length > 0)
 const canSubmit = computed(() => changed.value && summary.value.trim().length > 0)
@@ -33,6 +40,11 @@ watch([() => stage.value, host], async ([current, element]) => {
     if (canSubmit.value)
       submit()
   })
+  insertAt = (snippet) => {
+    const at = view.state.selection.main.head
+    view.dispatch({ changes: { from: at, insert: snippet }, selection: { anchor: at + snippet.length } })
+    view.focus()
+  }
   editor = { destroy: () => view.destroy() }
 })
 
@@ -41,6 +53,40 @@ function teardown() {
   editor = undefined
   preview?.close()
   preview = undefined
+}
+
+function pickImage() {
+  picker.value?.click()
+}
+
+function onPicked(event: Event) {
+  const file = (event.target as HTMLInputElement).files?.[0]
+  if (file)
+    pending.value = { file, alt: '', caption: '' }
+  ;(event.target as HTMLInputElement).value = ''
+}
+
+async function insertImage() {
+  const choice = pending.value
+  if (!choice || !choice.alt.trim())
+    return
+
+  busy.value = true
+  try {
+    const { toWebp } = await import('./editor/image')
+    const image = await toWebp(choice.file)
+    const dir = `${page.value.filePath.split('/')[0]}/assets`
+    images.value.push({ path: `${dir}/${image.name}`, base64: image.base64 })
+    const caption = choice.caption.trim() ? ` caption="${choice.caption.trim()}"` : ''
+    insertAt?.(`\n<Figure src="/${dir}/${image.name}" alt="${choice.alt.trim()}"${caption} />\n`)
+    pending.value = undefined
+  }
+  catch (error) {
+    problem.value = (error as Error).message
+  }
+  finally {
+    busy.value = false
+  }
 }
 
 async function showPreview() {
@@ -92,10 +138,11 @@ async function submit() {
   try {
     result.value = await send(page.value.filePath, {
       content: draft.value,
-      sha: blobSha.value,
       summary: summary.value.trim(),
       author: memberName.value,
+      images: images.value,
     })
+    images.value = []
     teardown()
     stage.value = 'closed'
   }
@@ -149,6 +196,9 @@ function close() {
                 placeholder="这次改了什么？一句话"
                 :disabled="stage === 'submitting'"
               >
+              <button type="button" class="nb-edit-ghost" :disabled="stage === 'submitting'" @click="pickImage">
+                插图
+              </button>
               <button type="button" class="nb-edit-ghost" :disabled="!changed" @click="showPreview">
                 预览
               </button>
@@ -161,6 +211,24 @@ function close() {
                 {{ stage === 'submitting' ? '提交中……' : (localMode ? '保存到本地' : '提交修改') }}
               </button>
             </div>
+            <input ref="picker" type="file" accept="image/*" hidden @change="onPicked">
+
+            <div v-if="pending" class="nb-image-form">
+              <p class="nb-edit-note">
+                {{ pending.file.name }} — 会转成 WebP 并随这次修改一起提交
+              </p>
+              <input v-model="pending.alt" class="nb-edit-summary" placeholder="图里是什么？看不见图的人靠它（必填）">
+              <input v-model="pending.caption" class="nb-edit-summary" placeholder="图注（可选）">
+              <div class="nb-edit-foot">
+                <button type="button" class="nb-edit-ghost" @click="pending = undefined">
+                  取消
+                </button>
+                <button type="button" class="nb-edit-submit" :disabled="!pending.alt.trim() || busy" @click="insertImage">
+                  {{ busy ? '转换中……' : '插入' }}
+                </button>
+              </div>
+            </div>
+
             <p class="nb-edit-note">
               {{ localMode
                 ? '本地开发：保存会直接写入这个 markdown 文件。'
@@ -271,6 +339,16 @@ function close() {
 .nb-edit-foot {
   display: flex;
   gap: 13px;
+}
+
+.nb-image-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 13px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 4px;
+  background: var(--vp-c-bg-soft);
 }
 
 .nb-edit-summary {
