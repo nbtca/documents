@@ -169,16 +169,16 @@ function close() {
   color: var(--vp-c-text-3);
 }
 
+/* The card's one action. A dotted underline means internal link on this
+   site, and this is not one. */
 .nb-edit-open {
-  font-family: var(--nb-mono);
-  font-size: 12px;
-  color: var(--vp-c-text-2);
-  border-bottom: 1px dotted var(--vp-c-divider);
+  color: var(--vp-c-brand-1);
+  font: inherit;
   transition: color 0.2s;
 }
 
 .nb-edit-open:hover {
-  color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-2);
 }
 
 .nb-edit-sheet {
