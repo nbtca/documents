@@ -27,6 +27,7 @@ let showDiff: ((original: string | undefined) => void) | undefined
 const diffing = ref(false)
 
 const images = ref<PendingImage[]>([])
+const pendingUrls = new Map<string, string>()
 const picker = ref<HTMLInputElement>()
 const pending = ref<{ file: File, alt: string, caption: string } | undefined>()
 const busy = ref(false)
@@ -86,9 +87,11 @@ async function insertImage() {
     const { toWebp } = await import('./editor/image')
     const image = await toWebp(choice.file)
     const dir = `${page.value.filePath.split('/')[0]}/assets`
+    const path = `/${dir}/${image.name}`
     images.value.push({ path: `${dir}/${image.name}`, base64: image.base64 })
+    pendingUrls.set(path, image.url)
     const caption = choice.caption.trim() ? ` caption="${choice.caption.trim()}"` : ''
-    insertAt?.(`\n<Figure src="/${dir}/${image.name}" alt="${choice.alt.trim()}"${caption} />\n`)
+    insertAt?.(`\n<Figure src="${path}" alt="${choice.alt.trim()}"${caption} />\n`)
     pending.value = undefined
   }
   catch (error) {
@@ -101,7 +104,7 @@ async function insertImage() {
 
 async function showPreview() {
   const { openPreview } = await import('./editor/preview')
-  preview = await openPreview(draft.value)
+  preview = await openPreview(draft.value, pendingUrls)
   if (preview)
     stage.value = 'previewing'
 }
@@ -160,6 +163,9 @@ async function submit() {
       author: memberName.value,
       images: images.value,
     })
+    for (const url of pendingUrls.values())
+      URL.revokeObjectURL(url)
+    pendingUrls.clear()
     images.value = []
     teardown()
     stage.value = 'closed'

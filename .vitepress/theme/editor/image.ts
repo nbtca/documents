@@ -5,6 +5,7 @@ export interface PreparedImage {
   name: string
   base64: string
   bytes: number
+  url: string
 }
 
 export function slugFor(filename: string): string {
@@ -48,5 +49,10 @@ export async function toWebp(file: File): Promise<PreparedImage> {
   for (const byte of bytes)
     binary += String.fromCharCode(byte)
 
-  return { name: slugFor(file.name), base64: btoa(binary), bytes: blob.size }
+  return {
+    name: slugFor(file.name),
+    base64: btoa(binary),
+    bytes: blob.size,
+    url: URL.createObjectURL(blob),
+  }
 }
