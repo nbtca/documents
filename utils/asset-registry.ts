@@ -4,7 +4,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 
 const repoRoot = path.resolve(__dirname, '..')
-const targetAssetExtensions = new Set(['.png', '.doc', '.docx', '.xlsx'])
+const targetAssetExtensions = new Set(['.png', '.jpg', '.jpeg', '.webp', '.doc', '.docx', '.xlsx'])
 const ignoredDirectoryPaths = ['.git', 'node_modules', '.vitepress/dist', '.vitepress/cache']
 
 export interface AssetRegistryManifest {
@@ -75,6 +75,7 @@ export function listTargetBinaryAssets(rootDir = repoRoot): string[] {
   if (trackedAssets) {
     return trackedAssets
       .filter(repoPath => targetAssetExtensions.has(path.extname(repoPath).toLowerCase()))
+      .filter(repoPath => !isIgnoredDirectory(repoPath))
       .sort((a, b) => a.localeCompare(b))
   }
 

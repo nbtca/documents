@@ -1,6 +1,10 @@
 ---
+summary: 协会现任各职位的具体分工——会长、副会长与开发、维修、宣传、组织四部各自负责什么，按届记名。
 editLink: true
 lastUpdated: true
+maintainers:
+  - user: Yuna-Celisse
+    since: 2026-01
 ---
 
 # 职能分配
@@ -48,11 +52,3 @@ Sheepkinn（2026届）
 - 写策划
 - 推广
 - 报销
-
-:::info 维护信息
-
-| 维护人                                           | 时间           |
-| ------------------------------------------------ | -------------- |
-| [@Yuna-Celisse](https://github.com/Yuna-Celisse) | 2026.1.8 - Now |
-
-:::

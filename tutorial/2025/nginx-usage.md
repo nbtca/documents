@@ -1,3 +1,9 @@
+---
+maintainers:
+  - user: m1ngsama
+    since: 2025-11
+---
+
 # 快速上手 nginx
 
 nginx 是一个高性能的 Web 服务器与反向代理。本文用最短路径带你跑起第一个静态页面，讲清每一步在做什么，最后给出反向代理的最小示例。
@@ -130,7 +136,7 @@ nginx: configuration file /etc/nginx/nginx.conf test is successful
 
 浏览器访问 `http://ip/` 时：请求到达 80 端口 → nginx 用 `listen` + `server_name` 挑出匹配的 server 块 → `location` 匹配路径 → 以 `root` + 路径拼出文件位置，`try_files` 依次尝试。排错就沿这条链查：`nginx -t` 报错是配置写错了；404 是拼出的文件路径不存在；403 多半是 nginx 对文件没有读权限。
 
-另外，conf.d 里每个 `server {}` 就是一个「虚拟主机」：同一个 80 端口可以挂多个站点，nginx 靠请求头里的域名（对上哪个 `server_name`）区分它们——这就是「每个配置丢进 conf.d」背后发生的事。
+另外，conf.d 里每个 `server {}` 就是一个“虚拟主机”：同一个 80 端口可以挂多个站点，nginx 靠请求头里的域名（对上哪个 `server_name`）区分它们——这就是“每个配置丢进 conf.d”背后发生的事。
 
 ## 下一步：反向代理
 
@@ -160,11 +166,3 @@ server {
 ```bash
 sudo ln -s /etc/nginx/sites-available/hello.conf /etc/nginx/sites-enabled/hello.conf
 ```
-
-:::info 维护信息
-
-| 维护人                                   | 时间            |
-| ---------------------------------------- | --------------- |
-| [@m1ngsama](https://github.com/m1ngsama) | 2025.11.3 - Now |
-
-:::

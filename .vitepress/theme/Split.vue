@@ -1,12 +1,9 @@
 <script setup lang="ts">
-// Image beside prose. Alternate `reverse` down a page to build rhythm.
 defineProps<{
   src: string
   alt: string
-  /** Small monospace label above the heading. */
   kicker?: string
   heading?: string
-  /** Photo on the left instead of the right. */
   reverse?: boolean
 }>()
 </script>

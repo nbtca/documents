@@ -1,0 +1,39 @@
+---
+summary: 博客重启的选型讨论：框架在 VitePress 与 Hexo 之间倾向前者，域名拟用 blogs.nbtca.space，部署位置在 Cloudflare Pages 与 GitHub Pages 之间勾选。
+archive:
+  date: "2023-11"
+  source: "协会自有记录，随本仓库保存"
+  transcriber: "LazuliKao"
+  transcribed: "2023.11"
+---
+
+# 博客重启
+
+〔原件没有总标题，只按小节分块。此处补一个标题，各节标题的文字照原件，仅将层级下调一级。〕
+
+## 框架
+
+- [VitePress](https://vitepress.dev/)
+  - [推荐]
+  - 支持内嵌 vue3 组件，markdown 语法基础上还能嵌交互式功能
+- [Hexo](https://hexo.io/zh-cn/index.html)
+  - 传统静态博客框架，中文教程多
+  - 缺点：可能有一些缺点吧
+- or others?
+
+## 信息
+
+- 沿用 @wen-templari 的`nbtca.space`备案信息？(放在页尾)
+- 域名用`blogs.nbtca.space`？
+
+## 部署位置
+
+- [ ] Cloudflare Pages
+  - (建议这个，在中国大陆基本都能访问)
+- [x] GitHub Pages
+- [ ] Vercel
+  - (之前用的)
+
+## 参考
+
+- 旧博客用的`Hexo`框架: <https://github.com/chundot/nbtca-blog>

@@ -8,9 +8,19 @@ on:
     branches:
       - main
 
+# The job only reads the checkout; nothing here writes back to the repository.
+permissions:
+  contents: read
+
+# A branch that gets several pushes in a row only needs its newest commit built.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -38,3 +48,6 @@ jobs:
 
       - name: Build site
         run: pnpm docs:build
+
+      - name: Verify rendered output
+        run: pnpm run ci:verify

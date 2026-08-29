@@ -88,8 +88,14 @@ describe('getTitle', () => {
 describe('link helpers', () => {
   it('should build absolute page links without markdown extensions', () => {
     expect(pageLink('repair', 'guide.md')).toBe('/repair/guide')
-    expect(pageLink('/archived/2025/', '2025.01.24开发部例会.md'))
-      .toBe('/archived/2025/2025.01.24开发部例会')
+    expect(pageLink('/archived/2025/', '2025-01-24-dev-meeting.md'))
+      .toBe('/archived/2025/2025-01-24-dev-meeting')
+  })
+
+  // /about/index never matches the /about/ the reader is on.
+  it('should link an index page as its directory', () => {
+    expect(pageLink('about', 'index')).toBe('/about/')
+    expect(pageLink('/archived/', 'index.md')).toBe('/archived/')
   })
 
   it('should join sidebar base paths with a trailing slash', () => {

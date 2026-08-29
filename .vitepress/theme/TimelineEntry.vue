@@ -1,10 +1,7 @@
 <script setup lang="ts">
-// One moment on the spine. The year sits in the monospace metadata voice so
-// the chronology can be scanned without reading the prose.
 defineProps<{
   year: string
   title?: string
-  /** Marks the entries that changed how the club is organised. */
   pivot?: boolean
 }>()
 </script>

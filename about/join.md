@@ -1,3 +1,9 @@
+---
+maintainers:
+  - user: m1ngsama
+    since: 2026-07
+---
+
 # 加入我们
 
 NBTCA 欢迎任何对计算机有兴趣的人——不论你是本校学生想加入社团，还是被我们的项目和理念吸引来的校外朋友。没有门槛，来了就算。
@@ -19,19 +25,11 @@ NBTCA 的[项目与基础设施](/about/infrastructure)都公开在 [GitHub](htt
 
 - **QQ 群**：906370401
 - **协会主页**：[nbtca.space](https://nbtca.space)
-- **电脑维修小程序**：微信搜索「NBT电脑维修」
+- **电脑报修**：协会主页的[预约维修](https://nbtca.space/repair/create-ticket)
 - **代码与文档**：[github.com/nbtca](https://github.com/nbtca)
 
-<Split src="./assets/community.jpg" alt="十余名成员在地铁站内并排合影，有人搭着彼此的肩笑着" heading="除了社团活动，大家也一起出门">
+<Split src="./assets/community.webp" alt="2023 年主要成员的一次团聚，十余人在地铁站内并排合影，有人搭着彼此的肩笑着" heading="除了社团活动，大家也一起出门">
 
 拿不准从哪一步开始，就进 QQ 群说一声，会有人回你。
 
 </Split>
-
-:::info 维护信息
-
-| 维护人                                   | 时间          |
-| ---------------------------------------- | ------------- |
-| [@m1ngsama](https://github.com/m1ngsama) | 2026.07 - Now |
-
-:::

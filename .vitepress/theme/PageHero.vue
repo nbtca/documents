@@ -1,15 +1,13 @@
 <script setup lang="ts">
-// Full-bleed opening band for flagship pages. Carries the page title, so the
-// markdown source omits its H1 (concepts.data.ts falls back to frontmatter).
+// Carries the page title, so the markdown source omits its H1 and the preview
+// indexer falls back to frontmatter.
 withDefaults(defineProps<{
   src: string
   alt: string
   kicker?: string
   title: string
   lede?: string
-  /** Provenance stamp, e.g. "协会照片档案". */
   source?: string
-  /** Light text needs a darker scrim on busy photos. */
   scrim?: 'soft' | 'strong'
 }>(), { scrim: 'soft' })
 </script>

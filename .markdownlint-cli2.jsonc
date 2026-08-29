@@ -7,9 +7,14 @@
     "MD049": false
   },
   "globs": [
+    "about/**/*.md",
+    "concepts/**/*.md",
     "repair/**/*.md",
     "process/**/*.md",
     "tutorial/**/*.md",
-    "archived/**/*.md"
+    "archived/**/*.md",
+    "index.md",
+    "README.md",
+    "CONTRIBUTING.md"
   ]
 }

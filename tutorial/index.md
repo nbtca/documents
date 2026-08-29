@@ -1,3 +1,9 @@
+---
+maintainers:
+  - user: m1ngsama
+    since: 2025-11
+---
+
 # 指南
 
 社团事务怎么办、常用技术怎么学，都收在这里。本栏分三组：**流程**（办社务）、**教程**（用工具）、**手册**（成体系的知识），也可以用站内搜索直接找。不知道从哪篇看起，按你想做的事对号入座。
@@ -8,7 +14,7 @@
 - 活动花了钱 → [报销流程](/process/2025/reimbursement-process)
 - 想把参与的活动认定为[第二课堂](/concepts/second-classroom)学分 → [申请第二课堂学分](/process/2025/apply-for-credits)
 - 想写点东西发出去 → [撰写并发布你的第一篇 NBTCA 博客](/process/2025/nbtca-post)
-- 想办一场活动 → [活动组织](/process/2025/event-organization)（待完善）
+- 想办一场活动 → [活动组织](/process/2025/event-organization)
 
 ## 我想参与社团协作
 

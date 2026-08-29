@@ -1,3 +1,9 @@
+---
+maintainers:
+  - user: m1ngsama
+    since: 2025-10
+---
+
 # 撰写并发布你的第一篇 NBTCA 博客
 
 本指南带你用最主流的开源协作方式——**Git + Markdown + Pull Request**——撰写并发布你的第一篇 [NBTCA](/about/what-is-nbtca) 博客。若只想了解通用的 Git 协作流程，见[快速上手 GitHub 工作流](/tutorial/2025/github-workflow)；本文在其基础上，讲博客投稿特有的部分。
@@ -91,7 +97,7 @@ cd home
 git checkout -b add-my-first-blog
 # -b 参数代表创建一个新的分支
 # 分支名 add-my-first-blog 可自行替换，
-# 常见习惯是「类型/具体事务」，例如 post/blog-post、feature/homepage
+# 常见习惯是“类型/具体事务”，例如 post/blog-post、feature/homepage
 ```
 
 ## 撰写博客（Markdown 格式）
@@ -187,11 +193,3 @@ git push origin add-my-first-blog
 当你第一次成功合并 PR 时：
 
 > 恭喜你，🎉 你正式成为了开源协作的一员！
-
-:::info 维护信息
-
-| 维护人                                   | 时间             |
-| ---------------------------------------- | ---------------- |
-| [@m1ngsama](https://github.com/m1ngsama) | 2025.10.23 - Now |
-
-:::

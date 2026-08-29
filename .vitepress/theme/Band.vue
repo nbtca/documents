@@ -1,6 +1,4 @@
 <script setup lang="ts">
-// Full-bleed photo band used as a section break, optionally carrying a line
-// of text over the image.
 defineProps<{
   src: string
   alt: string
