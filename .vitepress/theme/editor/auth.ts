@@ -3,7 +3,6 @@ import type LogtoClient from '@logto/browser'
 const endpoint = import.meta.env.VITE_LOGTO_ENDPOINT
 const appId = import.meta.env.VITE_LOGTO_APP_ID
 
-// Without both, the editor never renders: readers get the site they had.
 export const editorConfigured = Boolean(endpoint && appId)
 
 export const CALLBACK_PATH = '/callback'
@@ -62,8 +61,7 @@ export async function currentMember(): Promise<Member | undefined> {
 
 export class NotLinkedError extends Error {}
 
-// Logto holds the GitHub token in its secret vault; the connector must have
-// token storage on, and public_repo among its scopes.
+// Needs token storage on the connector, with public_repo among its scopes.
 export async function githubToken(): Promise<string> {
   const accessToken = await (await getClient()).getAccessToken()
   const response = await fetch(`${endpoint}/api/my-account/identities/github/access-token`, {

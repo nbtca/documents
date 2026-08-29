@@ -1,12 +1,8 @@
 import type MarkdownIt from 'markdown-it'
 import { noteRanges } from './editorial-note'
 
-// The build and the in-page preview run this same function, so the preview
-// cannot drift from what the site publishes. checks/preview-fidelity.test.ts
-// holds them to it.
 export function applyEditorialRules(md: MarkdownIt): void {
-  // A whole paragraph in 〔〕 reads exactly like the document it comments on.
-  // Frame those; notes inside a sentence already read as an aside.
+  // Only a whole paragraph in 〔〕 becomes a frame; mid-sentence notes read as asides.
   md.core.ruler.push('editorial_note', (state) => {
     const tokens = state.tokens
     const blocks: Array<{ type: string, text: string, open: number, close: number }> = []
@@ -39,13 +35,11 @@ export function applyEditorialRules(md: MarkdownIt): void {
       return undefined
     }
 
-    // Wrapped, not marked per block: a note can enclose a list or a table.
     for (const [from, to] of noteRanges(blocks).reverse()) {
       const head = textChild(blocks[from].open, blocks[from].close, false)
       const tail = textChild(blocks[to].open, blocks[to].close, true)
       const pending = head?.content.match(/^〔(待核实|待补充|待补)[：:]?/)
 
-      // The frame and its label say what 〔〕 was standing in for.
       if (head)
         head.content = head.content.replace(pending ? pending[0] : '〔', '')
       if (tail)
