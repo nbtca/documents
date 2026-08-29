@@ -2,7 +2,7 @@ import type { DefaultTheme } from 'vitepress'
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { extractTitle } from './markdown'
+import { extractTitle, frontmatterValue } from './markdown'
 
 export type SidebarItem = DefaultTheme.SidebarItem
 
@@ -123,4 +123,29 @@ export function getTitle(filepath: string): string {
   catch {
     return path.basename(filepath, '.md')
   }
+}
+
+function getOrder(filepath: string): number {
+  try {
+    const declared = Number(frontmatterValue(readFileSync(filepath, 'utf-8'), 'order'))
+    return Number.isFinite(declared) ? declared : Number.MAX_SAFE_INTEGER
+  }
+  catch {
+    return Number.MAX_SAFE_INTEGER
+  }
+}
+
+// Scanned, so adding a page means adding a markdown file and nothing else.
+// `order:` in frontmatter places it; without one it sorts to the end by title.
+export function groupFromDir(text: string, dirname: string, collapsed = false): SidebarItem {
+  const items = listMarkdownFiles(dirname)
+    .map(file => ({
+      text: getTitle(file.filepath),
+      link: relativePageLink(file.filename),
+      order: getOrder(file.filepath),
+    }))
+    .sort((a, b) => a.order - b.order || a.text.localeCompare(b.text, 'zh'))
+    .map(({ text, link }) => ({ text, link }))
+
+  return { text, collapsed, base: normalizeBasePath(dirname), items }
 }

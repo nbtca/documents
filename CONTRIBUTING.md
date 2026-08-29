@@ -24,10 +24,11 @@ checks/                 contracts, asset manifest, dist verifier
 
 ## Where content goes
 
-- `tutorial/` and `process/` share one sidebar. Adding a page means updating `.vitepress/sidebars/guide.ts`.
-- `about/` has its own: `.vitepress/sidebars/about.ts`.
+- `about/`, `tutorial/`, `process/` and `archived/` build their sidebars by scanning the directory. Add a markdown file and it appears; nothing else to edit.
 - `repair/` and `concepts/` carry no sidebar. Link a new page from its section index; search covers the rest.
-- `archived/` is scanned automatically. Leave the record as it stands.
+- `archived/` keeps the record as it stands.
+
+Scanned entries take their label from the page's H1 and sort by `order` in frontmatter, then by title. A page without `order` sorts to the end of its group.
 
 Internal links start with `/`. Renaming a page means updating every reference to it, and published URLs stay put.
 

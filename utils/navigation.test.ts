@@ -5,6 +5,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { sidebar as archivedSidebar } from '../.vitepress/sidebars/archived'
 import {
   getTitle,
+  groupFromDir,
   joinBasePath,
   listDirectories,
   listMarkdownFiles,
@@ -87,5 +88,34 @@ describe('archived sidebar', () => {
 
     const sorted = [...yearTexts].sort((a, b) => Number(b) - Number(a))
     expect(yearTexts).toEqual(sorted)
+  })
+})
+
+describe('groupFromDir', () => {
+  let dir: string
+
+  beforeAll(() => {
+    dir = mkdtempSync(join(tmpdir(), 'group-'))
+    writeFileSync(join(dir, 'second.md'), '---\norder: 2\n---\n\n# Second')
+    writeFileSync(join(dir, 'first.md'), '---\norder: 1\n---\n\n# First')
+    writeFileSync(join(dir, 'zebra.md'), '# Zebra')
+    writeFileSync(join(dir, 'apple.md'), '# Apple')
+    writeFileSync(join(dir, 'index.md'), '# Index')
+  })
+
+  afterAll(() => rmSync(dir, { recursive: true }))
+
+  // The whole point: a contributor adds a markdown file and nothing else.
+  it('places ordered pages first, then the rest by title', () => {
+    expect(groupFromDir('Group', dir).items?.map(item => item.text)).toEqual([
+      'First',
+      'Second',
+      'Apple',
+      'Zebra',
+    ])
+  })
+
+  it('titles each entry from its heading', () => {
+    expect(groupFromDir('Group', dir).items?.[0]).toMatchObject({ text: 'First', link: 'first' })
   })
 })

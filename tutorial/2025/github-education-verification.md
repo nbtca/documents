@@ -1,4 +1,5 @@
 ---
+order: 2
 maintainers:
   - user: Yuna-Celisse
     since: 2025-12
