@@ -14,11 +14,9 @@ maintainers:
 
 ## 先分清三种流量
 
-| 流量 | 期望处理方式 | 对应配置 |
-| ---- | ----------- | ------- |
-| 访问 Tailnet 设备的内层流量 | Windows 路由交给 Tailscale | 排除 Tailnet 网段，保留地址直连兜底规则 |
-| Tailscale 连接控制服务器、DERP 和对端的外层流量 | 如果进入 Mihomo，则匹配直连规则 | Headscale 域名、Tailscale 进程规则 |
-| 普通公网访问 | 继续按原订阅分流 | 保留原有代理节点与规则 |
+- **访问 Tailnet 设备的内层流量**：由 Windows 路由交给 Tailscale。配置时排除 Tailnet 网段，并保留地址直连兜底规则。
+- **Tailscale 连接控制服务器、DERP 和对端的外层流量**：如果进入 Mihomo，就通过 Headscale 域名和 Tailscale 进程规则匹配直连。
+- **普通公网访问**：继续按原订阅分流，保留原有代理节点与规则。
 
 ```mermaid
 flowchart TD
