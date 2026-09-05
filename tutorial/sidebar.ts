@@ -23,6 +23,7 @@ export const sidebar = [
       pageInGroup('GitHub Education 认证指南', 'github-education-verification'),
       pageInGroup('教育邮箱用途', 'edu-email'),
       pageInGroup('社团自建 Tailscale 使用指南', 'tailscale-usage'),
+      pageInGroup('Windows 下 Mihomo 与 Tailscale 共存', 'mihomo-tailscale'),
       pageInGroup('快速上手 nginx', 'nginx-usage'),
       pageInGroup('谷歌日历使用指南', 'google-calendar'),
     ],
