@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { PendingImage } from './editor/backend'
+import type { Me, PendingImage } from './editor/backend'
 import type { Destination } from './editor/destinations'
 import { useData } from 'vitepress'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { extractH1, splitFrontmatter } from '../../utils/markdown'
-import { isSignedIn, signIn } from './editor/auth'
-import { load, localMode, submit as send, taken, whoAmI } from './editor/backend'
+import { isSignedIn, signIn, signOut } from './editor/auth'
+import { load, localMode, submit as send, taken, me as whoami } from './editor/backend'
 import {
   checklistFor,
   DESTINATIONS,
@@ -22,7 +22,9 @@ const { page } = useData()
 
 const stage = ref<Stage>('closed')
 const signedIn = ref(false)
-const memberName = ref('')
+const member = ref<Me>()
+const progress = ref('')
+const armed = ref(false)
 const draft = ref('')
 const original = ref('')
 const blobSha = ref('')
@@ -78,7 +80,10 @@ const blocker = computed(() => {
 
 const canSubmit = computed(() => !blocker.value)
 
-watch([draft, slug, summary], () => (problem.value = ''))
+watch([draft, slug, summary], () => {
+  problem.value = ''
+  armed.value = false
+})
 
 // The archive transcribes originals; "correcting" one falsifies the record.
 const editable = computed(() => !page.value.filePath.startsWith('archived/'))
@@ -182,7 +187,7 @@ onBeforeUnmount(teardown)
 onMounted(async () => {
   signedIn.value = localMode || await isSignedIn()
   if (signedIn.value)
-    memberName.value = await whoAmI()
+    member.value = await whoami()
 })
 
 function reset() {
@@ -211,7 +216,7 @@ async function startNew() {
 
 function chose(choice: Destination) {
   destination.value = choice
-  head.value = frontmatterFor(memberName.value)
+  head.value = frontmatterFor(member.value?.name ?? '')
   original.value = ''
   draft.value = ''
   blobSha.value = ''
@@ -243,18 +248,21 @@ async function open() {
 
 async function submit() {
   stage.value = 'submitting'
+  progress.value = ''
   try {
     const at = destination.value
+    if (at)
+      progress.value = '正在检查这个网址是否可用……'
     if (at && await taken(target.value.path))
       throw new Error(`${target.value.route} 已经有人了，换一个网址名。`)
 
     result.value = await send(target.value.path, {
       content: head.value + draft.value,
       summary: summary.value.trim(),
-      author: memberName.value,
+      author: member.value?.name ?? '',
       images: images.value,
       checklist: at ? checklistFor(at, slug.value) : undefined,
-    })
+    }, step => (progress.value = step))
     for (const url of pendingUrls.values())
       URL.revokeObjectURL(url)
     pendingUrls.clear()
@@ -268,10 +276,19 @@ async function submit() {
     problem.value = (error as Error).message
     stage.value = 'editing'
   }
+  finally {
+    progress.value = ''
+  }
 }
 
 function close() {
+  if (changed.value && !armed.value) {
+    armed.value = true
+    return
+  }
   teardown()
+  armed.value = false
+  progress.value = ''
   stage.value = 'closed'
   result.value = undefined
 }
@@ -306,9 +323,25 @@ function close() {
               <span class="nb-edit-title">{{ heading.title }}</span>
               <span v-if="heading.path" class="nb-edit-path">{{ heading.path }}</span>
             </div>
-            <button type="button" class="nb-edit-close" aria-label="关闭" @click="close">
-              ✕
-            </button>
+            <div class="nb-edit-who-right">
+              <span v-if="member?.name" class="nb-edit-member">
+                <img
+                  v-if="member.picture"
+                  class="nb-edit-avatar"
+                  :src="member.picture"
+                  alt=""
+                  width="20"
+                  height="20"
+                >
+                {{ member.name }}
+              </span>
+              <button v-if="!localMode && member?.name" type="button" class="nb-edit-signout" @click="signOut">
+                退出
+              </button>
+              <button type="button" class="nb-edit-close" :aria-label="armed ? '再点一次放弃改动并关闭' : '关闭'" @click="close">
+                ✕
+              </button>
+            </div>
           </header>
 
           <div v-if="stage === 'choosing'" class="nb-pick">
@@ -367,6 +400,7 @@ function close() {
               <span><code>- 项</code> 列表</span>
               <span><code>**加粗**</code></span>
               <span><code>[文字](/tutorial/2025/edu-email)</code> 站内链接</span>
+              <span class="nb-edit-shortcut">⌘S 提交</span>
             </p>
 
             <div class="nb-edit-foot">
@@ -404,10 +438,13 @@ function close() {
               </button>
             </div>
 
-            <p class="nb-edit-why" :class="{ 'is-bad': problem }">
-              {{ problem || blocker || (localMode
-                ? '保存会直接写入这个 markdown 文件。'
-                : '提交会开一个 PR，交由维护者审阅后合并，不会直接改动线上页面。') }}
+            <p class="nb-edit-why" :class="{ 'is-bad': problem || armed }">
+              {{ problem
+                || (armed ? '有未保存的改动。再点一次 ✕ 就会丢弃它们。' : '')
+                || progress
+                || blocker || (localMode
+                  ? '保存会直接写入这个 markdown 文件。'
+                  : '提交会开一个 PR，交由维护者审阅后合并，不会直接改动线上页面。') }}
             </p>
             <input ref="picker" type="file" accept="image/*" hidden @change="onPicked">
           </template>
@@ -508,6 +545,39 @@ function close() {
   font-family: var(--nb-mono);
   font-size: 12px;
   color: var(--vp-c-text-3);
+}
+
+.nb-edit-who-right {
+  display: flex;
+  gap: 13px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.nb-edit-member {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  font-size: 13px;
+  color: var(--vp-c-text-2);
+}
+
+.nb-edit-avatar {
+  border-radius: 50%;
+  background: var(--vp-c-bg-soft);
+}
+
+.nb-edit-signout {
+  font-size: 13px;
+  color: var(--vp-c-text-3);
+}
+
+.nb-edit-signout:hover {
+  color: var(--vp-c-text-1);
+}
+
+.nb-edit-shortcut {
+  margin-left: auto;
 }
 
 .nb-edit-close {
