@@ -78,6 +78,8 @@ const blocker = computed(() => {
 
 const canSubmit = computed(() => !blocker.value)
 
+watch([draft, slug, summary], () => (problem.value = ''))
+
 // The archive transcribes originals; "correcting" one falsifies the record.
 const editable = computed(() => !page.value.filePath.startsWith('archived/'))
 
@@ -261,8 +263,10 @@ async function submit() {
     stage.value = 'closed'
   }
   catch (error) {
-    problem.value = `提交失败：${(error as Error).message}`
-    stage.value = 'failed'
+    // Recoverable — the draft has to survive, and a slug collision is fixed
+    // right here. Only a failed load is terminal.
+    problem.value = (error as Error).message
+    stage.value = 'editing'
   }
 }
 
@@ -400,17 +404,22 @@ function close() {
               </button>
             </div>
 
-            <p class="nb-edit-why">
-              {{ blocker || (localMode
+            <p class="nb-edit-why" :class="{ 'is-bad': problem }">
+              {{ problem || blocker || (localMode
                 ? '保存会直接写入这个 markdown 文件。'
                 : '提交会开一个 PR，交由维护者审阅后合并，不会直接改动线上页面。') }}
             </p>
             <input ref="picker" type="file" accept="image/*" hidden @change="onPicked">
           </template>
 
-          <p v-if="stage === 'failed'" class="nb-edit-note nb-edit-problem">
-            {{ problem }}
-          </p>
+          <div v-if="stage === 'failed'" class="nb-edit-failed">
+            <p class="nb-edit-problem">
+              {{ problem }}
+            </p>
+            <button type="button" class="nb-edit-ghost" @click="open">
+              重试
+            </button>
+          </div>
         </div>
       </div>
 
@@ -554,6 +563,7 @@ function close() {
 
 .nb-image-actions .nb-edit-why {
   flex: 1;
+  max-width: none;
   padding: 0;
 }
 
@@ -773,6 +783,21 @@ function close() {
 .nb-edit-syntax code {
   color: var(--vp-c-text-2);
   font-family: var(--nb-mono);
+}
+
+.nb-edit-why.is-bad {
+  color: var(--vp-c-danger-1);
+}
+
+.nb-edit-failed {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  align-items: flex-start;
+  width: 100%;
+  max-width: var(--nb-measure);
+  margin: 0 auto;
+  padding: 34px 21px 0;
 }
 
 .nb-edit-why {
