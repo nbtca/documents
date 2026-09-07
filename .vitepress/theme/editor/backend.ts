@@ -61,6 +61,24 @@ export async function load(path: string): Promise<Loaded> {
   return withToken(token => getFile(token, REPO, path))
 }
 
+// A new page is written blind: without this, an occupied path would be
+// overwritten rather than refused.
+export async function taken(path: string): Promise<boolean> {
+  if (localMode) {
+    return local<Loaded>(`/__edit?path=${encodeURIComponent(path)}`)
+      .then(() => true)
+      .catch(() => false)
+  }
+
+  return withToken(token => getFile(token, REPO, path)
+    .then(() => true)
+    .catch((error) => {
+      if (error instanceof GitHubError && error.status === 404)
+        return false
+      throw error
+    }))
+}
+
 async function registryWith(token: string | undefined, images: PendingImage[]): Promise<FileChange> {
   const raw = token
     ? (await getFile(token, REPO, REGISTRY)).content
@@ -87,9 +105,22 @@ function changesFor(
   return files
 }
 
+function bodyFor(edit: { summary: string, author: string, checklist?: string[] }): string {
+  const opening = `${edit.summary}\n\n由 ${edit.author} 在 docs.nbtca.space 上编辑。`
+  return edit.checklist?.length
+    ? `${opening}\n\n合并前请确认：\n\n${edit.checklist.map(item => `- [ ] ${item}`).join('\n')}`
+    : opening
+}
+
 export async function submit(
   path: string,
-  edit: { content: string, summary: string, author: string, images: PendingImage[] },
+  edit: {
+    content: string
+    summary: string
+    author: string
+    images: PendingImage[]
+    checklist?: string[]
+  },
 ): Promise<Submitted> {
   if (localMode) {
     const registry = edit.images.length ? await registryWith(undefined, edit.images) : undefined
@@ -108,7 +139,7 @@ export async function submit(
     const pull = await openPullRequest(token, REPO, fork, {
       files: changesFor(path, edit.content, edit.images, registry),
       title: `docs: ${edit.summary}`,
-      body: `${edit.summary}\n\n由 ${edit.author} 在 docs.nbtca.space 上编辑。`,
+      body: bodyFor(edit),
       branch: branchNameFor(path),
     })
 
