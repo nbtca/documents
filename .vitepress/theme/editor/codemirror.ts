@@ -210,8 +210,5 @@ export function mountEditor(
     }),
   ]
 
-  return new EditorView({
-    state: EditorState.create({ doc, extensions, selection: { anchor: doc.length } }),
-    parent,
-  })
+  return new EditorView({ state: EditorState.create({ doc, extensions }), parent })
 }

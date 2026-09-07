@@ -340,7 +340,24 @@ function close() {
           <template v-if="stage !== 'choosing' && stage !== 'loading' && stage !== 'failed'">
             <div ref="host" class="nb-edit-area" :class="{ 'is-busy': stage === 'submitting' }" />
 
-            <p class="nb-edit-syntax">
+            <div v-if="pending" class="nb-image-form">
+              <p class="nb-image-file">
+                {{ pending.file.name }} — 会转成 WebP，随这次修改一起提交
+              </p>
+              <input v-model="pending.alt" class="nb-edit-summary" placeholder="图里是什么？看不见图的人靠它">
+              <input v-model="pending.caption" class="nb-edit-summary" placeholder="图注（可选）">
+              <div class="nb-image-actions">
+                <span class="nb-edit-why">{{ pending.alt.trim() ? '' : '先写一句图里是什么' }}</span>
+                <button type="button" class="nb-edit-ghost" @click="pending = undefined">
+                  取消
+                </button>
+                <button type="button" class="nb-edit-submit" :disabled="!pending.alt.trim() || busy" @click="insertImage">
+                  {{ busy ? '转换中……' : '插入' }}
+                </button>
+              </div>
+            </div>
+
+            <p v-if="!pending" class="nb-edit-syntax">
               <span><code># 标题</code> 一级</span>
               <span><code>## 小标题</code> 二级</span>
               <span><code>- 项</code> 列表</span>
@@ -389,22 +406,6 @@ function close() {
                 : '提交会开一个 PR，交由维护者审阅后合并，不会直接改动线上页面。') }}
             </p>
             <input ref="picker" type="file" accept="image/*" hidden @change="onPicked">
-
-            <div v-if="pending" class="nb-image-form">
-              <p class="nb-edit-note">
-                {{ pending.file.name }} — 会转成 WebP 并随这次修改一起提交
-              </p>
-              <input v-model="pending.alt" class="nb-edit-summary" placeholder="图里是什么？看不见图的人靠它（必填）">
-              <input v-model="pending.caption" class="nb-edit-summary" placeholder="图注（可选）">
-              <div class="nb-edit-foot">
-                <button type="button" class="nb-edit-ghost" @click="pending = undefined">
-                  取消
-                </button>
-                <button type="button" class="nb-edit-submit" :disabled="!pending.alt.trim() || busy" @click="insertImage">
-                  {{ busy ? '转换中……' : '插入' }}
-                </button>
-              </div>
-            </div>
           </template>
 
           <p v-if="stage === 'failed'" class="nb-edit-note nb-edit-problem">
@@ -536,8 +537,24 @@ function close() {
   max-width: var(--nb-measure);
   margin: 0 auto;
   padding: 13px 21px;
-  border-top: 1px solid var(--vp-c-divider);
   background: var(--vp-c-bg-soft);
+}
+
+.nb-image-file {
+  font-size: 13px;
+  color: var(--vp-c-text-3);
+}
+
+.nb-image-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.nb-image-actions .nb-edit-why {
+  flex: 1;
+  padding: 0;
 }
 
 .nb-edit-summary {
