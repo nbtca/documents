@@ -23,16 +23,29 @@ export function routeFromHref(href: string, origin: string): string | null {
   return path.endsWith('/index') ? path.slice(0, -'index'.length) : path
 }
 
-export function stripFrontmatter(source: string): string {
+export interface Frontmatter {
+  head: string
+  body: string
+}
+
+// head keeps its trailing newline, so head + body is the file byte for byte:
+// an edited page is put back together, never re-serialised.
+export function splitFrontmatter(source: string): Frontmatter {
   if (!source.startsWith('---'))
-    return source
+    return { head: '', body: source }
 
   const end = source.indexOf('\n---', 3)
   if (end === -1)
-    return source
+    return { head: '', body: source }
 
   const after = source.indexOf('\n', end + 1)
-  return after === -1 ? '' : source.slice(after + 1)
+  return after === -1
+    ? { head: source, body: '' }
+    : { head: source.slice(0, after + 1), body: source.slice(after + 1) }
+}
+
+export function stripFrontmatter(source: string): string {
+  return splitFrontmatter(source).body
 }
 
 export function frontmatterValue(source: string, key: string): string | undefined {
