@@ -395,12 +395,12 @@ function close() {
             </div>
 
             <p v-if="!pending" class="nb-edit-syntax">
-              <span><code># 标题</code> 一级</span>
-              <span><code>## 小标题</code> 二级</span>
-              <span><code>- 项</code> 列表</span>
+              <span><code># 标题</code></span>
+              <span><code>## 小标题</code></span>
+              <span><code>- 列表</code></span>
               <span><code>**加粗**</code></span>
-              <span><code>[文字](/tutorial/2025/edu-email)</code> 站内链接</span>
-              <span class="nb-edit-shortcut">⌘S 提交</span>
+              <span><code>[文字](/repair/)</code> 站内链接</span>
+              <span><code>⌘S</code> 提交</span>
             </p>
 
             <div class="nb-edit-foot">
@@ -511,9 +511,24 @@ function close() {
   z-index: 60;
   padding: 21px;
   background: var(--vp-c-bg);
+  animation: nb-sheet-in 180ms cubic-bezier(0.2, 0, 0.2, 1);
 
   /* The published page's measure; writing and its chrome share one axis. */
   --nb-measure: 43rem;
+}
+
+/* A full-screen takeover that just appears reads as a glitch. */
+@keyframes nb-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nb-edit-sheet {
+    animation: none;
+  }
 }
 
 .nb-edit-inner {
@@ -574,10 +589,6 @@ function close() {
 
 .nb-edit-signout:hover {
   color: var(--vp-c-text-1);
-}
-
-.nb-edit-shortcut {
-  margin-left: auto;
 }
 
 .nb-edit-close {
