@@ -34,10 +34,15 @@ async function local<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json() as Promise<T>
 }
 
-export async function whoAmI(): Promise<string> {
+export interface Me {
+  name: string
+  picture?: string
+}
+
+export async function me(): Promise<Me> {
   if (localMode)
-    return '本地开发'
-  return (await currentMember())?.name ?? ''
+    return { name: '本地开发' }
+  return (await currentMember()) ?? { name: '' }
 }
 
 // A spent or revoked token only shows up on the first call that uses it.
@@ -120,6 +125,7 @@ export async function submit(
     images: PendingImage[]
     checklist?: string[]
   },
+  onStep: (step: string) => void = () => {},
 ): Promise<Submitted> {
   if (localMode) {
     const registry = edit.images.length ? await registryWith(undefined, edit.images) : undefined
@@ -133,8 +139,12 @@ export async function submit(
 
   return withToken(async (token) => {
     const registry = edit.images.length ? await registryWith(token, edit.images) : undefined
+
+    // A first-time fork is queued and can take half a minute; say so.
+    onStep('正在准备你名下的仓库副本……')
     const fork = await ensureFork(token, REPO)
 
+    onStep('正在开 Pull Request……')
     const pull = await openPullRequest(token, REPO, fork, {
       files: changesFor(path, edit.content, edit.images, registry),
       title: `docs: ${edit.summary}`,
