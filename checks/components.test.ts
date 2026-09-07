@@ -1,8 +1,7 @@
 import { globSync, readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 
-// An unknown tag renders as nothing at all: the page comes back blank, the
-// build stays green, and only a human clicking through ever finds out.
+// An unknown tag renders as nothing: blank page, green build, no warning.
 describe('components used in markdown', () => {
   const registered = new Set(
     readFileSync('.vitepress/theme/components.ts', 'utf8')

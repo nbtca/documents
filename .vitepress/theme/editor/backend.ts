@@ -2,12 +2,12 @@ import type { Manifest } from '../../../utils/asset-manifest'
 import type { FileChange } from '../../../utils/github'
 import { addAsset } from '../../../utils/asset-manifest'
 import { branchNameFor, ensureFork, getFile, GitHubError, openPullRequest } from '../../../utils/github'
+import { endWithNewline } from '../../../utils/markdown'
 import { currentMember, forgetToken, githubToken } from './auth'
 
 const REPO = { owner: 'nbtca', name: 'documents' }
 const REGISTRY = 'checks/asset-registry.json'
 
-// Development edits the file on disk; a build always goes through GitHub.
 export const localMode = import.meta.env.DEV
 
 export interface Loaded {
@@ -61,8 +61,7 @@ export async function load(path: string): Promise<Loaded> {
   return withToken(token => getFile(token, REPO, path))
 }
 
-// A new page is written blind: without this, an occupied path would be
-// overwritten rather than refused.
+// A new page is written blind; an occupied path must be refused, not taken.
 export async function taken(path: string): Promise<boolean> {
   if (localMode) {
     return local<Loaded>(`/__edit?path=${encodeURIComponent(path)}`)
@@ -97,7 +96,7 @@ function changesFor(
   images: PendingImage[],
   registry: FileChange | undefined,
 ): FileChange[] {
-  const files: FileChange[] = [{ path, content }]
+  const files: FileChange[] = [{ path, content: endWithNewline(content) }]
   if (registry)
     files.push(registry)
   for (const image of images)

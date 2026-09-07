@@ -34,8 +34,6 @@ describe('token exchange', () => {
     expect(response.headers.get('Cache-Control')).toBe('no-store')
   })
 
-  // GitHub answers 200 for a spent code; taking status at face value would
-  // have stored `undefined` as the token.
   it('fails on a spent code even though GitHub answers 200', async () => {
     githubReplies({ error: 'bad_verification_code', error_description: 'The code passed is incorrect or expired.' })
 

@@ -4,7 +4,7 @@ import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
 import { syntaxTree } from '@codemirror/language'
 import { Compartment, EditorState, RangeSet } from '@codemirror/state'
-import { Decoration, EditorView, keymap, ViewPlugin } from '@codemirror/view'
+import { Decoration, EditorView, keymap, placeholder, ViewPlugin } from '@codemirror/view'
 
 const HEADING = /^ATXHeading([1-6])$/
 const MARK_CLASS: Record<string, string> = {
@@ -126,16 +126,19 @@ const liveStyling = ViewPlugin.fromClass(
 )
 
 const theme = EditorView.theme({
-  '&': { height: '100%', fontSize: '15px', color: 'var(--vp-c-text-1)' },
+  '&': { height: '100%', fontSize: '16px', color: 'var(--vp-c-text-1)' },
   '.cm-content': {
     fontFamily: 'var(--vp-font-family-base)',
     lineHeight: '1.75',
-    padding: '13px 0 40vh',
+    padding: '34px 0 40vh',
+    maxWidth: 'var(--nb-measure)',
+    margin: '0 auto',
     caretColor: 'var(--vp-c-brand-1)',
   },
   '.cm-scroller': { overflow: 'auto' },
   '&.cm-focused': { outline: 'none' },
-  '.cm-line': { padding: '0 18px' },
+  '.cm-line': { padding: '0 21px' },
+  '.cm-placeholder': { color: 'var(--vp-c-text-3)' },
   '.cm-selectionBackground, ::selection': { backgroundColor: 'var(--vp-c-brand-soft)' },
   '.cm-cursor': { borderLeftColor: 'var(--vp-c-brand-1)' },
 
@@ -179,9 +182,11 @@ export function mountEditor(
   doc: string,
   onChange: (value: string) => void,
   onSave: () => void,
+  hint?: string,
 ): EditorView {
   const extensions: Extension[] = [
     history(),
+    placeholder(hint ?? ''),
     keymap.of([
       {
         key: 'Mod-s',
@@ -205,5 +210,8 @@ export function mountEditor(
     }),
   ]
 
-  return new EditorView({ state: EditorState.create({ doc, extensions }), parent })
+  return new EditorView({
+    state: EditorState.create({ doc, extensions, selection: { anchor: doc.length } }),
+    parent,
+  })
 }

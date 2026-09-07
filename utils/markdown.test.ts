@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { extractH1, extractSummary, extractTitle, frontmatterValue, routeFromHref, splitFrontmatter } from './markdown'
+import { endWithNewline, extractH1, extractSummary, extractTitle, frontmatterValue, routeFromHref, splitFrontmatter } from './markdown'
 
 const ORIGIN = 'https://docs.nbtca.space'
 
@@ -128,8 +128,6 @@ describe('page title', () => {
   })
 })
 
-// The editor hands back only the body, so the join has to be exact: anything
-// lost here is a maintainers block or an archive record silently dropped.
 describe('frontmatter split', () => {
   const PAGE = '---\nmaintainers:\n  - user: m1ngsama\n    since: 2026-07\n---\n\n# 维修日\n\n正文。\n'
 
@@ -157,5 +155,19 @@ describe('frontmatter split', () => {
   it('treats an unterminated block as body rather than eating the page', () => {
     const broken = '---\nmaintainers:\n\n# 标题\n'
     expect(splitFrontmatter(broken)).toEqual({ head: '', body: broken })
+  })
+})
+
+describe('file ending', () => {
+  it('leaves a well-formed page alone', () => {
+    expect(endWithNewline('# 标题\n\n正文。\n')).toBe('# 标题\n\n正文。\n')
+  })
+
+  it('adds the newline markdownlint requires', () => {
+    expect(endWithNewline('# 标题\n\n正文。')).toBe('# 标题\n\n正文。\n')
+  })
+
+  it('collapses trailing blank lines rather than leaving them', () => {
+    expect(endWithNewline('# 标题\n\n正文。\n\n\n  \n')).toBe('# 标题\n\n正文。\n')
   })
 })

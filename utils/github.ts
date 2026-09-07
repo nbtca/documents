@@ -132,8 +132,7 @@ export async function openPullRequest(
   const upstream = `/repos/${repo.owner}/${repo.name}`
   const mine = `/repos/${fork.owner}/${fork.name}`
 
-  // Written into the fork off upstream's tip: a fork shares the object store,
-  // so a stale fork never has to be synced first.
+  // Forks share the object store, so a stale fork needs no sync first.
   const head = await call<{ object: { sha: string } }>(token, `${upstream}/git/ref/heads/main`)
   const commit = await call<{ tree: { sha: string } }>(token, `${upstream}/git/commits/${head.object.sha}`)
 
