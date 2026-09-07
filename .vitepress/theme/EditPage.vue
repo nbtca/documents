@@ -163,8 +163,13 @@ function backToEditing() {
 }
 
 function onKey(event: KeyboardEvent) {
-  if (event.key === 'Escape' && stage.value === 'previewing')
+  if (event.key !== 'Escape')
+    return
+  if (stage.value === 'previewing')
     backToEditing()
+  // Escaping out of unsaved work would throw the draft away without asking.
+  else if (stage.value !== 'closed' && !changed.value)
+    close()
 }
 
 onMounted(() => window.addEventListener('keydown', onKey))
@@ -277,7 +282,7 @@ function close() {
     <button v-if="editable" type="button" class="nb-edit-open" @click="open">
       {{ signedIn ? '在本页编辑' : '登录后在本页编辑' }}
     </button>
-    <button type="button" class="nb-edit-open" @click="startNew">
+    <button type="button" class="nb-edit-open is-secondary" @click="startNew">
       {{ signedIn ? '新建一页' : '登录后新建一页' }}
     </button>
 
@@ -288,6 +293,7 @@ function close() {
         class="nb-edit-sheet"
         :class="{ 'is-away': stage === 'previewing' }"
         role="dialog"
+        aria-modal="true"
         aria-label="编辑页面"
       >
         <div class="nb-edit-inner">
@@ -440,6 +446,10 @@ function close() {
   transition: color 0.2s;
 }
 
+.nb-edit-open.is-secondary {
+  color: var(--vp-c-text-3);
+}
+
 .nb-edit-open:hover {
   color: var(--vp-c-brand-2);
 }
@@ -522,9 +532,11 @@ function close() {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 13px;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 4px;
+  width: 100%;
+  max-width: var(--nb-measure);
+  margin: 0 auto;
+  padding: 13px 21px;
+  border-top: 1px solid var(--vp-c-divider);
   background: var(--vp-c-bg-soft);
 }
 
@@ -761,11 +773,39 @@ function close() {
 
 @media (max-width: 640px) {
   .nb-edit-sheet {
-    padding: 13px;
+    padding: 13px 0;
+  }
+
+  .nb-edit-head {
+    padding: 0 21px 13px;
+  }
+
+  /* A writer does not need the file path; the screen is worth more. */
+  .nb-edit-path {
+    display: none;
   }
 
   .nb-edit-foot {
-    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .nb-edit-summary {
+    flex: 1 0 100%;
+  }
+
+  .nb-edit-ghost {
+    flex: 1;
+    padding: 8px 0;
+  }
+
+  .nb-edit-submit {
+    flex: 1.618;
+    padding: 8px 0;
+  }
+
+  .nb-pick {
+    padding: 21px 21px 0;
   }
 }
 </style>
