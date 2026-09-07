@@ -7,4 +7,8 @@ sitemap:
   exclude: true
 ---
 
+<script setup>
+import SignInCallback from './.vitepress/theme/SignInCallback.vue'
+</script>
+
 <SignInCallback />
