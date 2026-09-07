@@ -4,13 +4,11 @@ export interface Destination {
   dir: string
   what: string
   how: string
-  // No sidebar: reached by inline links and search, so a new page here is an
-  // orphan until a maintainer links it from the section index.
+  // No sidebar, so a page here is an orphan until the section index links it.
   hub?: boolean
 }
 
-// Only directories a generated sidebar actually scans (.vitepress/sidebars/).
-// A page anywhere else in these trees would never appear in navigation.
+// Only what .vitepress/sidebars/ scans; elsewhere a page never reaches nav.
 export const DESTINATIONS: Destination[] = [
   {
     id: 'about',
@@ -72,11 +70,13 @@ export function routeFor(destination: Destination, slug: string): string {
 
 export function frontmatterFor(login: string, now = new Date()): string {
   const since = now.toISOString().slice(0, 7)
-  return `---\nmaintainers:\n  - user: ${login}\n    since: ${since}\n---\n`
+  // Local development has no GitHub identity; leave something people notice.
+  const user = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(login) ? login : 'your-github-login'
+  return `---\nmaintainers:\n  - user: ${user}\n    since: ${since}\n---\n\n`
 }
 
-export function templateFor(destination: Destination): string {
-  return `\n# \n\n（${destination.how}）\n`
+export function placeholderFor(destination: Destination): string {
+  return `以一行「# 标题」开头，然后写正文。${destination.how}。`
 }
 
 export function checklistFor(destination: Destination, slug: string): string[] {

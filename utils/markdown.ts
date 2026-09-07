@@ -28,8 +28,7 @@ export interface Frontmatter {
   body: string
 }
 
-// head keeps its trailing newline, so head + body is the file byte for byte:
-// an edited page is put back together, never re-serialised.
+// head keeps its newline, so head + body restores the file byte for byte.
 export function splitFrontmatter(source: string): Frontmatter {
   if (!source.startsWith('---'))
     return { head: '', body: source }
@@ -46,6 +45,11 @@ export function splitFrontmatter(source: string): Frontmatter {
 
 export function stripFrontmatter(source: string): string {
   return splitFrontmatter(source).body
+}
+
+// markdownlint MD047; a browser-saved page would fail the lint without it.
+export function endWithNewline(source: string): string {
+  return `${source.replace(/\s+$/, '')}\n`
 }
 
 export function frontmatterValue(source: string, key: string): string | undefined {

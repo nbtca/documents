@@ -6,8 +6,6 @@ import { checklistFor, DESTINATIONS, draftSlug, frontmatterFor, pathFor, routeFo
 const AT = new Date('2026-09-07T04:00:00Z')
 
 describe('new page destinations', () => {
-  // A page in a directory no sidebar scans is invisible, and the contributor
-  // meets the nav contract as a CI failure they cannot act on.
   it('only offer directories a generated sidebar actually scans', () => {
     const scanned = new Set(
       globSync('.vitepress/sidebars/*.ts')
@@ -22,8 +20,6 @@ describe('new page destinations', () => {
     expect(unreachable).toEqual([])
   })
 
-  // The hub flag decides whether the reviewer is told to link the page from a
-  // section index, so it has to mean what the contract means by "hub".
   it('flag as hub exactly the trees the nav contract exempts', () => {
     const exempt = new Set<string>(HUB_DOC_DIRS)
     const wrong = DESTINATIONS
@@ -47,7 +43,7 @@ describe('new page destinations', () => {
 describe('generated frontmatter', () => {
   it('names the member and dates it as the contract wants', () => {
     expect(frontmatterFor('m1ngsama', AT))
-      .toBe('---\nmaintainers:\n  - user: m1ngsama\n    since: 2026-09\n---\n')
+      .toBe('---\nmaintainers:\n  - user: m1ngsama\n    since: 2026-09\n---\n\n')
   })
 })
 
@@ -64,5 +60,16 @@ describe('reviewer checklist', () => {
   it('asks for a hub link only where there is no sidebar to find the page', () => {
     expect(checklistFor(concepts, 'volunteer-hours').join()).toMatch(/concepts\/index\.md/)
     expect(checklistFor(tutorial, 'edu-email').join()).not.toMatch(/index\.md/)
+  })
+})
+
+describe('generated frontmatter, without a GitHub identity', () => {
+  it('leaves something a person will notice, not a name that is no account', () => {
+    expect(frontmatterFor('本地开发', AT)).toContain('user: your-github-login')
+    expect(frontmatterFor('m1ngsama', AT)).toContain('user: m1ngsama')
+  })
+
+  it('separates the block from the body the way every other page does', () => {
+    expect(frontmatterFor('m1ngsama', AT).endsWith('---\n\n')).toBe(true)
   })
 })

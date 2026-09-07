@@ -12,8 +12,8 @@ import {
   draftSlug,
   frontmatterFor,
   pathFor,
+  placeholderFor,
   routeFor,
-  templateFor,
 } from './editor/destinations'
 
 type Stage = 'closed' | 'choosing' | 'loading' | 'editing' | 'previewing' | 'submitting' | 'failed'
@@ -52,12 +52,31 @@ const target = computed(() => destination.value
   : { path: page.value.filePath, route: '' })
 
 const titled = computed(() => Boolean(extractH1(draft.value)?.trim()))
+const slugOk = computed(() => /^[a-z0-9][a-z0-9-]*$/.test(slug.value))
+
+const heading = computed(() => {
+  if (stage.value === 'choosing')
+    return { title: '新建文档', path: '' }
+  return destination.value
+    ? { title: '新建文档', path: target.value.path }
+    : { title: page.value.title, path: page.value.filePath }
+})
+
 const changed = computed(() => draft.value !== original.value && draft.value.trim().length > 0)
-const canSubmit = computed(() =>
-  changed.value
-  && summary.value.trim().length > 0
-  && (!destination.value || (titled.value && /^[a-z0-9][a-z0-9-]*$/.test(slug.value))),
-)
+
+const blocker = computed(() => {
+  if (!changed.value)
+    return '还没有改动'
+  if (destination.value && !titled.value)
+    return '正文第一行写 # 标题，它同时是页面标题和边栏上的名字'
+  if (destination.value && !slugOk.value)
+    return '网址名只能用小写字母、数字和连字符'
+  if (!summary.value.trim())
+    return destination.value ? '写一句话说明这一页讲什么' : '写一句话说明这次改了什么'
+  return ''
+})
+
+const canSubmit = computed(() => !blocker.value)
 
 // The archive transcribes originals; "correcting" one falsifies the record.
 const editable = computed(() => !page.value.filePath.startsWith('archived/'))
@@ -70,7 +89,8 @@ watch([() => stage.value, host], async ([current, element]) => {
   const view = mountEditor(element, draft.value, value => (draft.value = value), () => {
     if (canSubmit.value)
       submit()
-  })
+  }, destination.value && placeholderFor(destination.value))
+  view.focus()
   const { setDiff } = await import('./editor/codemirror')
   showDiff = original => setDiff(view, original)
   insertAt = (snippet) => {
@@ -166,8 +186,7 @@ function reset() {
   head.value = ''
 }
 
-// The editor mounts once per open sheet, so going back to the picker has to
-// tear it down or the next choice keeps the previous template.
+// The editor mounts once per sheet; a second choice needs a fresh one.
 function chooseAgain() {
   teardown()
   stage.value = 'choosing'
@@ -187,7 +206,7 @@ function chose(choice: Destination) {
   destination.value = choice
   head.value = frontmatterFor(memberName.value)
   original.value = ''
-  draft.value = templateFor(choice)
+  draft.value = ''
   blobSha.value = ''
   stage.value = 'editing'
 }
@@ -273,9 +292,9 @@ function close() {
       >
         <div class="nb-edit-inner">
           <header class="nb-edit-head">
-            <div>
-              <span class="nb-edit-title">{{ destination ? '新建文档' : page.title }}</span>
-              <span class="nb-edit-path">{{ destination ? target.path : page.filePath }}</span>
+            <div class="nb-edit-who">
+              <span class="nb-edit-title">{{ heading.title }}</span>
+              <span v-if="heading.path" class="nb-edit-path">{{ heading.path }}</span>
             </div>
             <button type="button" class="nb-edit-close" aria-label="关闭" @click="close">
               ✕
@@ -284,30 +303,28 @@ function close() {
 
           <div v-if="stage === 'choosing'" class="nb-pick">
             <p class="nb-pick-lead">
-              这篇放哪里？每一栏的写法不一样，选之前先看一眼。
+              这篇放哪里？每一栏收的东西和写法都不一样。
             </p>
             <ul class="nb-pick-list">
               <li v-for="option in DESTINATIONS" :key="option.id">
                 <button type="button" class="nb-pick-option" @click="chose(option)">
                   <span class="nb-pick-label">{{ option.label }}</span>
                   <span class="nb-pick-what">{{ option.what }}</span>
-                  <span class="nb-pick-how">写法：{{ option.how }}</span>
+                  <span class="nb-pick-how">{{ option.how }}</span>
                 </button>
               </li>
             </ul>
           </div>
 
-          <div v-if="destination && stage === 'editing'" class="nb-new-bar">
-            <button type="button" class="nb-edit-ghost" @click="chooseAgain">
-              {{ destination.label }} ⌄
+          <div v-if="destination && stage !== 'choosing'" class="nb-new-bar">
+            <button type="button" class="nb-new-where" @click="chooseAgain">
+              {{ destination.label }}
             </button>
             <label class="nb-new-slug">
-              网址名
+              网址
               <input v-model="slug" spellcheck="false" placeholder="edu-email">
             </label>
-            <span class="nb-new-route" :class="{ 'is-bad': !/^[a-z0-9][a-z0-9-]*$/.test(slug) }">
-              {{ target.route }}
-            </span>
+            <span class="nb-new-route" :class="{ 'is-bad': !slugOk }">{{ target.route }}</span>
           </div>
 
           <p v-if="stage === 'loading'" class="nb-edit-note">
@@ -316,17 +333,27 @@ function close() {
 
           <template v-if="stage !== 'choosing' && stage !== 'loading' && stage !== 'failed'">
             <div ref="host" class="nb-edit-area" :class="{ 'is-busy': stage === 'submitting' }" />
+
+            <p class="nb-edit-syntax">
+              <span><code># 标题</code> 一级</span>
+              <span><code>## 小标题</code> 二级</span>
+              <span><code>- 项</code> 列表</span>
+              <span><code>**加粗**</code></span>
+              <span><code>[文字](/tutorial/2025/edu-email)</code> 站内链接</span>
+            </p>
+
             <div class="nb-edit-foot">
               <input
                 v-model="summary"
                 class="nb-edit-summary"
-                placeholder="这次改了什么？一句话"
+                :placeholder="destination ? '这一页讲什么？一句话' : '这次改了什么？一句话'"
                 :disabled="stage === 'submitting'"
               >
               <button type="button" class="nb-edit-ghost" :disabled="stage === 'submitting'" @click="pickImage">
                 插图
               </button>
               <button
+                v-if="!destination"
                 type="button"
                 class="nb-edit-ghost"
                 :class="{ 'is-on': diffing }"
@@ -344,9 +371,17 @@ function close() {
                 :disabled="!canSubmit || stage === 'submitting'"
                 @click="submit"
               >
-                {{ stage === 'submitting' ? '提交中……' : (localMode ? '保存到本地' : '提交修改') }}
+                {{ stage === 'submitting'
+                  ? '提交中……'
+                  : localMode ? '保存到本地' : (destination ? '提交新页面' : '提交修改') }}
               </button>
             </div>
+
+            <p class="nb-edit-why">
+              {{ blocker || (localMode
+                ? '保存会直接写入这个 markdown 文件。'
+                : '提交会开一个 PR，交由维护者审阅后合并，不会直接改动线上页面。') }}
+            </p>
             <input ref="picker" type="file" accept="image/*" hidden @change="onPicked">
 
             <div v-if="pending" class="nb-image-form">
@@ -364,16 +399,6 @@ function close() {
                 </button>
               </div>
             </div>
-
-            <p v-if="destination && !titled" class="nb-edit-note">
-              还没有标题。正文第一行写 <code># 标题</code>，它同时是页面标题和边栏上的名字。
-            </p>
-
-            <p class="nb-edit-note">
-              {{ localMode
-                ? '本地开发：保存会直接写入这个 markdown 文件。'
-                : '提交会开一个 PR，交由维护者审阅后合并。不会直接改动线上页面。' }}
-            </p>
           </template>
 
           <p v-if="stage === 'failed'" class="nb-edit-note nb-edit-problem">
@@ -429,6 +454,9 @@ function close() {
   z-index: 60;
   padding: 21px;
   background: var(--vp-c-bg);
+
+  /* The published page's measure; writing and its chrome share one axis. */
+  --nb-measure: 43rem;
 }
 
 .nb-edit-inner {
@@ -471,8 +499,8 @@ function close() {
   overflow: hidden;
   flex: 1;
   min-height: 0;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 4px;
+  border-top: 1px solid var(--vp-c-divider);
+  border-bottom: 1px solid var(--vp-c-divider);
 }
 
 .nb-edit-area.is-busy {
@@ -482,7 +510,12 @@ function close() {
 
 .nb-edit-foot {
   display: flex;
-  gap: 13px;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  max-width: var(--nb-measure);
+  margin: 0 auto;
+  padding: 0 21px;
 }
 
 .nb-image-form {
@@ -579,88 +612,114 @@ function close() {
   display: flex;
   flex-direction: column;
   min-height: 0;
+  width: 100%;
+  max-width: var(--nb-measure);
+  margin: 0 auto;
+  padding-top: 34px;
 }
 
 .nb-pick-lead {
-  margin: 0 0 13px;
-  font-size: 13px;
-  color: var(--vp-c-text-3);
+  margin: 0 0 21px;
+  font-size: 15px;
+  color: var(--vp-c-text-2);
 }
 
 .nb-pick-list {
-  display: grid;
-  gap: 8px;
   margin: 0;
   padding: 0;
+  border-top: 1px solid var(--vp-c-divider);
   list-style: none;
   overflow-y: auto;
 }
 
 .nb-pick-option {
   display: grid;
-  gap: 3px;
+  gap: 2px;
   width: 100%;
-  padding: 13px;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 8px;
+  padding: 13px 13px 13px 0;
+  border: 0;
+  border-bottom: 1px solid var(--vp-c-divider);
+  border-left: 2px solid transparent;
   background: transparent;
   text-align: left;
   cursor: pointer;
   transition:
-    border-color 200ms ease,
-    background-color 200ms ease;
+    border-left-color 150ms ease,
+    padding-left 150ms ease;
 }
 
-.nb-pick-option:hover {
-  border-color: var(--vp-c-brand-1);
-  background: var(--vp-c-bg-soft);
+.nb-pick-option:hover,
+.nb-pick-option:focus-visible {
+  padding-left: 13px;
+  border-left-color: var(--vp-c-brand-1);
+  outline: none;
 }
 
 .nb-pick-label {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--vp-c-text-1);
 }
 
 .nb-pick-what {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--vp-c-text-2);
 }
 
 .nb-pick-how {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--vp-c-text-3);
 }
 
 .nb-new-bar {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  padding-bottom: 8px;
+  align-items: baseline;
+  gap: 5px 13px;
+  width: 100%;
+  max-width: var(--nb-measure);
+  margin: 0 auto;
+  padding: 0 21px;
+}
+
+.nb-new-where {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vp-c-brand-1);
+}
+
+.nb-new-where::after {
+  content: '⌄';
+  margin-left: 3px;
 }
 
 .nb-new-slug {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 5px;
   font-size: 13px;
   color: var(--vp-c-text-3);
 }
 
 .nb-new-slug input {
-  width: 13rem;
-  padding: 5px 8px;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 6px;
-  background: var(--vp-c-bg);
+  width: 11rem;
+  padding: 2px 0;
+  border: 0;
+  border-bottom: 1px solid var(--vp-c-divider);
+  border-radius: 0;
+  background: transparent;
   color: var(--vp-c-text-1);
-  font-family: var(--vp-font-family-mono);
+  font-family: var(--nb-mono);
   font-size: 13px;
 }
 
+.nb-new-slug input:focus {
+  border-bottom-color: var(--vp-c-brand-1);
+  outline: none;
+}
+
 .nb-new-route {
-  font-family: var(--vp-font-family-mono);
+  font-family: var(--nb-mono);
   font-size: 12px;
   color: var(--vp-c-text-3);
 }
@@ -668,6 +727,32 @@ function close() {
 .nb-new-route.is-bad {
   color: var(--vp-c-danger-1);
   text-decoration: line-through;
+}
+
+.nb-edit-syntax {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 16px;
+  width: 100%;
+  max-width: var(--nb-measure);
+  margin: 0 auto;
+  padding: 0 21px;
+  font-size: 12px;
+  color: var(--vp-c-text-3);
+}
+
+.nb-edit-syntax code {
+  color: var(--vp-c-text-2);
+  font-family: var(--nb-mono);
+}
+
+.nb-edit-why {
+  width: 100%;
+  max-width: var(--nb-measure);
+  margin: 0 auto;
+  padding: 0 21px;
+  font-size: 13px;
+  color: var(--vp-c-text-3);
 }
 
 .nb-edit-problem {
