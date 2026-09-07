@@ -1,8 +1,8 @@
 import type { Manifest } from '../../../utils/asset-manifest'
 import type { FileChange } from '../../../utils/github'
 import { addAsset } from '../../../utils/asset-manifest'
-import { branchNameFor, canPush, getFile, openPullRequest } from '../../../utils/github'
-import { currentMember, editorConfigured, githubToken, NotLinkedError } from './auth'
+import { branchNameFor, ensureFork, getFile, GitHubError, openPullRequest } from '../../../utils/github'
+import { currentMember, editorConfigured, forgetToken, githubToken } from './auth'
 
 const REPO = { owner: 'nbtca', name: 'documents' }
 const REGISTRY = 'checks/asset-registry.json'
@@ -41,24 +41,25 @@ export async function whoAmI(): Promise<string> {
   return (await currentMember())?.name ?? ''
 }
 
+// A spent or revoked token only shows up on the first call that uses it.
+async function withToken<T>(use: (token: string) => Promise<T>): Promise<T> {
+  try {
+    return await use(await githubToken())
+  }
+  catch (error) {
+    if (error instanceof GitHubError && error.status === 401) {
+      forgetToken()
+      throw new EditorError('登录已失效，请重新登录。')
+    }
+    throw error
+  }
+}
+
 export async function load(path: string): Promise<Loaded> {
   if (localMode)
     return local<Loaded>(`/__edit?path=${encodeURIComponent(path)}`)
 
-  let token: string
-  try {
-    token = await githubToken()
-  }
-  catch (error) {
-    throw error instanceof NotLinkedError
-      ? new EditorError('登录时没有授权 GitHub。请退出后重新登录，并选择「Continue with GitHub」。')
-      : error
-  }
-
-  if (!(await canPush(token, REPO)))
-    throw new EditorError('你的 GitHub 账号还没有本仓库的写入权限，请联系社长加入协作者。')
-
-  return getFile(token, REPO, path)
+  return withToken(token => getFile(token, REPO, path))
 }
 
 async function registryWith(token: string | undefined, images: PendingImage[]): Promise<FileChange> {
@@ -101,15 +102,17 @@ export async function submit(
     return { label: '已写入本地文件，页面稍后自动刷新' }
   }
 
-  const token = await githubToken()
-  const registry = edit.images.length ? await registryWith(token, edit.images) : undefined
+  return withToken(async (token) => {
+    const registry = edit.images.length ? await registryWith(token, edit.images) : undefined
+    const fork = await ensureFork(token, REPO)
 
-  const pull = await openPullRequest(token, REPO, {
-    files: changesFor(path, edit.content, edit.images, registry),
-    title: `docs: ${edit.summary}`,
-    body: `${edit.summary}\n\n由 ${edit.author} 在 docs.nbtca.space 上编辑。`,
-    branch: branchNameFor(path),
+    const pull = await openPullRequest(token, REPO, fork, {
+      files: changesFor(path, edit.content, edit.images, registry),
+      title: `docs: ${edit.summary}`,
+      body: `${edit.summary}\n\n由 ${edit.author} 在 docs.nbtca.space 上编辑。`,
+      branch: branchNameFor(path),
+    })
+
+    return { label: `已提交 #${pull.number}`, url: pull.url }
   })
-
-  return { label: `已提交 #${pull.number}`, url: pull.url }
 }

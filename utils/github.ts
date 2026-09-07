@@ -1,8 +1,15 @@
 const API = 'https://api.github.com'
+const FORK_ATTEMPTS = 20
+const FORK_INTERVAL_MS = 1500
 
 export interface Repo {
   owner: string
   name: string
+}
+
+export interface User {
+  login: string
+  avatarUrl?: string
 }
 
 export interface FileAtRef {
@@ -83,32 +90,55 @@ export async function getFile(token: string, repo: Repo, path: string, ref = 'ma
   return { content: decodeContent(file.content), sha: file.sha }
 }
 
-export async function currentLogin(token: string): Promise<string> {
-  const user = await call<{ login: string }>(token, '/user')
-  return user.login
+export async function currentUser(token: string): Promise<User> {
+  const user = await call<{ login: string, avatar_url?: string }>(token, '/user')
+  return { login: user.login, avatarUrl: user.avatar_url }
 }
 
-export async function canPush(token: string, repo: Repo): Promise<boolean> {
-  try {
-    const meta = await call<{ permissions?: { push?: boolean } }>(token, `/repos/${repo.owner}/${repo.name}`)
-    return meta.permissions?.push === true
+export async function ensureFork(
+  token: string,
+  repo: Repo,
+  wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms)),
+): Promise<Repo> {
+  const created = await call<{ owner: { login: string }, name: string }>(
+    token,
+    `/repos/${repo.owner}/${repo.name}/forks`,
+    { method: 'POST' },
+  )
+  const fork = { owner: created.owner.login, name: created.name }
+
+  // Forking is queued, so a first-time fork 404s for a few seconds.
+  for (let attempt = 0; attempt < FORK_ATTEMPTS; attempt++) {
+    try {
+      await call(token, `/repos/${fork.owner}/${fork.name}/git/ref/heads/main`)
+      return fork
+    }
+    catch (error) {
+      if (!(error instanceof GitHubError) || error.status !== 404)
+        throw error
+      await wait(FORK_INTERVAL_MS)
+    }
   }
-  catch {
-    return false
-  }
+
+  throw new GitHubError(202, 'GitHub 还在创建你的仓库副本，请稍后重试。')
 }
 
 export async function openPullRequest(
   token: string,
   repo: Repo,
+  fork: Repo,
   edit: { files: FileChange[], title: string, body: string, branch: string },
 ): Promise<OpenedPull> {
-  const base = `/repos/${repo.owner}/${repo.name}`
-  const head = await call<{ object: { sha: string } }>(token, `${base}/git/ref/heads/main`)
-  const commit = await call<{ tree: { sha: string } }>(token, `${base}/git/commits/${head.object.sha}`)
+  const upstream = `/repos/${repo.owner}/${repo.name}`
+  const mine = `/repos/${fork.owner}/${fork.name}`
+
+  // Written into the fork off upstream's tip: a fork shares the object store,
+  // so a stale fork never has to be synced first.
+  const head = await call<{ object: { sha: string } }>(token, `${upstream}/git/ref/heads/main`)
+  const commit = await call<{ tree: { sha: string } }>(token, `${upstream}/git/commits/${head.object.sha}`)
 
   const tree = await Promise.all(edit.files.map(async (file) => {
-    const blob = await call<{ sha: string }>(token, `${base}/git/blobs`, {
+    const blob = await call<{ sha: string }>(token, `${mine}/git/blobs`, {
       method: 'POST',
       body: JSON.stringify(
         file.base64
@@ -119,24 +149,30 @@ export async function openPullRequest(
     return { path: file.path, mode: '100644', type: 'blob', sha: blob.sha }
   }))
 
-  const written = await call<{ sha: string }>(token, `${base}/git/trees`, {
+  const written = await call<{ sha: string }>(token, `${mine}/git/trees`, {
     method: 'POST',
     body: JSON.stringify({ base_tree: commit.tree.sha, tree }),
   })
 
-  const made = await call<{ sha: string }>(token, `${base}/git/commits`, {
+  const made = await call<{ sha: string }>(token, `${mine}/git/commits`, {
     method: 'POST',
     body: JSON.stringify({ message: edit.title, tree: written.sha, parents: [head.object.sha] }),
   })
 
-  await call(token, `${base}/git/refs`, {
+  await call(token, `${mine}/git/refs`, {
     method: 'POST',
     body: JSON.stringify({ ref: `refs/heads/${edit.branch}`, sha: made.sha }),
   })
 
-  const pull = await call<{ number: number, html_url: string }>(token, `${base}/pulls`, {
+  const pull = await call<{ number: number, html_url: string }>(token, `${upstream}/pulls`, {
     method: 'POST',
-    body: JSON.stringify({ title: edit.title, head: edit.branch, base: 'main', body: edit.body }),
+    body: JSON.stringify({
+      title: edit.title,
+      head: `${fork.owner}:${edit.branch}`,
+      base: 'main',
+      body: edit.body,
+      maintainer_can_modify: true,
+    }),
   })
 
   return { number: pull.number, url: pull.html_url, branch: edit.branch }

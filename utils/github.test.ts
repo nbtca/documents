@@ -1,5 +1,33 @@
-import { describe, expect, it } from 'vitest'
-import { branchNameFor, decodeContent, encodeContent } from './github'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { branchNameFor, decodeContent, encodeContent, ensureFork, openPullRequest } from './github'
+
+interface Reply { status?: number, body?: unknown }
+interface Seen { route: string, body?: any }
+
+function stubGitHub(routes: Array<[string, Reply | Reply[]]>): Seen[] {
+  const queues = routes.map(([route, reply]) => ({
+    match: new RegExp(`^${route.replace(/\*/g, '[^ ]*')}$`),
+    replies: Array.isArray(reply) ? [...reply] : [reply],
+  }))
+  const seen: Seen[] = []
+
+  vi.stubGlobal('fetch', async (url: string, init?: RequestInit) => {
+    const route = `${init?.method ?? 'GET'} ${url.replace('https://api.github.com', '')}`
+    seen.push({ route, body: init?.body ? JSON.parse(init.body as string) : undefined })
+
+    const queue = queues.find(candidate => candidate.match.test(route))
+    if (!queue)
+      return new Response('unrouted', { status: 500 })
+
+    const reply = queue.replies.length > 1 ? queue.replies.shift()! : queue.replies[0]
+    return new Response(JSON.stringify(reply.body ?? {}), { status: reply.status ?? 200 })
+  })
+
+  return seen
+}
+
+const NOW = () => Promise.resolve()
+const UPSTREAM = { owner: 'nbtca', name: 'documents' }
 
 describe('content encoding', () => {
   it('survives a round trip through base64', () => {
@@ -26,5 +54,91 @@ describe('branch name', () => {
 
   it('still names a branch when nothing survives slugging', () => {
     expect(branchNameFor('第七届.md', at)).toBe('edit/page-202608291130')
+  })
+})
+
+describe('forking', () => {
+  afterEach(() => vi.unstubAllGlobals())
+
+  const FORKED = { body: { owner: { login: 'mia' }, name: 'documents' }, status: 202 }
+
+  it('names the fork from what GitHub actually created', async () => {
+    stubGitHub([
+      ['POST /repos/nbtca/documents/forks', FORKED],
+      ['GET /repos/mia/documents/git/ref/heads/main', { body: { object: { sha: 'a' } } }],
+    ])
+
+    expect(await ensureFork('t', UPSTREAM, NOW)).toEqual({ owner: 'mia', name: 'documents' })
+  })
+
+  it('waits out the queue instead of failing on a first-time fork', async () => {
+    const seen = stubGitHub([
+      ['POST /repos/nbtca/documents/forks', FORKED],
+      ['GET /repos/mia/documents/git/ref/heads/main', [
+        { status: 404 },
+        { status: 404 },
+        { body: { object: { sha: 'a' } } },
+      ]],
+    ])
+
+    await ensureFork('t', UPSTREAM, NOW)
+    expect(seen.filter(call => call.route.startsWith('GET'))).toHaveLength(3)
+  })
+
+  it('gives up rather than looping forever', async () => {
+    stubGitHub([
+      ['POST /repos/nbtca/documents/forks', FORKED],
+      ['GET /repos/mia/documents/git/ref/heads/main', { status: 404 }],
+    ])
+
+    await expect(ensureFork('t', UPSTREAM, NOW)).rejects.toThrow(/副本/)
+  })
+})
+
+describe('pull request from a fork', () => {
+  afterEach(() => vi.unstubAllGlobals())
+
+  const FORK = { owner: 'mia', name: 'documents' }
+
+  async function open() {
+    const seen = stubGitHub([
+      ['GET /repos/nbtca/documents/git/ref/heads/main', { body: { object: { sha: 'upstream-tip' } } }],
+      ['GET /repos/nbtca/documents/git/commits/upstream-tip', { body: { tree: { sha: 'upstream-tree' } } }],
+      ['POST /repos/mia/documents/git/blobs', { body: { sha: 'blob' } }],
+      ['POST /repos/mia/documents/git/trees', { body: { sha: 'tree' } }],
+      ['POST /repos/mia/documents/git/commits', { body: { sha: 'commit' } }],
+      ['POST /repos/mia/documents/git/refs', { body: {} }],
+      ['POST /repos/nbtca/documents/pulls', { body: { number: 7, html_url: 'https://x/7' } }],
+    ])
+
+    const pull = await openPullRequest('t', UPSTREAM, FORK, {
+      files: [{ path: 'tutorial/2025/edu-email.md', content: '# 教育邮箱' }],
+      title: 'docs: fix a typo',
+      body: 'body',
+      branch: 'edit/page',
+    })
+
+    return { seen, pull }
+  }
+
+  it('branches off upstream but writes into the fork', async () => {
+    const { seen } = await open()
+
+    expect(seen.find(call => call.route.endsWith('/git/trees'))).toMatchObject({
+      route: 'POST /repos/mia/documents/git/trees',
+      body: { base_tree: 'upstream-tree' },
+    })
+    expect(seen.find(call => call.route.endsWith('/git/commits') && call.body))
+      .toMatchObject({ body: { parents: ['upstream-tip'] } })
+  })
+
+  it('opens the pull request upstream with a cross-repository head', async () => {
+    const { seen, pull } = await open()
+
+    expect(seen.at(-1)).toMatchObject({
+      route: 'POST /repos/nbtca/documents/pulls',
+      body: { head: 'mia:edit/page', base: 'main', maintainer_can_modify: true },
+    })
+    expect(pull).toEqual({ number: 7, url: 'https://x/7', branch: 'edit/page' })
   })
 })

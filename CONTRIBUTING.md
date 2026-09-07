@@ -20,7 +20,15 @@ public/                                                 fixed URLs
 .vitepress/theme/       components, styles
 utils/                  build-time modules
 checks/                 contracts, asset manifest, dist verifier
+functions/              Pages Functions
 ```
+
+`pnpm docs:dev` gives a working in-page editor that reads and writes local
+files, with no configuration. Deployed, it signs in through a GitHub OAuth App
+and opens a pull request from the member's own fork; set
+`VITE_GITHUB_CLIENT_ID` at build time and `GITHUB_CLIENT_ID` /
+`GITHUB_CLIENT_SECRET` on the Pages project. Without them the editor is absent
+from the build.
 
 ## Where content goes
 
