@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { extractH1, extractSummary, extractTitle, frontmatterValue, routeFromHref } from './markdown'
+import { extractH1, extractSummary, extractTitle, frontmatterValue, routeFromHref, splitFrontmatter } from './markdown'
 
 const ORIGIN = 'https://docs.nbtca.space'
 
@@ -125,5 +125,37 @@ describe('page title', () => {
     ].join('\n'))
 
     expect(title).toBe('Real heading')
+  })
+})
+
+// The editor hands back only the body, so the join has to be exact: anything
+// lost here is a maintainers block or an archive record silently dropped.
+describe('frontmatter split', () => {
+  const PAGE = '---\nmaintainers:\n  - user: m1ngsama\n    since: 2026-07\n---\n\n# 维修日\n\n正文。\n'
+
+  it('rejoins byte for byte', () => {
+    const { head, body } = splitFrontmatter(PAGE)
+    expect(head + body).toBe(PAGE)
+  })
+
+  it('hands the editor the body alone', () => {
+    expect(splitFrontmatter(PAGE).body).toBe('\n# 维修日\n\n正文。\n')
+  })
+
+  it('stops at the opening block, not at a rule or a table in the body', () => {
+    const withRules = `${PAGE}\n---\n\n| a | b |\n| --- | --- |\n| 1 | 2 |\n`
+    const { head, body } = splitFrontmatter(withRules)
+    expect(head).toBe('---\nmaintainers:\n  - user: m1ngsama\n    since: 2026-07\n---\n')
+    expect(head + body).toBe(withRules)
+  })
+
+  it('leaves a page that has no frontmatter alone', () => {
+    const plain = '# 只有正文\n\n没有 frontmatter。\n'
+    expect(splitFrontmatter(plain)).toEqual({ head: '', body: plain })
+  })
+
+  it('treats an unterminated block as body rather than eating the page', () => {
+    const broken = '---\nmaintainers:\n\n# 标题\n'
+    expect(splitFrontmatter(broken)).toEqual({ head: '', body: broken })
   })
 })

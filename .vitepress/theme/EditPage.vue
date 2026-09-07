@@ -2,6 +2,7 @@
 import type { PendingImage } from './editor/backend'
 import { useData } from 'vitepress'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { splitFrontmatter } from '../../utils/markdown'
 import { isSignedIn, signIn } from './editor/auth'
 import { load, localMode, submit as send, whoAmI } from './editor/backend'
 
@@ -16,6 +17,7 @@ const draft = ref('')
 const original = ref('')
 const blobSha = ref('')
 const summary = ref('')
+const head = ref('')
 const problem = ref('')
 const result = ref<{ label: string, url?: string } | undefined>()
 const host = ref<HTMLElement>()
@@ -34,6 +36,9 @@ const busy = ref(false)
 
 const changed = computed(() => draft.value !== original.value && draft.value.trim().length > 0)
 const canSubmit = computed(() => changed.value && summary.value.trim().length > 0)
+
+// The archive transcribes originals; "correcting" one falsifies the record.
+const editable = computed(() => !page.value.filePath.startsWith('archived/'))
 
 watch([() => stage.value, host], async ([current, element]) => {
   if (current !== 'editing' || !element || editor)
@@ -142,8 +147,10 @@ async function open() {
   result.value = undefined
   try {
     const file = await load(page.value.filePath)
-    original.value = file.content
-    draft.value = file.content
+    const parts = splitFrontmatter(file.content)
+    head.value = parts.head
+    original.value = parts.body
+    draft.value = parts.body
     blobSha.value = file.sha
     summary.value = ''
     stage.value = 'editing'
@@ -158,7 +165,7 @@ async function submit() {
   stage.value = 'submitting'
   try {
     result.value = await send(page.value.filePath, {
-      content: draft.value,
+      content: head.value + draft.value,
       summary: summary.value.trim(),
       author: memberName.value,
       images: images.value,
@@ -184,7 +191,7 @@ function close() {
 </script>
 
 <template>
-  <div class="nb-edit">
+  <div v-if="editable" class="nb-edit">
     <p v-if="result" class="nb-edit-result">
       <a v-if="result.url" :href="result.url" target="_blank" rel="noreferrer">{{ result.label }}</a>
       <span v-else>{{ result.label }}</span>
