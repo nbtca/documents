@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useData, useRoute } from 'vitepress'
 import { computed, defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue'
-import { editorAvailable } from './editor/backend'
 
 interface Maintainer {
   user: string
@@ -167,6 +166,6 @@ const day = (iso: string) => DAY.format(new Date(iso))
       </template>
     </dl>
 
-    <EditPage v-if="editorAvailable" />
+    <EditPage />
   </aside>
 </template>

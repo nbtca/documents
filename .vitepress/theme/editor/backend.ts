@@ -2,14 +2,13 @@ import type { Manifest } from '../../../utils/asset-manifest'
 import type { FileChange } from '../../../utils/github'
 import { addAsset } from '../../../utils/asset-manifest'
 import { branchNameFor, ensureFork, getFile, GitHubError, openPullRequest } from '../../../utils/github'
-import { currentMember, editorConfigured, forgetToken, githubToken } from './auth'
+import { currentMember, forgetToken, githubToken } from './auth'
 
 const REPO = { owner: 'nbtca', name: 'documents' }
 const REGISTRY = 'checks/asset-registry.json'
 
-export const localMode = import.meta.env.DEV && !editorConfigured
-
-export const editorAvailable = editorConfigured || localMode
+// Development edits the file on disk; a build always goes through GitHub.
+export const localMode = import.meta.env.DEV
 
 export interface Loaded {
   content: string

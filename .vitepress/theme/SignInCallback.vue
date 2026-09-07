@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { completeSignIn, editorConfigured } from './editor/auth'
+import { completeSignIn } from './editor/auth'
 
 const state = ref<'working' | 'failed'>('working')
 const detail = ref('')
@@ -8,12 +8,6 @@ const returnTo = ref('/')
 const slow = ref(false)
 
 onMounted(async () => {
-  if (!editorConfigured) {
-    state.value = 'failed'
-    detail.value = '本站尚未配置登录。'
-    return
-  }
-
   const timer = setTimeout(() => (slow.value = true), 5000)
 
   try {

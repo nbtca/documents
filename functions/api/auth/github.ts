@@ -1,9 +1,9 @@
 interface Env {
-  GITHUB_CLIENT_ID: string
   GITHUB_CLIENT_SECRET: string
 }
 
 const TOKEN_URL = 'https://github.com/login/oauth/access_token'
+const CLIENT_ID = 'Ov23liLyXZEIgI9vKNV6'
 
 interface Exchange {
   access_token?: string
@@ -21,7 +21,7 @@ function json(body: unknown, status = 200): Response {
 export async function onRequestPost(
   { request, env }: { request: Request, env: Env },
 ): Promise<Response> {
-  if (!env.GITHUB_CLIENT_ID || !env.GITHUB_CLIENT_SECRET)
+  if (!env.GITHUB_CLIENT_SECRET)
     return json({ error: 'not_configured' }, 503)
 
   const { code } = await request.json() as { code?: string }
@@ -32,7 +32,7 @@ export async function onRequestPost(
     method: 'POST',
     headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      client_id: env.GITHUB_CLIENT_ID,
+      client_id: CLIENT_ID,
       client_secret: env.GITHUB_CLIENT_SECRET,
       code,
     }),

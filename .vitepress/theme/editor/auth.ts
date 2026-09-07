@@ -1,8 +1,7 @@
 import { currentUser } from '../../../utils/github'
 
-const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID
-
-export const editorConfigured = Boolean(clientId)
+// Public by design: it travels in the authorize URL every member can read.
+const CLIENT_ID = 'Ov23liLyXZEIgI9vKNV6'
 
 export const CALLBACK_PATH = '/callback'
 const AUTHORIZE_URL = 'https://github.com/login/oauth/authorize'
@@ -20,7 +19,7 @@ export interface Member {
 let member: Member | undefined
 
 export async function isSignedIn(): Promise<boolean> {
-  return editorConfigured && Boolean(sessionStorage.getItem(TOKEN_KEY))
+  return Boolean(sessionStorage.getItem(TOKEN_KEY))
 }
 
 export async function signIn(returnTo: string): Promise<void> {
@@ -29,7 +28,7 @@ export async function signIn(returnTo: string): Promise<void> {
   sessionStorage.setItem(RETURN_KEY, returnTo)
 
   const authorize = new URL(AUTHORIZE_URL)
-  authorize.searchParams.set('client_id', clientId)
+  authorize.searchParams.set('client_id', CLIENT_ID)
   authorize.searchParams.set('redirect_uri', `${location.origin}${CALLBACK_PATH}`)
   authorize.searchParams.set('scope', 'public_repo')
   authorize.searchParams.set('state', state)

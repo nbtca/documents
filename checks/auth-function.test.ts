@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { onRequestPost } from '../functions/api/auth/github'
 
-const ENV = { GITHUB_CLIENT_ID: 'id', GITHUB_CLIENT_SECRET: 'secret' }
+const ENV = { GITHUB_CLIENT_SECRET: 'secret' }
 
 function post(body: unknown): Request {
   return new Request('https://docs.nbtca.space/api/auth/github', {
@@ -54,7 +54,7 @@ describe('token exchange', () => {
   it('says so when the deployment has no credentials', async () => {
     const response = await onRequestPost({
       request: post({ code: 'c' }),
-      env: { GITHUB_CLIENT_ID: '', GITHUB_CLIENT_SECRET: '' },
+      env: { GITHUB_CLIENT_SECRET: '' },
     })
 
     expect(response.status).toBe(503)

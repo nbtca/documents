@@ -24,11 +24,10 @@ functions/              Pages Functions
 ```
 
 `pnpm docs:dev` gives a working in-page editor that reads and writes local
-files, with no configuration. Deployed, it signs in through a GitHub OAuth App
-and opens a pull request from the member's own fork; set
-`VITE_GITHUB_CLIENT_ID` at build time and `GITHUB_CLIENT_ID` /
-`GITHUB_CLIENT_SECRET` on the Pages project. Without them the editor is absent
-from the build.
+files. Deployed, it signs in through a GitHub OAuth App and opens a pull
+request from the member's own fork. The only deployment setting is
+`GITHUB_CLIENT_SECRET` on the Pages project; the client id is public and lives
+in the source.
 
 ## Where content goes
 
