@@ -33,6 +33,18 @@ describe('new page destinations', () => {
     expect(DESTINATIONS.filter(d => !d.what.trim() || !d.how.trim())).toEqual([])
   })
 
+  it('offer a skeleton markdownlint will not reject', () => {
+    // A trailing space is MD009, and the heading a member types into is the
+    // only line allowed to hold one on the way out.
+    const offending = DESTINATIONS
+      .filter(d => d.outline)
+      .flatMap(d => d.outline!.split('\n').slice(1).map(line => [d.id, line] as const))
+      .filter(([, line]) => line !== line.trimEnd() || line.trim() === '##')
+
+    expect(offending).toEqual([])
+    expect(DESTINATIONS.filter(d => d.outline && !d.outline.startsWith('# \n'))).toEqual([])
+  })
+
   it('build the path and the route from the same choice', () => {
     const tutorial = DESTINATIONS.find(d => d.id === 'tutorial')!
     expect(pathFor(tutorial, 'edu-email')).toBe('tutorial/2025/edu-email.md')

@@ -35,7 +35,7 @@ const result = ref<{ label: string, url?: string } | undefined>()
 const host = ref<HTMLElement>()
 let editor: { destroy: () => void } | undefined
 let preview: { update: (md: string) => void, close: () => void } | undefined
-let insertAt: ((snippet: string) => void) | undefined
+let insertAt: ((snippet: string, caret?: number) => void) | undefined
 let showDiff: ((original: string | undefined) => void) | undefined
 
 const diffing = ref(false)
@@ -48,6 +48,7 @@ const busy = ref(false)
 
 const destination = ref<Destination>()
 const slug = ref('')
+const slugTaken = ref('')
 
 const target = computed(() => destination.value
   ? { path: pathFor(destination.value, slug.value), route: routeFor(destination.value, slug.value) }
@@ -66,24 +67,45 @@ const heading = computed(() => {
 
 const changed = computed(() => draft.value !== original.value && draft.value.trim().length > 0)
 
+// Said next to the address field rather than in the footer, which is a whole
+// document away from the input that has to change.
+const slugIssue = computed(() => {
+  if (!destination.value)
+    return ''
+  if (slugTaken.value)
+    return `${slugTaken.value} 已经有人了，换一个名字`
+  if (!slugOk.value)
+    return '只能用小写字母、数字和连字符'
+  return ''
+})
+
 const blocker = computed(() => {
   if (!changed.value)
     return '还没有改动'
   if (destination.value && !titled.value)
     return '正文第一行写 # 标题，它同时是页面标题和边栏上的名字'
-  if (destination.value && !slugOk.value)
-    return '网址名只能用小写字母、数字和连字符'
   if (!summary.value.trim())
     return destination.value ? '写一句话说明这一页讲什么' : '写一句话说明这次改了什么'
   return ''
 })
 
-const canSubmit = computed(() => !blocker.value)
+const canSubmit = computed(() => !blocker.value && !slugIssue.value)
+
+const armedLead = computed(() => {
+  const verb = localMode ? '保存' : '提交'
+  if (blocker.value)
+    return `有未保存的改动。${blocker.value}，才能${verb}。`
+  if (slugIssue.value)
+    return `有未保存的改动。上面的网址名改好才能${verb}。`
+  return '有未保存的改动。'
+})
 
 watch([draft, slug, summary], () => {
   problem.value = ''
   armed.value = false
 })
+
+watch(slug, () => (slugTaken.value = ''))
 
 // The archive transcribes originals; "correcting" one falsifies the record.
 const editable = computed(() => !page.value.filePath.startsWith('archived/'))
@@ -100,9 +122,9 @@ watch([() => stage.value, host], async ([current, element]) => {
   view.focus()
   const { setDiff } = await import('./editor/codemirror')
   showDiff = original => setDiff(view, original)
-  insertAt = (snippet) => {
+  insertAt = (snippet, caret) => {
     const at = view.state.selection.main.head
-    view.dispatch({ changes: { from: at, insert: snippet }, selection: { anchor: at + snippet.length } })
+    view.dispatch({ changes: { from: at, insert: snippet }, selection: { anchor: at + (caret ?? snippet.length) } })
     view.focus()
   }
   editor = { destroy: () => view.destroy() }
@@ -174,6 +196,8 @@ function onKey(event: KeyboardEvent) {
     return
   if (stage.value === 'previewing')
     backToEditing()
+  else if (armed.value)
+    armed.value = false
   // Escaping out of unsaved work would throw the draft away without asking.
   else if (stage.value !== 'closed' && !changed.value)
     close()
@@ -188,6 +212,13 @@ onMounted(async () => {
   signedIn.value = localMode || await isSignedIn()
   if (signedIn.value)
     member.value = await whoami()
+})
+
+// Filled after mount: the server renders for no particular keyboard, and
+// CodeMirror's Mod-s is ⌘ on a Mac and Ctrl everywhere else.
+const saveKey = ref('')
+onMounted(() => {
+  saveKey.value = /mac|iphone|ipad/i.test(navigator.userAgent) ? '⌘S' : 'Ctrl+S'
 })
 
 function reset() {
@@ -247,14 +278,18 @@ async function open() {
 }
 
 async function submit() {
+  armed.value = false
   stage.value = 'submitting'
   progress.value = ''
   try {
     const at = destination.value
     if (at)
       progress.value = '正在检查这个网址是否可用……'
-    if (at && await taken(target.value.path))
-      throw new Error(`${target.value.route} 已经有人了，换一个网址名。`)
+    if (at && await taken(target.value.path)) {
+      slugTaken.value = target.value.route
+      stage.value = 'editing'
+      return
+    }
 
     result.value = await send(target.value.path, {
       content: head.value + draft.value,
@@ -286,11 +321,23 @@ function close() {
     armed.value = true
     return
   }
+  discard()
+}
+
+function discard() {
   teardown()
   armed.value = false
   progress.value = ''
   stage.value = 'closed'
   result.value = undefined
+}
+
+function insertOutline() {
+  const outline = destination.value?.outline
+  if (!outline)
+    return
+  // Land on the empty heading, which is the first thing to fill in.
+  insertAt?.(outline, outline.indexOf('\n'))
 }
 </script>
 
@@ -368,6 +415,7 @@ function close() {
               <input v-model="slug" spellcheck="false" placeholder="edu-email">
             </label>
             <span class="nb-new-route" :class="{ 'is-bad': !slugOk }">{{ target.route }}</span>
+            <span v-if="slugIssue" class="nb-new-issue">{{ slugIssue }}</span>
           </div>
 
           <p v-if="stage === 'loading'" class="nb-edit-note">
@@ -394,13 +442,20 @@ function close() {
               </div>
             </div>
 
-            <p v-if="!pending" class="nb-edit-syntax">
+            <p v-if="!pending && !draft && destination?.outline" class="nb-edit-syntax">
+              <span>不知道从哪开始？</span>
+              <button type="button" class="nb-edit-outline" @click="insertOutline">
+                搭一个结构
+              </button>
+            </p>
+
+            <p v-else-if="!pending" class="nb-edit-syntax">
               <span><code># 标题</code></span>
               <span><code>## 小标题</code></span>
               <span><code>- 列表</code></span>
               <span><code>**加粗**</code></span>
               <span><code>[文字](/repair/)</code> 站内链接</span>
-              <span><code>⌘S</code> 提交</span>
+              <span v-if="saveKey" class="nb-edit-key"><code>{{ saveKey }}</code> 提交</span>
             </p>
 
             <div class="nb-edit-foot">
@@ -410,37 +465,51 @@ function close() {
                 :placeholder="destination ? '这一页讲什么？一句话' : '这次改了什么？一句话'"
                 :disabled="stage === 'submitting'"
               >
-              <button type="button" class="nb-edit-ghost" :disabled="stage === 'submitting'" @click="pickImage">
-                插图
-              </button>
-              <button
-                v-if="!destination"
-                type="button"
-                class="nb-edit-ghost"
-                :class="{ 'is-on': diffing }"
-                :disabled="!changed"
-                @click="toggleDiff"
-              >
-                改动
-              </button>
-              <button type="button" class="nb-edit-ghost" :disabled="stage === 'submitting'" @click="showPreview">
-                预览
-              </button>
-              <button
-                type="button"
-                class="nb-edit-submit"
-                :disabled="!canSubmit || stage === 'submitting'"
-                @click="submit"
-              >
-                {{ stage === 'submitting'
-                  ? '提交中……'
-                  : localMode ? '保存到本地' : (destination ? '提交新页面' : '提交修改') }}
-              </button>
+              <template v-if="armed">
+                <button type="button" class="nb-edit-ghost is-danger" @click="discard">
+                  丢弃改动
+                </button>
+                <button type="button" class="nb-edit-ghost" @click="armed = false">
+                  继续编辑
+                </button>
+                <button type="button" class="nb-edit-submit" :disabled="!canSubmit" @click="submit">
+                  {{ localMode ? '先保存' : '先提交' }}
+                </button>
+              </template>
+
+              <template v-else>
+                <button type="button" class="nb-edit-ghost" :disabled="stage === 'submitting'" @click="pickImage">
+                  插图
+                </button>
+                <button
+                  v-if="!destination"
+                  type="button"
+                  class="nb-edit-ghost"
+                  :class="{ 'is-on': diffing }"
+                  :disabled="!changed"
+                  @click="toggleDiff"
+                >
+                  改动
+                </button>
+                <button type="button" class="nb-edit-ghost" :disabled="stage === 'submitting'" @click="showPreview">
+                  预览
+                </button>
+                <button
+                  type="button"
+                  class="nb-edit-submit"
+                  :disabled="!canSubmit || stage === 'submitting'"
+                  @click="submit"
+                >
+                  {{ stage === 'submitting'
+                    ? '提交中……'
+                    : localMode ? '保存到本地' : (destination ? '提交新页面' : '提交修改') }}
+                </button>
+              </template>
             </div>
 
             <p class="nb-edit-why" :class="{ 'is-bad': problem || armed }">
               {{ problem
-                || (armed ? '有未保存的改动。再点一次 ✕ 就会丢弃它们。' : '')
+                || (armed ? armedLead : '')
                 || progress
                 || blocker || (localMode
                   ? '保存会直接写入这个 markdown 文件。'
@@ -849,6 +918,12 @@ function close() {
   text-decoration: line-through;
 }
 
+.nb-new-issue {
+  flex: 1 0 100%;
+  font-size: 13px;
+  color: var(--vp-c-danger-1);
+}
+
 .nb-edit-syntax {
   display: flex;
   flex-wrap: wrap;
@@ -864,6 +939,24 @@ function close() {
 .nb-edit-syntax code {
   color: var(--vp-c-text-2);
   font-family: var(--nb-mono);
+}
+
+.nb-edit-outline {
+  font-size: 12px;
+  color: var(--vp-c-brand-1);
+}
+
+.nb-edit-outline:hover {
+  color: var(--vp-c-brand-2);
+}
+
+.nb-edit-ghost.is-danger {
+  color: var(--vp-c-danger-1);
+}
+
+.nb-edit-ghost.is-danger:hover:not(:disabled) {
+  color: var(--vp-c-danger-1);
+  border-color: var(--vp-c-danger-1);
 }
 
 .nb-edit-why.is-bad {
@@ -905,6 +998,11 @@ function close() {
 
   /* A writer does not need the file path; the screen is worth more. */
   .nb-edit-path {
+    display: none;
+  }
+
+  /* No keyboard to press it on. */
+  .nb-edit-key {
     display: none;
   }
 
