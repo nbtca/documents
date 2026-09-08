@@ -33,7 +33,7 @@ in the source.
 
 - `about/`, `tutorial/`, `process/` and `archived/` build their sidebars by scanning the directory. Add a markdown file and it appears; nothing else to edit.
 - `repair/` and `concepts/` carry no sidebar. Link a new page from its section index; search covers the rest.
-- `archived/` keeps the record as it stands.
+- `archived/` holds two kinds of page, told apart by `archive.source`. A page transcribed from an original follows that original word for word, typos included — correct the transcription, never the source. A page whose source is `协会自有记录` is this association's own record, filed by year, and reads like any other page.
 
 Scanned entries take their label from the page's H1 and sort by `order` in frontmatter, then by title. A page without `order` sorts to the end of its group.
 
