@@ -831,10 +831,10 @@ pnpm docs:preview
 
 简单记：
 
-| 命令 | 用途 |
-| --- | --- |
-| `pnpm docs:dev` | 开发时实时查看 |
-| `pnpm docs:build` | 构建正式网站 |
+| 命令                | 用途             |
+| ------------------- | ---------------- |
+| `pnpm docs:dev`     | 开发时实时查看   |
+| `pnpm docs:build`   | 构建正式网站     |
 | `pnpm docs:preview` | 检查正式构建结果 |
 
 平时修改文档主要使用：
@@ -1275,41 +1275,41 @@ flowchart LR
 
 ### 7.1 Terminal 常用命令
 
-| 命令 | 作用 |
-| --- | --- |
-| `pwd` | 查看当前位置 |
-| `ls` | 查看当前目录 |
-| `cd` | 切换目录 |
-| `mkdir` | 创建文件夹 |
-| `touch` | 创建文件 |
-| `mv` | 移动 / 重命名 |
-| `rm` | 删除 |
-| `open .` | macOS 打开当前目录 |
+| 命令         | 作用                 |
+| ------------ | -------------------- |
+| `pwd`        | 查看当前位置         |
+| `ls`         | 查看当前目录         |
+| `cd`         | 切换目录             |
+| `mkdir`      | 创建文件夹           |
+| `touch`      | 创建文件             |
+| `mv`         | 移动 / 重命名        |
+| `rm`         | 删除                 |
+| `open .`     | macOS 打开当前目录   |
 | `explorer .` | Windows 打开当前目录 |
 
 ### 7.2 Git 常用命令
 
-| 命令 | 作用 |
-| --- | --- |
-| `git clone` | 第一次下载仓库 |
-| `git pull` | 同步远程最新修改 |
-| `git status` | 查看修改状态 |
-| `git branch` | 查看分支 |
-| `git switch` | 切换分支 |
-| `git switch -c` | 创建并切换分支 |
-| `git add` | 加入暂存区 |
-| `git commit` | 创建提交 |
-| `git push` | 推送到 GitHub |
-| `git log` | 查看提交历史 |
+| 命令            | 作用             |
+| --------------- | ---------------- |
+| `git clone`     | 第一次下载仓库   |
+| `git pull`      | 同步远程最新修改 |
+| `git status`    | 查看修改状态     |
+| `git branch`    | 查看分支         |
+| `git switch`    | 切换分支         |
+| `git switch -c` | 创建并切换分支   |
+| `git add`       | 加入暂存区       |
+| `git commit`    | 创建提交         |
+| `git push`      | 推送到 GitHub    |
+| `git log`       | 查看提交历史     |
 
 ### 7.3 pnpm 常用命令
 
-| 命令 | 作用 |
-| --- | --- |
-| `pnpm install --frozen-lockfile` | 安装项目依赖 |
-| `pnpm docs:dev` | 启动实时开发预览 |
-| `pnpm docs:build` | 构建正式网站 |
-| `pnpm docs:preview` | 预览正式版本 |
+| 命令                             | 作用             |
+| -------------------------------- | ---------------- |
+| `pnpm install --frozen-lockfile` | 安装项目依赖     |
+| `pnpm docs:dev`                  | 启动实时开发预览 |
+| `pnpm docs:build`                | 构建正式网站     |
+| `pnpm docs:preview`              | 预览正式版本     |
 
 ### 7.4 macOS 无法访问 GitHub
 
