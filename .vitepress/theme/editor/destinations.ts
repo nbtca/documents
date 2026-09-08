@@ -4,6 +4,9 @@ export interface Destination {
   dir: string
   what: string
   how: string
+  // Only where the section has a shape to offer; elsewhere the page is one
+  // piece of prose and a skeleton would be an empty gesture.
+  outline?: string
   // No sidebar, so a page here is an orphan until the section index links it.
   hub?: boolean
 }
@@ -23,6 +26,7 @@ export const DESTINATIONS: Destination[] = [
     dir: 'tutorial/2025',
     what: '怎么做成一件具体的事',
     how: '一篇只解决一件事；先说清楚这篇要解决什么问题，再写步骤',
+    outline: '# \n\n## 这篇解决什么问题\n\n## 步骤\n',
   },
   {
     id: 'manual',
@@ -30,6 +34,7 @@ export const DESTINATIONS: Destination[] = [
     dir: 'tutorial/manual',
     what: '长期有效的操作手册，不绑定某一年',
     how: '开头说明适用范围；内容要经得起放两三年',
+    outline: '# \n\n## 适用范围\n',
   },
   {
     id: 'process',
@@ -37,6 +42,7 @@ export const DESTINATIONS: Destination[] = [
     dir: 'process/2025',
     what: '协会内部办事：报销、借教室、申请学分',
     how: '先说清楚谁在什么时候要办这件事，再按顺序写步骤',
+    outline: '# \n\n## 谁在什么时候要办\n\n## 步骤\n',
   },
   {
     id: 'concepts',
