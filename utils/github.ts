@@ -36,6 +36,19 @@ export class GitHubError extends Error {
   }
 }
 
+// GitHub's own wording is JSON aimed at whoever wrote the request. Say what
+// happened and what to do about it; the body goes to the console for us.
+const SAID: Record<number, string> = {
+  403: '这次操作被 GitHub 拒绝了，可能是短时间内提交太多。等几分钟再试。',
+  404: '找不到这个位置，可能刚被人改动过。刷新页面重新打开，再提交一次。',
+  409: '这一页刚被别人改过。刷新页面重新打开，把改动重做一遍再提交。',
+  422: 'GitHub 没有接受这次改动，可能同一处已经有人改了。刷新页面再试一次。',
+}
+
+function said(status: number): string {
+  return SAID[status] ?? `提交没有成功（GitHub 返回 ${status}）。稍后重试，仍旧不行就把这句话告诉维护者。`
+}
+
 async function call<T>(token: string, path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${API}${path}`, {
     ...init,
@@ -49,8 +62,8 @@ async function call<T>(token: string, path: string, init?: RequestInit): Promise
   })
 
   if (!response.ok) {
-    const body = await response.text()
-    throw new GitHubError(response.status, body.slice(0, 300))
+    console.error(`GitHub ${response.status} ${init?.method ?? 'GET'} ${path}`, await response.text())
+    throw new GitHubError(response.status, said(response.status))
   }
 
   return response.json() as Promise<T>
@@ -95,10 +108,12 @@ export async function currentUser(token: string): Promise<User> {
   return { login: user.login, avatarUrl: user.avatar_url }
 }
 
+const sleep = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms))
+
 export async function ensureFork(
   token: string,
   repo: Repo,
-  wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms)),
+  wait: (ms: number) => Promise<unknown> = sleep,
 ): Promise<Repo> {
   const created = await call<{ owner: { login: string }, name: string }>(
     token,
@@ -120,7 +135,30 @@ export async function ensureFork(
     }
   }
 
-  throw new GitHubError(202, 'GitHub 还在创建你的仓库副本，请稍后重试。')
+  throw new GitHubError(202, 'GitHub 还在创建你名下的仓库副本。等半分钟再点一次提交。')
+}
+
+// POST /forks answers 202 even for a fork that already exists, and the job it
+// queues makes writing a ref 404 for a few seconds. Objects write fine
+// throughout, so this is the one call that has to wait the job out.
+async function createRef(
+  token: string,
+  mine: string,
+  ref: string,
+  sha: string,
+  wait: (ms: number) => Promise<unknown>,
+): Promise<void> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      await call(token, `${mine}/git/refs`, { method: 'POST', body: JSON.stringify({ ref, sha }) })
+      return
+    }
+    catch (error) {
+      if (!(error instanceof GitHubError) || error.status !== 404 || attempt >= FORK_ATTEMPTS - 1)
+        throw error
+      await wait(FORK_INTERVAL_MS)
+    }
+  }
 }
 
 export async function openPullRequest(
@@ -128,6 +166,7 @@ export async function openPullRequest(
   repo: Repo,
   fork: Repo,
   edit: { files: FileChange[], title: string, body: string, branch: string },
+  wait: (ms: number) => Promise<unknown> = sleep,
 ): Promise<OpenedPull> {
   const upstream = `/repos/${repo.owner}/${repo.name}`
   const mine = `/repos/${fork.owner}/${fork.name}`
@@ -158,10 +197,7 @@ export async function openPullRequest(
     body: JSON.stringify({ message: edit.title, tree: written.sha, parents: [head.object.sha] }),
   })
 
-  await call(token, `${mine}/git/refs`, {
-    method: 'POST',
-    body: JSON.stringify({ ref: `refs/heads/${edit.branch}`, sha: made.sha }),
-  })
+  await createRef(token, mine, `refs/heads/${edit.branch}`, made.sha, wait)
 
   const pull = await call<{ number: number, html_url: string }>(token, `${upstream}/pulls`, {
     method: 'POST',

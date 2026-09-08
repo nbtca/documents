@@ -141,4 +141,48 @@ describe('pull request from a fork', () => {
     })
     expect(pull).toEqual({ number: 7, url: 'https://x/7', branch: 'edit/page' })
   })
+
+  // Observed against the live API: POST /forks answers 202 for a fork that
+  // already exists, and the ref write 404s until that job finishes.
+  it('waits out the fork refresh that makes the first ref write 404', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const seen = stubGitHub([
+      ['GET /repos/nbtca/documents/git/ref/heads/main', { body: { object: { sha: 'upstream-tip' } } }],
+      ['GET /repos/nbtca/documents/git/commits/upstream-tip', { body: { tree: { sha: 'upstream-tree' } } }],
+      ['POST /repos/mia/documents/git/blobs', { body: { sha: 'blob' } }],
+      ['POST /repos/mia/documents/git/trees', { body: { sha: 'tree' } }],
+      ['POST /repos/mia/documents/git/commits', { body: { sha: 'commit' } }],
+      ['POST /repos/mia/documents/git/refs', [{ status: 404 }, { status: 404 }, { body: {} }]],
+      ['POST /repos/nbtca/documents/pulls', { body: { number: 7, html_url: 'https://x/7' } }],
+    ])
+
+    const pull = await openPullRequest('t', UPSTREAM, FORK, {
+      files: [{ path: 'tutorial/2025/edu-email.md', content: '# 教育邮箱' }],
+      title: 'docs: fix a typo',
+      body: 'body',
+      branch: 'edit/page',
+    }, NOW)
+
+    expect(seen.filter(call => call.route.endsWith('/git/refs'))).toHaveLength(3)
+    expect(pull.number).toBe(7)
+  })
+
+  it('tells a member what to do rather than handing over GitHub JSON', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    stubGitHub([
+      ['GET /repos/nbtca/documents/git/ref/heads/main', {
+        status: 404,
+        body: { message: 'Not Found', documentation_url: 'https://docs.github.com/rest/git/refs' },
+      }],
+    ])
+
+    const error = await openPullRequest('t', UPSTREAM, FORK, {
+      files: [{ path: 'a.md', content: 'x' }],
+      title: 't',
+      body: 'b',
+      branch: 'edit/page',
+    }, NOW).then(() => undefined, (reason: Error) => reason)
+
+    expect(error?.message).toBe('找不到这个位置，可能刚被人改动过。刷新页面重新打开，再提交一次。')
+  })
 })

@@ -2,7 +2,7 @@ import type { Manifest } from '../../../utils/asset-manifest'
 import type { FileChange } from '../../../utils/github'
 import { addAsset } from '../../../utils/asset-manifest'
 import { branchNameFor, ensureFork, getFile, GitHubError, openPullRequest } from '../../../utils/github'
-import { endWithNewline } from '../../../utils/markdown'
+import { tidyBody } from '../../../utils/markdown'
 import { currentMember, forgetToken, githubToken } from './auth'
 
 const REPO = { owner: 'nbtca', name: 'documents' }
@@ -101,7 +101,7 @@ function changesFor(
   images: PendingImage[],
   registry: FileChange | undefined,
 ): FileChange[] {
-  const files: FileChange[] = [{ path, content: endWithNewline(content) }]
+  const files: FileChange[] = [{ path, content: tidyBody(content) }]
   if (registry)
     files.push(registry)
   for (const image of images)
