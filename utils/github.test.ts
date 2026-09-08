@@ -45,15 +45,23 @@ describe('branch name', () => {
   const at = new Date('2026-08-29T11:30:00Z')
 
   it('keeps the page readable in the branch', () => {
-    expect(branchNameFor('tutorial/2025/edu-email.md', at)).toBe('edit/tutorial-2025-edu-email-202608291130')
+    expect(branchNameFor('tutorial/2025/edu-email.md', at)).toBe('edit/tutorial-2025-edu-email-20260829113000')
   })
 
   it('leaves no empty ref component when the filename is all CJK', () => {
-    expect(branchNameFor('archived/2014/第七届.md', at)).toBe('edit/archived-2014-202608291130')
+    expect(branchNameFor('archived/2014/第七届.md', at)).toBe('edit/archived-2014-20260829113000')
   })
 
   it('still names a branch when nothing survives slugging', () => {
-    expect(branchNameFor('第七届.md', at)).toBe('edit/page-202608291130')
+    expect(branchNameFor('第七届.md', at)).toBe('edit/page-20260829113000')
+  })
+
+  // A minute-precision stamp collided when the same page was submitted twice
+  // in a row, and GitHub refused the second branch.
+  it('separates two submits of the same page a second apart', () => {
+    const later = new Date('2026-08-29T11:30:01Z')
+    const second = branchNameFor('tutorial/2025/edu-email.md', later)
+    expect(branchNameFor('tutorial/2025/edu-email.md', at)).not.toBe(second)
   })
 })
 
@@ -180,6 +188,36 @@ describe('pull request from a fork', () => {
 
     return { seen, pull }
   }
+
+  // Cutting from the tip at submit time turns "someone merged a change to
+  // this page while I was writing" into a clean single-file diff that quietly
+  // reverts them. Branching from what the writer read lets git see it.
+  it('branches from where the writing started, not from the tip', async () => {
+    const seen = stubGitHub([
+      ['GET /repos/nbtca/documents/git/ref/heads/main', { body: { object: { sha: 'moved-on' } } }],
+      ['GET /repos/nbtca/documents/git/commits/read-this', { body: { tree: { sha: 'read-tree' } } }],
+      ['POST /repos/mia/documents/git/blobs', { body: { sha: 'blob' } }],
+      ['POST /repos/mia/documents/git/trees', { body: { sha: 'tree' } }],
+      ['POST /repos/mia/documents/git/commits', { body: { sha: 'commit' } }],
+      ['POST /repos/mia/documents/git/refs', { body: {} }],
+      ['POST /repos/nbtca/documents/pulls', { body: { number: 7, html_url: 'https://x/7' } }],
+    ])
+
+    await openPullRequest('t', UPSTREAM, FORK, {
+      files: [{ path: 'tutorial/2025/edu-email.md', content: '# 教育邮箱' }],
+      title: 'docs: fix a typo',
+      body: 'body',
+      branch: 'edit/page',
+      base: 'read-this',
+    })
+
+    expect(seen.find(call => call.route.endsWith('/git/trees')))
+      .toMatchObject({ body: { base_tree: 'read-tree' } })
+    expect(seen.find(call => call.route.endsWith('/git/commits') && call.body))
+      .toMatchObject({ body: { parents: ['read-this'] } })
+    // The tip is never consulted when the starting point is known.
+    expect(seen.some(call => call.route.endsWith('/git/ref/heads/main'))).toBe(false)
+  })
 
   it('branches off upstream but writes into the fork', async () => {
     const { seen } = await open()
