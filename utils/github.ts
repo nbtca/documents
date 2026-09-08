@@ -129,6 +129,24 @@ async function existingFork(token: string, repo: Repo, login: string): Promise<R
   }
 }
 
+// A fork that has fallen behind refuses a ref pointing at an object it does
+// not hold yet, with a 404 — even though the object store is shared and the
+// blob, tree and commit all write fine. One fast-forward puts the object in
+// reach. A conflict here is not fatal: the branch is cut from upstream's tip
+// either way, so the sync is an optimisation, not a precondition.
+async function syncFork(token: string, fork: Repo): Promise<void> {
+  try {
+    await call(token, `/repos/${fork.owner}/${fork.name}/merge-upstream`, {
+      method: 'POST',
+      body: JSON.stringify({ branch: 'main' }),
+    })
+  }
+  catch (error) {
+    if (!(error instanceof GitHubError))
+      throw error
+  }
+}
+
 export async function ensureFork(
   token: string,
   repo: Repo,
@@ -140,8 +158,10 @@ export async function ensureFork(
   // starts nothing.
   const { login } = await currentUser(token)
   const already = await existingFork(token, repo, login)
-  if (already)
+  if (already) {
+    await syncFork(token, already)
     return already
+  }
 
   const created = await call<{ owner: { login: string }, name: string }>(
     token,
@@ -198,7 +218,6 @@ export async function openPullRequest(
   const upstream = `/repos/${repo.owner}/${repo.name}`
   const mine = `/repos/${fork.owner}/${fork.name}`
 
-  // Forks share the object store, so a stale fork needs no sync first.
   const head = await call<{ object: { sha: string } }>(token, `${upstream}/git/ref/heads/main`)
   const commit = await call<{ tree: { sha: string } }>(token, `${upstream}/git/commits/${head.object.sha}`)
 
