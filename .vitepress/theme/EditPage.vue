@@ -4,6 +4,7 @@ import type { Destination } from './editor/destinations'
 import { useData } from 'vitepress'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { extractH1, splitFrontmatter } from '../../utils/markdown'
+import { reviewNoteFor, transcribedFrom } from './editor/archive'
 import { isSignedIn, signIn, signOut } from './editor/auth'
 import { load, localMode, submit as send, startedAt, taken, me as whoami } from './editor/backend'
 import {
@@ -110,8 +111,15 @@ watch([draft, slug, summary], () => {
 
 watch(slug, () => (slugTaken.value = ''))
 
-// The archive transcribes originals; "correcting" one falsifies the record.
-const editable = computed(() => !page.value.filePath.startsWith('archived/'))
+// Only a page that transcribes an original is held to the original; a record
+// this association wrote itself is just a page, wherever it is filed.
+const transcribed = computed(() => transcribedFrom(page.value.frontmatter))
+
+const checklist = computed(() => {
+  if (destination.value)
+    return checklistFor(destination.value, slug.value)
+  return transcribed.value ? [reviewNoteFor(transcribed.value)] : undefined
+})
 
 watch([() => stage.value, host], async ([current, element]) => {
   if (current !== 'editing' || !element || editor)
@@ -306,7 +314,7 @@ async function submit() {
       author: member.value?.name ?? '',
       images: images.value,
       base: base.value,
-      checklist: at ? checklistFor(at, slug.value) : undefined,
+      checklist: checklist.value,
     }, step => (progress.value = step))
     for (const url of pendingUrls.values())
       URL.revokeObjectURL(url)
@@ -364,7 +372,7 @@ function insertOutline() {
       <a v-if="result.url" :href="result.url" target="_blank" rel="noreferrer">{{ result.label }}</a>
       <span v-else>{{ result.label }}</span>
     </p>
-    <button v-if="editable" type="button" class="nb-edit-open" @click="open">
+    <button type="button" class="nb-edit-open" @click="open">
       {{ signedIn ? '在本页编辑' : '登录后在本页编辑' }}
     </button>
     <button type="button" class="nb-edit-open is-secondary" @click="startNew">
@@ -413,6 +421,10 @@ function insertOutline() {
               </button>
             </div>
           </header>
+
+          <p v-if="transcribed && stage !== 'choosing'" class="nb-edit-origin">
+            这一页照录自「{{ transcribed }}」。原文的笔误是有意留着的，改动请只用来修正转写本身的错误。
+          </p>
 
           <div v-if="stage === 'choosing'" class="nb-pick">
             <p class="nb-pick-lead">
@@ -829,6 +841,18 @@ function insertOutline() {
 .nb-edit-note {
   font-size: 13px;
   color: var(--vp-c-text-3);
+}
+
+.nb-edit-origin {
+  width: 100%;
+  max-width: var(--nb-measure);
+  margin: 0 auto;
+  padding: 8px 21px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--vp-c-text-2);
+  background: var(--vp-c-bg-soft);
+  border-radius: 4px;
 }
 
 .nb-pick {
