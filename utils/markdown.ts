@@ -52,6 +52,18 @@ export function endWithNewline(source: string): string {
   return `${source.replace(/\s+$/, '')}\n`
 }
 
+// A member writing prose in a box trips MD012 and MD009 without ever seeing
+// them: the failure surfaces as a red check on a pull request they cannot
+// read. Neither fix changes what the page renders — except a deliberate
+// two-space hard break, which is kept.
+export function tidyBody(source: string): string {
+  return endWithNewline(
+    source
+      .replace(/[ \t]+$/gm, match => (match === '  ' ? '  ' : ''))
+      .replace(/\n{3,}/g, '\n\n'),
+  )
+}
+
 export function frontmatterValue(source: string, key: string): string | undefined {
   if (!source.startsWith('---'))
     return undefined

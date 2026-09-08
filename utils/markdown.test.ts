@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { endWithNewline, extractH1, extractSummary, extractTitle, frontmatterValue, routeFromHref, splitFrontmatter } from './markdown'
+import { endWithNewline, extractH1, extractSummary, extractTitle, frontmatterValue, routeFromHref, splitFrontmatter, tidyBody } from './markdown'
 
 const ORIGIN = 'https://docs.nbtca.space'
 
@@ -169,5 +169,25 @@ describe('file ending', () => {
 
   it('collapses trailing blank lines rather than leaving them', () => {
     expect(endWithNewline('# 标题\n\n正文。\n\n\n  \n')).toBe('# 标题\n\n正文。\n')
+  })
+})
+
+// A member cannot read the red check these rules produce on a pull request.
+describe('tidying a body written in the browser', () => {
+  it('collapses the blank run MD012 rejects', () => {
+    expect(tidyBody('# 标题\n\n\n\n正文。\n')).toBe('# 标题\n\n正文。\n')
+  })
+
+  it('drops the stray trailing space MD009 rejects', () => {
+    expect(tidyBody('正文。 \n下一行。\t\n')).toBe('正文。\n下一行。\n')
+  })
+
+  it('keeps a deliberate two-space hard break', () => {
+    expect(tidyBody('上一行。  \n下一行。\n')).toBe('上一行。  \n下一行。\n')
+  })
+
+  it('leaves a page that was already clean byte for byte', () => {
+    const page = '---\nmaintainers:\n  - user: m1ngsama\n---\n\n# 标题\n\n正文。\n'
+    expect(tidyBody(page)).toBe(page)
   })
 })
