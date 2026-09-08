@@ -25,6 +25,7 @@ const signedIn = ref(false)
 const member = ref<Me>()
 const progress = ref('')
 const armed = ref(false)
+const leaving = ref(false)
 const draft = ref('')
 const original = ref('')
 const base = ref<string>()
@@ -93,16 +94,18 @@ const canSubmit = computed(() => !blocker.value && !slugIssue.value)
 
 const armedLead = computed(() => {
   const verb = localMode ? '保存' : '提交'
+  const lead = leaving.value ? '退出登录会一起丢掉未保存的改动。' : '有未保存的改动。'
   if (blocker.value)
-    return `有未保存的改动。${blocker.value}，才能${verb}。`
+    return `${lead}${blocker.value}，才能${verb}。`
   if (slugIssue.value)
-    return `有未保存的改动。上面的网址名改好才能${verb}。`
-  return '有未保存的改动。'
+    return `${lead}上面的网址名改好才能${verb}。`
+  return lead
 })
 
 watch([draft, slug, summary], () => {
   problem.value = ''
   armed.value = false
+  leaving.value = false
 })
 
 watch(slug, () => (slugTaken.value = ''))
@@ -194,13 +197,17 @@ function backToEditing() {
 function onKey(event: KeyboardEvent) {
   if (event.key !== 'Escape')
     return
-  if (stage.value === 'previewing')
+  if (stage.value === 'previewing') {
     backToEditing()
-  else if (armed.value)
+  }
+  else if (armed.value) {
     armed.value = false
+    leaving.value = false
+  }
   // Escaping out of unsaved work would throw the draft away without asking.
-  else if (stage.value !== 'closed' && !changed.value)
+  else if (stage.value !== 'closed' && !changed.value) {
     close()
+  }
 }
 
 onMounted(() => window.addEventListener('keydown', onKey))
@@ -280,6 +287,7 @@ async function open() {
 
 async function submit() {
   armed.value = false
+  leaving.value = false
   stage.value = 'submitting'
   progress.value = ''
   try {
@@ -318,20 +326,27 @@ async function submit() {
   }
 }
 
-function close() {
+// Signing out closes the sheet too, so it goes through the same confirmation
+// rather than taking the draft with it unannounced.
+function close(andSignOut = false) {
   if (changed.value && !armed.value) {
     armed.value = true
+    leaving.value = andSignOut
     return
   }
   discard()
 }
 
 function discard() {
+  const out = leaving.value
   teardown()
   armed.value = false
+  leaving.value = false
   progress.value = ''
   stage.value = 'closed'
   result.value = undefined
+  if (out)
+    signOut()
 }
 
 function insertOutline() {
@@ -384,10 +399,16 @@ function insertOutline() {
                 >
                 {{ member.name }}
               </span>
-              <button v-if="!localMode && member?.name" type="button" class="nb-edit-signout" @click="signOut">
-                退出
+              <button v-if="!localMode && member?.name" type="button" class="nb-edit-signout" @click="close(true)">
+                退出登录
               </button>
-              <button type="button" class="nb-edit-close" :aria-label="armed ? '再点一次放弃改动并关闭' : '关闭'" @click="close">
+              <button
+                type="button"
+                class="nb-edit-close"
+                :aria-label="armed ? '再点一次放弃改动并关闭' : '关闭编辑器'"
+                title="关闭编辑器"
+                @click="close()"
+              >
                 ✕
               </button>
             </div>
@@ -662,9 +683,20 @@ function insertOutline() {
   color: var(--vp-c-text-1);
 }
 
+/* A 14px glyph next to a worded button reads as that button's icon. Give it
+   the 44px target the guidelines ask for, and room of its own. */
 .nb-edit-close {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: -10px -13px -10px 8px;
   font-size: 18px;
   color: var(--vp-c-text-3);
+}
+
+.nb-edit-close:hover {
+  color: var(--vp-c-text-1);
 }
 
 .nb-edit-area {
