@@ -91,7 +91,9 @@ export function branchNameFor(path: string, now = new Date()): string {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
-  const stamp = now.toISOString().slice(0, 16).replace(/[-:T]/g, '')
+  // To the second: a minute-precision stamp collides when the same page is
+  // submitted twice in a row, and GitHub refuses the second branch.
+  const stamp = now.toISOString().slice(0, 19).replace(/[-:T]/g, '')
   return `edit/${slug || 'page'}-${stamp}`
 }
 
@@ -108,6 +110,14 @@ export async function currentUser(token: string): Promise<User> {
   return { login: user.login, avatarUrl: user.avatar_url }
 }
 
+export async function headSha(token: string, repo: Repo, branch = 'main'): Promise<string> {
+  const ref = await call<{ object: { sha: string } }>(
+    token,
+    `/repos/${repo.owner}/${repo.name}/git/ref/heads/${branch}`,
+  )
+  return ref.object.sha
+}
+
 const sleep = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms))
 
 // A repository of the same name that is not a fork of this one is someone
@@ -118,7 +128,9 @@ async function existingFork(token: string, repo: Repo, login: string): Promise<R
       token,
       `/repos/${login}/${repo.name}`,
     )
-    return mine.fork && mine.parent?.full_name === `${repo.owner}/${repo.name}`
+    // GitHub treats owner and repository names case-insensitively.
+    const parent = mine.parent?.full_name.toLowerCase()
+    return mine.fork && parent === `${repo.owner}/${repo.name}`.toLowerCase()
       ? { owner: login, name: repo.name }
       : undefined
   }
@@ -212,14 +224,18 @@ export async function openPullRequest(
   token: string,
   repo: Repo,
   fork: Repo,
-  edit: { files: FileChange[], title: string, body: string, branch: string },
+  edit: { files: FileChange[], title: string, body: string, branch: string, base?: string },
   wait: (ms: number) => Promise<unknown> = sleep,
 ): Promise<OpenedPull> {
   const upstream = `/repos/${repo.owner}/${repo.name}`
   const mine = `/repos/${fork.owner}/${fork.name}`
 
-  const head = await call<{ object: { sha: string } }>(token, `${upstream}/git/ref/heads/main`)
-  const commit = await call<{ tree: { sha: string } }>(token, `${upstream}/git/commits/${head.object.sha}`)
+  // Branch from where the writing started, not from wherever main has moved
+  // to since. Cutting from the tip would rewrite whatever landed in between
+  // as a clean single-file diff, and nothing would report a conflict.
+  const base = edit.base
+    ?? (await call<{ object: { sha: string } }>(token, `${upstream}/git/ref/heads/main`)).object.sha
+  const commit = await call<{ tree: { sha: string } }>(token, `${upstream}/git/commits/${base}`)
 
   const tree = await Promise.all(edit.files.map(async (file) => {
     const blob = await call<{ sha: string }>(token, `${mine}/git/blobs`, {
@@ -240,7 +256,7 @@ export async function openPullRequest(
 
   const made = await call<{ sha: string }>(token, `${mine}/git/commits`, {
     method: 'POST',
-    body: JSON.stringify({ message: edit.title, tree: written.sha, parents: [head.object.sha] }),
+    body: JSON.stringify({ message: edit.title, tree: written.sha, parents: [base] }),
   })
 
   await createRef(token, mine, `refs/heads/${edit.branch}`, made.sha, wait)

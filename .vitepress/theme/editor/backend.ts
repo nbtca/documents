@@ -1,7 +1,7 @@
 import type { Manifest } from '../../../utils/asset-manifest'
 import type { FileChange } from '../../../utils/github'
 import { addAsset } from '../../../utils/asset-manifest'
-import { branchNameFor, ensureFork, getFile, GitHubError, openPullRequest } from '../../../utils/github'
+import { branchNameFor, ensureFork, getFile, GitHubError, headSha, openPullRequest } from '../../../utils/github'
 import { tidyBody } from '../../../utils/markdown'
 import { currentMember, forgetToken, githubToken } from './auth'
 
@@ -66,6 +66,14 @@ export async function load(path: string): Promise<Loaded> {
   return withToken(token => getFile(token, REPO, path))
 }
 
+// Recorded when the sheet opens, so the branch can be cut from what the
+// writer actually read rather than from wherever main has moved to since.
+export async function startedAt(): Promise<string | undefined> {
+  if (localMode)
+    return undefined
+  return withToken(token => headSha(token, REPO))
+}
+
 // A new page is written blind; an occupied path must be refused, not taken.
 export async function taken(path: string): Promise<boolean> {
   if (localMode) {
@@ -124,6 +132,7 @@ export async function submit(
     author: string
     images: PendingImage[]
     checklist?: string[]
+    base?: string
   },
   onStep: (step: string) => void = () => {},
 ): Promise<Submitted> {
@@ -150,6 +159,7 @@ export async function submit(
       title: `docs: ${edit.summary}`,
       body: bodyFor(edit),
       branch: branchNameFor(path),
+      base: edit.base,
     })
 
     return { label: `已提交 #${pull.number}`, url: pull.url }

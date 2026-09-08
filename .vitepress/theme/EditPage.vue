@@ -5,7 +5,7 @@ import { useData } from 'vitepress'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { extractH1, splitFrontmatter } from '../../utils/markdown'
 import { isSignedIn, signIn, signOut } from './editor/auth'
-import { load, localMode, submit as send, taken, me as whoami } from './editor/backend'
+import { load, localMode, submit as send, startedAt, taken, me as whoami } from './editor/backend'
 import {
   checklistFor,
   DESTINATIONS,
@@ -27,7 +27,7 @@ const progress = ref('')
 const armed = ref(false)
 const draft = ref('')
 const original = ref('')
-const blobSha = ref('')
+const base = ref<string>()
 const summary = ref('')
 const head = ref('')
 const problem = ref('')
@@ -227,6 +227,7 @@ function reset() {
   summary.value = ''
   destination.value = undefined
   head.value = ''
+  base.value = undefined
 }
 
 // The editor mounts once per sheet; a second choice needs a fresh one.
@@ -245,13 +246,13 @@ async function startNew() {
   chooseAgain()
 }
 
-function chose(choice: Destination) {
+async function chose(choice: Destination) {
   destination.value = choice
   head.value = frontmatterFor(member.value?.name ?? '')
   original.value = ''
   draft.value = ''
-  blobSha.value = ''
   stage.value = 'editing'
+  base.value = await startedAt().catch(() => undefined)
 }
 
 async function open() {
@@ -263,12 +264,12 @@ async function open() {
   reset()
   stage.value = 'loading'
   try {
-    const file = await load(page.value.filePath)
+    const [file, from] = await Promise.all([load(page.value.filePath), startedAt()])
     const parts = splitFrontmatter(file.content)
     head.value = parts.head
     original.value = parts.body
     draft.value = parts.body
-    blobSha.value = file.sha
+    base.value = from
     stage.value = 'editing'
   }
   catch (error) {
@@ -296,6 +297,7 @@ async function submit() {
       summary: summary.value.trim(),
       author: member.value?.name ?? '',
       images: images.value,
+      base: base.value,
       checklist: at ? checklistFor(at, slug.value) : undefined,
     }, step => (progress.value = step))
     for (const url of pendingUrls.values())

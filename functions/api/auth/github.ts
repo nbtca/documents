@@ -24,7 +24,8 @@ export async function onRequestPost(
   if (!env.GITHUB_CLIENT_SECRET)
     return json({ error: 'not_configured' }, 503)
 
-  const { code } = await request.json() as { code?: string }
+  const sent = await request.json().catch(() => undefined) as { code?: string } | undefined
+  const code = sent?.code
   if (!code)
     return json({ error: 'missing_code' }, 400)
 
