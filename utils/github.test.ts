@@ -67,10 +67,41 @@ describe('forking', () => {
   // POST /forks queues a sync job on a fork that already exists, and the fork
   // refuses ref writes while it runs — the whole first submit then fails.
   it('does not ask GitHub to fork again when the fork is already there', async () => {
-    const seen = stubGitHub([ME, ['GET /repos/mia/documents', MINE]])
+    const seen = stubGitHub([
+      ME,
+      ['GET /repos/mia/documents', MINE],
+      ['POST /repos/mia/documents/merge-upstream', { body: { merge_type: 'fast-forward' } }],
+    ])
 
     expect(await ensureFork('t', UPSTREAM, NOW)).toEqual({ owner: 'mia', name: 'documents' })
-    expect(seen.filter(call => call.route.startsWith('POST'))).toEqual([])
+    expect(seen.some(call => call.route === 'POST /repos/nbtca/documents/forks')).toBe(false)
+  })
+
+  // Measured live: with the fork fifteen months behind, writing the ref 404s;
+  // one fast-forward and the identical write returns 201.
+  it('fast-forwards a fork that has fallen behind before writing to it', async () => {
+    const seen = stubGitHub([
+      ME,
+      ['GET /repos/mia/documents', MINE],
+      ['POST /repos/mia/documents/merge-upstream', { body: { merge_type: 'fast-forward' } }],
+    ])
+
+    await ensureFork('t', UPSTREAM, NOW)
+    expect(seen.at(-1)).toMatchObject({
+      route: 'POST /repos/mia/documents/merge-upstream',
+      body: { branch: 'main' },
+    })
+  })
+
+  it('goes on submitting when the fork cannot be fast-forwarded', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    stubGitHub([
+      ME,
+      ['GET /repos/mia/documents', MINE],
+      ['POST /repos/mia/documents/merge-upstream', { status: 409 }],
+    ])
+
+    expect(await ensureFork('t', UPSTREAM, NOW)).toEqual({ owner: 'mia', name: 'documents' })
   })
 
   it('forks when a repository of that name is somebody else, not the fork', async () => {
