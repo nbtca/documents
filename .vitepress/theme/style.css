@@ -302,25 +302,6 @@
   margin-top: 10px;
 }
 
-.nb-history-avatar {
-  border-radius: 50%;
-  background: var(--vp-c-bg);
-}
-
-.nb-history {
-  margin-top: 10px;
-}
-
-.nb-history ol {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.nb-history li {
-  margin: 0;
-}
-
 .nb-page-card a.nb-history-item,
 .nb-page-card a.nb-history-item:hover {
   text-decoration: none;
@@ -343,7 +324,6 @@
   padding: 5px 0;
 }
 
-.nb-history-item + .nb-history-item,
 .nb-history li + li .nb-history-item {
   border-top: 1px dashed var(--vp-c-divider);
 }

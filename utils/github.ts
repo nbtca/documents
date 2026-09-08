@@ -141,11 +141,8 @@ async function existingFork(token: string, repo: Repo, login: string): Promise<R
   }
 }
 
-// A fork that has fallen behind refuses a ref pointing at an object it does
-// not hold yet, with a 404 — even though the object store is shared and the
-// blob, tree and commit all write fine. One fast-forward puts the object in
-// reach. A conflict here is not fatal: the branch is cut from upstream's tip
-// either way, so the sync is an optimisation, not a precondition.
+// A stale fork 404s a ref pointing at an object it does not hold yet, though
+// blob, tree and commit all write. Best effort: the branch cuts from upstream.
 async function syncFork(token: string, fork: Repo): Promise<void> {
   try {
     await call(token, `/repos/${fork.owner}/${fork.name}/merge-upstream`, {
@@ -164,10 +161,8 @@ export async function ensureFork(
   repo: Repo,
   wait: (ms: number) => Promise<unknown> = sleep,
 ): Promise<Repo> {
-  // POST /forks on a fork that already exists queues a sync job, and while
-  // that job runs the fork refuses ref writes with a 404 — for far longer on
-  // a fork that is a year behind. Asking whether it exists costs one GET and
-  // starts nothing.
+  // POST /forks on an existing fork queues a sync, and ref writes 404 until it
+  // finishes. Asking whether it exists costs one GET and starts nothing.
   const { login } = await currentUser(token)
   const already = await existingFork(token, repo, login)
   if (already) {
@@ -240,11 +235,7 @@ export async function openPullRequest(
   const tree = await Promise.all(edit.files.map(async (file) => {
     const blob = await call<{ sha: string }>(token, `${mine}/git/blobs`, {
       method: 'POST',
-      body: JSON.stringify(
-        file.base64
-          ? { content: file.content, encoding: 'base64' }
-          : { content: file.content, encoding: 'utf-8' },
-      ),
+      body: JSON.stringify({ content: file.content, encoding: file.base64 ? 'base64' : 'utf-8' }),
     })
     return { path: file.path, mode: '100644', type: 'blob', sha: blob.sha }
   }))

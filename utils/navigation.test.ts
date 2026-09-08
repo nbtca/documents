@@ -29,15 +29,9 @@ afterAll(() => {
 })
 
 describe('listMarkdownFiles', () => {
-  it('should filter index.md by default', () => {
+  it('should list markdown files and leave out index.md', () => {
     const files = listMarkdownFiles(tempDir).map(file => file.filename)
     expect(files).toEqual(['test1.md', 'test2.md'])
-  })
-
-  it('should include index.md when requested', () => {
-    const files = listMarkdownFiles(tempDir, { includeIndex: true })
-      .map(file => file.filename)
-    expect(files).toEqual(['index.md', 'test1.md', 'test2.md'])
   })
 })
 

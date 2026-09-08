@@ -147,10 +147,9 @@ export default withMermaid({
   },
   // Split page metadata out of app.js so content-only edits keep its hash.
   metaChunk: true,
-  // mermaid dynamically imports one chunk per diagram type, and the build
-  // preloads all of them on every page — ~940 KB on a page with no diagram at
-  // all. Drop the eager hint; the chunks still load when a diagram needs them.
-  shouldPreload: link => !/diagram|-definition-|dagre-|cose-bilkent|cytoscape|katex|wardley|mermaid/i.test(link),
+  // mermaid preloads one chunk per diagram type on every page. Match them by
+  // esbuild's -XXXXXXXX suffix; naming them one by one kept missing some.
+  shouldPreload: link => !/-[A-Z0-9]{8}\.|cytoscape|katex|mermaid/.test(link),
   // Asset URLs in props of our own components are plain strings to the
   // compiler; without this they ship unhashed and 404 in production. This map
   // replaces Vue's defaults wholesale, so the built-in tags are repeated here.

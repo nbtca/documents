@@ -1,5 +1,5 @@
 import type { DefaultTheme } from 'vitepress'
-import { readdirSync, readFileSync, statSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { extractTitle, frontmatterValue } from './markdown'
@@ -10,10 +10,6 @@ export interface MarkdownFile {
   filename: string
   filepath: string
   stem: string
-}
-
-export interface ListMarkdownOptions {
-  includeIndex?: boolean
 }
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -54,7 +50,7 @@ export function relativePageLink(filenameOrSlug: string): string {
   return markdownStem(filenameOrSlug)
 }
 
-export function page(text: string, link: string): SidebarItem {
+function page(text: string, link: string): SidebarItem {
   return { text, link }
 }
 
@@ -66,32 +62,11 @@ export function pageInSection(
   return page(text, pageLink(basePath, filenameOrSlug))
 }
 
-export function pageInGroup(text: string, filenameOrSlug: string): SidebarItem {
-  return page(text, relativePageLink(filenameOrSlug))
-}
-
-export function group(options: {
-  text: string
-  items: SidebarItem[]
-  base?: string
-  collapsed?: boolean
-}): SidebarItem {
-  return options
-}
-
-export function listMarkdownFiles(
-  dirname: string,
-  options: ListMarkdownOptions = {},
-): MarkdownFile[] {
+export function listMarkdownFiles(dirname: string): MarkdownFile[] {
   const dirpath = resolveContentDir(dirname)
 
   return readdirSync(dirpath)
-    .filter((filename) => {
-      if (!filename.endsWith('.md'))
-        return false
-
-      return options.includeIndex === true || filename !== 'index.md'
-    })
+    .filter(filename => filename.endsWith('.md') && filename !== 'index.md')
     .sort()
     .map(filename => ({
       filename,
@@ -101,18 +76,9 @@ export function listMarkdownFiles(
 }
 
 export function listDirectories(dirname: string): string[] {
-  const dirpath = resolveContentDir(dirname)
-
-  return readdirSync(dirpath)
-    .filter((filename) => {
-      try {
-        return !filename.startsWith('.')
-          && statSync(path.join(dirpath, filename)).isDirectory()
-      }
-      catch {
-        return false
-      }
-    })
+  return readdirSync(resolveContentDir(dirname), { withFileTypes: true })
+    .filter(entry => entry.isDirectory() && !entry.name.startsWith('.'))
+    .map(entry => entry.name)
     .sort()
 }
 
