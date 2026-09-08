@@ -32,3 +32,5 @@ archive:
 计算机协会
 
 二 0 0 七年 12 月 29 日
+
+<!-- pre-merge regression check -->
