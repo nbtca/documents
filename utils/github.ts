@@ -110,11 +110,39 @@ export async function currentUser(token: string): Promise<User> {
 
 const sleep = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms))
 
+// A repository of the same name that is not a fork of this one is someone
+// else's work; forking gives it a name of GitHub's choosing instead.
+async function existingFork(token: string, repo: Repo, login: string): Promise<Repo | undefined> {
+  try {
+    const mine = await call<{ fork: boolean, parent?: { full_name: string } }>(
+      token,
+      `/repos/${login}/${repo.name}`,
+    )
+    return mine.fork && mine.parent?.full_name === `${repo.owner}/${repo.name}`
+      ? { owner: login, name: repo.name }
+      : undefined
+  }
+  catch (error) {
+    if (error instanceof GitHubError && error.status === 404)
+      return undefined
+    throw error
+  }
+}
+
 export async function ensureFork(
   token: string,
   repo: Repo,
   wait: (ms: number) => Promise<unknown> = sleep,
 ): Promise<Repo> {
+  // POST /forks on a fork that already exists queues a sync job, and while
+  // that job runs the fork refuses ref writes with a 404 — for far longer on
+  // a fork that is a year behind. Asking whether it exists costs one GET and
+  // starts nothing.
+  const { login } = await currentUser(token)
+  const already = await existingFork(token, repo, login)
+  if (already)
+    return already
+
   const created = await call<{ owner: { login: string }, name: string }>(
     token,
     `/repos/${repo.owner}/${repo.name}/forks`,
@@ -138,9 +166,8 @@ export async function ensureFork(
   throw new GitHubError(202, 'GitHub 还在创建你名下的仓库副本。等半分钟再点一次提交。')
 }
 
-// POST /forks answers 202 even for a fork that already exists, and the job it
-// queues makes writing a ref 404 for a few seconds. Objects write fine
-// throughout, so this is the one call that has to wait the job out.
+// A fork refuses ref writes for a few seconds after the job that created it,
+// while objects write fine throughout. This is the one call that waits it out.
 async function createRef(
   token: string,
   mine: string,

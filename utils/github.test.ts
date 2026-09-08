@@ -61,9 +61,34 @@ describe('forking', () => {
   afterEach(() => vi.unstubAllGlobals())
 
   const FORKED = { body: { owner: { login: 'mia' }, name: 'documents' }, status: 202 }
+  const ME = ['GET /user', { body: { login: 'mia' } }] as const
+  const MINE = { body: { fork: true, parent: { full_name: 'nbtca/documents' } } }
+
+  // POST /forks queues a sync job on a fork that already exists, and the fork
+  // refuses ref writes while it runs — the whole first submit then fails.
+  it('does not ask GitHub to fork again when the fork is already there', async () => {
+    const seen = stubGitHub([ME, ['GET /repos/mia/documents', MINE]])
+
+    expect(await ensureFork('t', UPSTREAM, NOW)).toEqual({ owner: 'mia', name: 'documents' })
+    expect(seen.filter(call => call.route.startsWith('POST'))).toEqual([])
+  })
+
+  it('forks when a repository of that name is somebody else, not the fork', async () => {
+    const seen = stubGitHub([
+      ME,
+      ['GET /repos/mia/documents', { body: { fork: false } }],
+      ['POST /repos/nbtca/documents/forks', FORKED],
+      ['GET /repos/mia/documents/git/ref/heads/main', { body: { object: { sha: 'a' } } }],
+    ])
+
+    await ensureFork('t', UPSTREAM, NOW)
+    expect(seen.some(call => call.route === 'POST /repos/nbtca/documents/forks')).toBe(true)
+  })
 
   it('names the fork from what GitHub actually created', async () => {
     stubGitHub([
+      ME,
+      ['GET /repos/mia/documents', { status: 404 }],
       ['POST /repos/nbtca/documents/forks', FORKED],
       ['GET /repos/mia/documents/git/ref/heads/main', { body: { object: { sha: 'a' } } }],
     ])
@@ -73,6 +98,8 @@ describe('forking', () => {
 
   it('waits out the queue instead of failing on a first-time fork', async () => {
     const seen = stubGitHub([
+      ME,
+      ['GET /repos/mia/documents', { status: 404 }],
       ['POST /repos/nbtca/documents/forks', FORKED],
       ['GET /repos/mia/documents/git/ref/heads/main', [
         { status: 404 },
@@ -82,11 +109,13 @@ describe('forking', () => {
     ])
 
     await ensureFork('t', UPSTREAM, NOW)
-    expect(seen.filter(call => call.route.startsWith('GET'))).toHaveLength(3)
+    expect(seen.filter(call => call.route.endsWith('/git/ref/heads/main'))).toHaveLength(3)
   })
 
   it('gives up rather than looping forever', async () => {
     stubGitHub([
+      ME,
+      ['GET /repos/mia/documents', { status: 404 }],
       ['POST /repos/nbtca/documents/forks', FORKED],
       ['GET /repos/mia/documents/git/ref/heads/main', { status: 404 }],
     ])
