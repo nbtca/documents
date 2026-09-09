@@ -21,7 +21,7 @@ macOS 的默认 shell 是 zsh，[Apple 的说明](https://support.apple.com/en-u
 
 ## 命令查找顺序
 
-shell 先判断是否为内建命令或函数，否则按 `PATH` 中的目录从左到右查找，取第一个命中的。这套查找次序由 [POSIX 的 Shell Command Language](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html) 规定。
+shell 先判断是否为内建命令或函数，否则按 [`PATH`](https://pubs.opengroup.org/onlinepubs/9799919799/basedefs/V1_chap08.html#tag_08_03) 中的目录从左到右查找，取第一个命中的。这套次序由 POSIX 的 [Command Search and Execution](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html#tag_19_09_01_04) 规定。
 
 ```bash
 echo $PATH
@@ -64,7 +64,7 @@ source ~/.zshrc
 
 ## 环境变量与继承
 
-shell 变量默认只属于当前 shell，`export` 将其变为环境变量，此后启动的子进程获得一份副本。
+shell 变量默认只属于当前 shell，`export` 将其变为[环境变量](https://pubs.opengroup.org/onlinepubs/9799919799/basedefs/V1_chap08.html#tag_08_01)，此后启动的子进程获得一份副本。
 
 ```bash
 FOO=bar          # 仅当前 shell 可见
@@ -86,7 +86,7 @@ cd "My Documents"
 
 ## 引号与展开
 
-[zsh 手册的 Expansion 一章](https://zsh.sourceforge.io/Doc/Release/Expansion.html)列出了 shell 在执行前对命令行做的各类展开。落到日常，同一字符串在三种写法下的处理不同：
+[zsh 手册的 Expansion 一章](https://zsh.sourceforge.io/Doc/Release/Expansion.html)列出了 shell 在执行前对命令行做的各类展开，对应 POSIX 的 [Word Expansions](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html#tag_19_06)。三个相关规则各有出处：[引号](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html#tag_19_02)决定哪些字符失去特殊含义，[字段拆分](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html#tag_19_06_05)决定展开结果按什么拆成多个参数，[模式匹配](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html#tag_19_14)定义 `*` `?` `[...]` 的含义。落到日常，同一字符串在三种写法下的处理不同：
 
 | 写法      | 变量展开 | 通配符展开 | 按空格拆词 |
 | --------- | -------- | ---------- | ---------- |
@@ -98,7 +98,7 @@ cd "My Documents"
 
 ## 退出码、管道与重定向
 
-命令结束时留下退出码，`0` 为成功，非 `0` 为失败。
+命令结束时留下[退出码](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html#tag_19_08_02)，`0` 为成功，非 `0` 为失败。下面用到的[管道](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html#tag_19_09_02)与[重定向](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html#tag_19_07)语法同样由 POSIX 规定。
 
 ```bash
 curl -fsS https://example.com > /dev/null

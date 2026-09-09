@@ -14,29 +14,29 @@ maintainers:
 执行 `git clone https://github.com/nbtca/documents.git`，在拿到第一个字节前依次发生：
 
 1. **域名解析**：把 `github.com` 变成 IP 地址；
-2. **TCP 连接**：与该 IP 的 443 端口完成三次握手；
+2. **TCP 连接**：与该 IP 的 443 端口完成[三次握手](https://www.rfc-editor.org/rfc/rfc9293#section-3.5)；
 3. **TLS 握手**：在这条 TCP 连接上协商加密、验证证书；
 4. **HTTP 请求**：在加密通道内发出请求。
 
 四个阶段互相独立，任何一步都可能单独失败。排查时先确定卡在第几步。
 
-IP 地址定位到机器，端口定位到机器上的哪个程序。HTTP 默认 80，HTTPS 默认 443，SSH 默认 22。端口被网络屏蔽时，症状是域名解析正常但 TCP 握手超时。
+IP 地址定位到机器，端口定位到机器上的哪个程序。默认端口由 [IANA 的端口号注册表](https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml)统一登记，HTTP 是 80，HTTPS 是 443，SSH 是 22。端口被网络屏蔽时，症状是域名解析正常但 TCP 握手超时。
 
 ## 域名解析
 
-程序自己不做完整解析，而是调用系统的 stub resolver，由它去问递归解析器；递归解析器依次问根、顶级域和权威服务器，缓存结果后返回。这套分工在 [RFC 1034 §5](https://www.rfc-editor.org/rfc/rfc1034#section-5) 里有定义。本机 `hosts` 文件优先于这一流程。
+程序自己不做完整解析，而是调用系统的 stub resolver，由它去问递归解析器；递归解析器依次问根、顶级域和权威服务器，缓存结果后返回。这套分工见 [RFC 1034 §5](https://www.rfc-editor.org/rfc/rfc1034#section-5)，其中 stub resolver、递归解析器、权威服务器这几个词的准确定义见 [RFC 8499 §6](https://www.rfc-editor.org/rfc/rfc8499#section-6)。本机 `hosts` 文件优先于这一流程。
 
 域名解析与随后的 TCP 连接是两件独立的事：由谁解析、在哪台机器上解析，可以和由谁发起连接分开。[SOCKS 代理](#socks-代理)那一节建立在这个区分上。
 
 ## TLS 与 SNI
 
-TLS 握手跑在 TCP 之上，当前版本是 [RFC 8446](https://www.rfc-editor.org/rfc/rfc8446) 定义的 TLS 1.3。客户端在 ClientHello 中带 [SNI 扩展](https://www.rfc-editor.org/rfc/rfc6066#section-3)说明目标域名——一个 IP 上可能挂着数百个站点，服务器需要据此选择证书。
+TLS 握手跑在 TCP 之上，当前版本是 [RFC 8446](https://www.rfc-editor.org/rfc/rfc8446) 定义的 TLS 1.3。客户端在 [ClientHello](https://www.rfc-editor.org/rfc/rfc8446#section-4.1.2) 中带 [SNI 扩展](https://www.rfc-editor.org/rfc/rfc6066#section-3)说明目标域名——一个 IP 上可能挂着数百个站点，服务器需要据此选择证书。
 
 SNI 是明文的，链路上的任何一跳即使无法解密内容也能读到目标域名。
 
 ## HTTP 代理
 
-明文 HTTP 下代理能读懂请求，客户端把绝对 URL 写进请求行，由代理转发。
+明文 HTTP 下代理能读懂请求，客户端把绝对 URL 写进[请求行的 request-target](https://www.rfc-editor.org/rfc/rfc9112#section-3.2)，由代理转发。
 
 HTTPS 下代理没有密钥，读不了加密连接，于是用 CONNECT。[RFC 9110 §9.3.6](https://httpwg.org/specs/rfc9110.html#CONNECT)：
 
@@ -93,11 +93,11 @@ curl 定义的变量：
 | `ALL_PROXY`   | 未设置协议专用变量时的兜底           |
 | `NO_PROXY`    | 不走代理的主机列表，`*` 表示全部不走 |
 
-`NO_PROXY` 的匹配规则同样由实现决定。按 [`--noproxy`](https://curl.se/docs/manpage.html#--noproxy) 的说明，curl 按域名包含关系匹配：`local.com` 匹配 `local.com`、`local.com:80` 和 `www.local.com`，不匹配 `www.notlocal.com`；7.86.0 起支持 CIDR 写法，`192.168.0.0/16` 匹配所有 `192.168.` 开头的地址。
+`NO_PROXY` 的匹配规则同样由实现决定。按 [`--noproxy`](https://curl.se/docs/manpage.html#--noproxy) 的说明，curl 按域名包含关系匹配：`local.com` 匹配 `local.com`、`local.com:80` 和 `www.local.com`，不匹配 `www.notlocal.com`；7.86.0 起支持 [CIDR](https://www.rfc-editor.org/rfc/rfc4632) 写法，`192.168.0.0/16` 匹配所有 `192.168.` 开头的地址。
 
 ### 浏览器能通而终端不通
 
-浏览器跟随操作系统的代理设置，终端里的程序不读该设置，只读自身进程环境里的变量。而环境变量在创建子进程时继承，于是：
+浏览器跟随操作系统的代理设置，终端里的程序不读该设置，只读自身进程环境里的[环境变量](https://pubs.opengroup.org/onlinepubs/9799919799/basedefs/V1_chap08.html#tag_08_01)。而环境变量在创建子进程时继承，于是：
 
 - `export` 只对此后从该窗口启动的程序生效；
 - 已在运行的程序不受影响。
