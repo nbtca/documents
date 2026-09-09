@@ -195,7 +195,7 @@ git switch -c docs/你这次要做的事
 
 **验证**：`git branch` 的输出里，`*` 应该在你新建的分支上。
 
-分支到底是什么，见 [Git 的理念与模型](/tutorial/git-concepts#引用只是指针)。
+分支到底是什么，见 [Git 的理念与模型](/tutorial/git-concepts#分支只是一个指针)。
 
 ### 第七步：改，并且看着改
 
@@ -225,7 +225,7 @@ git commit -m "docs: 用英文一句话说清这次改了什么"
 
 **验证**：`git log --oneline -1` 能看到你刚写的那条。
 
-`add` 和 `commit` 分两步的原因，见 [Git 的理念与模型](/tutorial/git-concepts#三个区)。
+`add` 和 `commit` 分两步的原因，见 [Git 的理念与模型](/tutorial/git-concepts#工作区、索引、head)。
 
 ### 第九步：推送前先自查
 
