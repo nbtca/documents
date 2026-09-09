@@ -64,6 +64,10 @@ pnpm install --frozen-lockfile
 
 结尾的 `**` 前面是标点时，它后面就必须是空白或标点，否则不构成结束标记。开头的 `**` 有一条[对称的规则](https://spec.commonmark.org/0.31.2/#left-flanking-delimiter-run)。
 
+::: tip 下面这张表怎么来的
+逐条输入本仓库使用的 markdown-it 渲染后比对结果，不是照抄规范推演的。换一个 Markdown 实现，边界行为可能不同。
+:::
+
 用本仓库的 markdown-it 逐个试过，规律很清楚：
 
 | 输入                   | 是否生效 |
@@ -118,7 +122,7 @@ pnpm install --frozen-lockfile
 
 `pnpm run ci:lint` 跑 [markdownlint](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md)。本站关掉了四条规则：行长度不限（MD013）、允许内联 HTML（MD033）、首行不必是标题（MD041）、强调符号风格不限（MD049）。
 
-其余规则都开着。实测最常触发的是这九条：
+其余规则都开着。拿一个故意写坏的文件跑过一遍，实际触发的是这九条：
 
 | 规则  | 什么情况触发             | 怎么改                             |
 | ----- | ------------------------ | ---------------------------------- |

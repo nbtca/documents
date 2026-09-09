@@ -32,6 +32,10 @@ maintainers:
 }
 ```
 
+::: warning 版本会变
+本页写到的 Node 与 pnpm 版本、以及 Corepack 的分发区间，都会随上游发布而变化。最后核对 2026-09。动手前请以 `package.json` 里的 `engines`、`packageManager` 两个字段和 [Node 官方发布计划](https://nodejs.org/en/about/previous-releases)为准。
+:::
+
 `^22` 的意思是 22.x 的任何版本，不能是 23 或更高。Node 22 目前仍是[长期支持版本](https://nodejs.org/en/about/previous-releases)。装了别的大版本，`pnpm install` 会打印一行 `Unsupported engine` 警告。
 
 pnpm 必须是 9.0.0。版本对不上可能写出与仓库 lockfile 不兼容的结果。

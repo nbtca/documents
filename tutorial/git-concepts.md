@@ -160,6 +160,10 @@ Unix 一支用 `LF` 换行，Windows 传统上用 `CRLF`。同一个文件，Win
 
 按平台的常规配置是 Windows 上 `true`、macOS 与 Linux 上 `input`。更稳妥的做法是在仓库里放一个 [`.gitattributes`](https://git-scm.com/docs/gitattributes)，把规则跟着仓库走，不依赖每个人的本机设置。
 
+::: warning 以仓库的实际配置为准
+本仓库当前怎么处理换行符，看根目录下有没有 `.gitattributes` 以及它写了什么。仓库里的设置盖过你本机的 `core.autocrlf`，改本机配置之前先看仓库。
+:::
+
 ### 大小写
 
 Windows 与 macOS 的默认文件系统不区分大小写，Linux 区分。你在 Mac 上把 `Readme.md` 改名为 `readme.md`，Git 可能认为什么都没变，而 Linux 上的 CI 会因为找不到文件而失败。

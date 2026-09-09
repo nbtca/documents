@@ -62,7 +62,11 @@ winget install GitHub.cli
 
 :::
 
-**Linux 上装 `gh` 要注意**：只有 Arch 的官方库带它。Debian、Ubuntu、Fedora 都需要先添加 GitHub 自己的软件源，步骤见 [gh 的官方 Linux 安装说明](https://github.com/cli/cli/blob/trunk/docs/install_linux.md)。嫌麻烦就跳过 `gh`，后面凡是用到它的地方都给了纯 Git 的替代写法。
+::: warning Linux 上装 gh 要先加软件源
+只有 Arch 的官方库带 `gh`。Debian、Ubuntu、Fedora 都需要先添加 GitHub 自己的软件源，那段配置会随上游调整，请以 [gh 的官方 Linux 安装说明](https://github.com/cli/cli/blob/trunk/docs/install_linux.md)为准，本页不复制它。
+
+嫌麻烦就跳过 `gh`，后面凡是用到它的地方都给了纯 Git 的替代写法。
+:::
 
 各条路的取舍见[包管理器与 Node 工具链](/tutorial/package-managers)。
 
