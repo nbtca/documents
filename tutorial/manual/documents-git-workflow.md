@@ -155,7 +155,7 @@ node -v      # v22.x
 pnpm -v      # 9.0.0
 ```
 
-`pnpm -v` 不是 9.0.0 的话别硬着头皮往下走，先按[命令查找顺序](/tutorial/terminal-shell-and-path#命令查找顺序)查清用的是哪一个 pnpm。
+`pnpm -v` 不是 9.0.0 的话别硬着头皮往下走，先按[命令查找顺序](/tutorial/terminal-shell-and-path#shell-怎么找到一个命令)查清用的是哪一个 pnpm。
 
 ### 第五步：把仓库克隆到本地
 
@@ -274,8 +274,8 @@ git switch -c docs/下一件事
 | ------------------------------------ | -------------------------------------------------------------------------------- |
 | 浏览器能开 GitHub，终端连不上        | [计算机网络与代理](/tutorial/computer-networking-and-proxies)                    |
 | 换了代理之后 Git 突然连不上          | [给 Git 单独配代理](/tutorial/computer-networking-and-proxies#给-git-单独配代理) |
-| 命令找不到，或版本号跟装的对不上     | [终端、shell 与 PATH](/tutorial/terminal-shell-and-path#命令查找顺序)            |
-| 配置写了却不生效                     | [启动文件的读取顺序](/tutorial/terminal-shell-and-path#启动文件的读取顺序)       |
+| 命令找不到，或版本号跟装的对不上     | [终端、shell 与 PATH](/tutorial/terminal-shell-and-path#shell-怎么找到一个命令)  |
+| 配置写了却不生效                     | [启动文件的读取顺序](/tutorial/terminal-shell-and-path#配置写了却不生效)         |
 | `pnpm -v` 不是 9.0.0                 | [包管理器与 Node 工具链](/tutorial/package-managers)                             |
 | 分支、合并、`fetch` 与 `pull` 分不清 | [Git 的理念与模型](/tutorial/git-concepts)                                       |
 | 加粗、表格、链接写法                 | [Markdown](/tutorial/markdown)                                                   |

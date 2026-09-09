@@ -214,7 +214,7 @@ curl 手册的 [ENVIRONMENT](https://curl.se/docs/manpage.html#ENVIRONMENT) 一�
 
 浏览器跟随操作系统的代理设置。终端里的程序不读那个设置，只读自己进程环境里的[环境变量](https://pubs.opengroup.org/onlinepubs/9799919799/basedefs/V1_chap08.html#tag_08_01)。
 
-环境变量在创建子进程时继承，这带来两个结果：你 `export` 之后，只有此后从这个窗口启动的程序拿得到；已经在运行的程序不受影响。继承机制的细节见[终端、shell 与 PATH](/tutorial/terminal-shell-and-path#环境变量与继承)。
+环境变量在创建子进程时继承，这带来两个结果：你 `export` 之后，只有此后从这个窗口启动的程序拿得到；已经在运行的程序不受影响。继承机制的细节见[终端、shell 与 PATH](/tutorial/terminal-shell-and-path#环境变量为什么只对新开的程序生效)。
 
 ## 给 Git 单独配代理
 

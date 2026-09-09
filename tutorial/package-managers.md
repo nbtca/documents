@@ -13,7 +13,7 @@ maintainers:
 
 手动下载安装包会遇到三件事：这个软件还需要哪些别的软件（依赖）、装的是哪个版本（版本）、换台机器能不能装出一模一样的结果（可重现）。包管理器就是把这三件事自动化。
 
-它同时带来一个副作用，是新人最常困惑的地方：软件被装到包管理器自己的目录下，要能在终端直接敲出命令，那个目录必须在 `PATH` 里——机制见[终端、shell 与 PATH](/tutorial/terminal-shell-and-path#命令查找顺序)。
+它同时带来一个副作用，是新人最常困惑的地方：软件被装到包管理器自己的目录下，要能在终端直接敲出命令，那个目录必须在 `PATH` 里——机制见[终端、shell 与 PATH](/tutorial/terminal-shell-and-path#shell-怎么找到一个命令)。
 
 ## 系统级包管理器
 
@@ -33,7 +33,7 @@ Homebrew 把所有东西装进一个前缀目录，[安装文档](https://docs.b
 
 > The script installs Homebrew to its default prefix (`/opt/homebrew` for Apple Silicon, `/usr/local` for macOS Intel and `/home/linuxbrew/.linuxbrew` for Linux) so that you don't need `sudo` after Homebrew's initial installation when you `brew install`.
 
-装完后要执行 `brew shellenv` 把该前缀下的 `bin` 加进 `PATH`，这条通常写进 `.zprofile`——为什么是 `.zprofile` 而不是 `.zshrc`，见[启动文件的读取顺序](/tutorial/terminal-shell-and-path#启动文件的读取顺序)。
+装完后要执行 `brew shellenv` 把该前缀下的 `bin` 加进 `PATH`，这条通常写进 `.zprofile`——为什么是 `.zprofile` 而不是 `.zshrc`，见[启动文件的读取顺序](/tutorial/terminal-shell-and-path#配置写了却不生效)。
 
 前缀有两个：Apple Silicon 是 `/opt/homebrew`，Intel 是 `/usr/local`。同一台机器上两者可能都存在（比如从 Intel 迁移过来），此时 `PATH` 顺序决定了 `brew` 到底跑的是哪一个，用 `command -v brew` 确认。
 
@@ -111,7 +111,7 @@ pnpm -v      # 应为 9.0.0
 pnpm install --frozen-lockfile
 ```
 
-如果 `pnpm -v` 不是 9.0.0，说明它来自别处（例如 Homebrew 装的全局 pnpm 排在 `PATH` 更前面）。用 `command -v pnpm` 看它到底是哪一个，处理办法见[命令查找顺序](/tutorial/terminal-shell-and-path#命令查找顺序)。
+如果 `pnpm -v` 不是 9.0.0，说明它来自别处（例如 Homebrew 装的全局 pnpm 排在 `PATH` 更前面）。用 `command -v pnpm` 看它到底是哪一个，处理办法见[命令查找顺序](/tutorial/terminal-shell-and-path#shell-怎么找到一个命令)。
 
 ## 延伸阅读
 
