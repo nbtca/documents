@@ -1,5 +1,5 @@
 ---
-order: 12
+order: 5
 maintainers:
   - user: m1ngsama
     since: 2026-09
@@ -197,7 +197,7 @@ Git 本身没有下面这些，它们是平台功能：
 - **review 与 approve**，平台上的评审流程；
 - **分支保护**，平台对某些分支施加的推送限制。
 
-Git 只知道分支、提交和远程。NBTCA 怎么用这套平台流程，见 [GitHub 工作流](/tutorial/github-workflow)。
+Git 只知道分支、提交和远程。NBTCA 怎么用这套平台流程，见 [GitHub 工作流](/tutorial/manual/github-workflow)。
 
 ## 常用命令动了什么
 

@@ -1,5 +1,5 @@
 ---
-order: 7
+order: 1
 maintainers:
   - user: m1ngsama
     since: 2026-09
@@ -285,7 +285,7 @@ git switch -c docs/下一件事
 | 分支、合并、`fetch` 与 `pull` 分不清 | [Git 的理念与模型](/tutorial/git-concepts)                                       |
 | 加粗、表格、链接写法                 | [Markdown](/tutorial/markdown)                                                   |
 | 容器、代码组、组件、构建命令         | [VitePress](/tutorial/vitepress)                                                 |
-| Issue、标签、评审在 GitHub 上怎么点  | [GitHub 工作流](/tutorial/github-workflow)                                       |
+| Issue、标签、评审在 GitHub 上怎么点  | [GitHub 工作流](/tutorial/manual/github-workflow)                                |
 
 仍然解决不了就在群里问，或者直接开一个 [Issue](https://github.com/nbtca/documents/issues)。卡住不是你的问题，是这份手册没写清楚——欢迎顺手把它补上。
 

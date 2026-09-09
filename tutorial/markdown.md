@@ -1,5 +1,5 @@
 ---
-order: 13
+order: 6
 maintainers:
   - user: m1ngsama
     since: 2026-09

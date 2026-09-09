@@ -6,7 +6,13 @@ maintainers:
 
 # 指南
 
-社团事务怎么办、常用技术怎么学，都收在这里。本栏分三组：**流程**（办社务）、**教程**（用工具）、**手册**（成体系的知识），也可以用站内搜索直接找。不知道从哪篇看起，按你想做的事对号入座。
+社团事务怎么办、常用技术怎么学，都收在这里。本栏分三组：
+
+- **流程**——办社务的规定动作，报销、借教室、申请学分。
+- **手册**——解决一件事的完整流程，照着做就能做成。
+- **教程**——一项技术的原理与术语，写给想弄明白的人，不写操作步骤。
+
+要做成某件事，先找手册；想知道它为什么这么做，再翻教程。也可以用站内搜索直接找。不知道从哪篇看起，按你想做的事对号入座。
 
 ## 我想办社团的事
 
@@ -19,13 +25,15 @@ maintainers:
 ## 我想参与社团协作
 
 - 想改一页文档、补一段内容 → [文档编写与 Git 协作](/tutorial/manual/documents-git-workflow)，从网页上直接改起步，不用装任何东西
-- 第一次参与社团事务 → [GitHub 工作流](/tutorial/github-workflow)，先弄懂 Issue / 分支 / PR 三个词再动手
-- 想看社团日程、给活动排期 → [谷歌日历使用指南](/tutorial/google-calendar)，只想看日程订阅即可，不必申请权限
-- 在宿舍或家里访问社内服务 → [Tailscale 使用指南](/tutorial/tailscale-usage)
+- 第一次参与社团事务 → [GitHub 工作流](/tutorial/manual/github-workflow)，先弄懂 Issue / 分支 / PR 三个词再动手
+- 想看社团日程、给活动排期 → [谷歌日历使用指南](/tutorial/manual/google-calendar)，只想看日程订阅即可，不必申请权限
+- 在宿舍或家里访问社内服务 → [Tailscale 使用指南](/tutorial/manual/tailscale-usage)
 
 ## 我想把某个技术弄明白
 
-上一条那份手册管“怎么做”，下面这几篇管“为什么”，卡住时按需查阅：
+上面那些手册管“怎么做”，下面这几篇管“为什么”，卡住时按需查阅：
+
+- 三种操作系统为什么处处不同 → [操作系统](/tutorial/operating-systems)
 
 - 终端连不上、代理怎么配 → [计算机网络与代理](/tutorial/computer-networking-and-proxies)
 - 命令找不到、配置不生效 → [终端、shell 与 PATH](/tutorial/terminal-shell-and-path)
@@ -36,7 +44,7 @@ maintainers:
 
 ## 我想拿学生优惠
 
-先注册[教育邮箱](/tutorial/edu-email)——它是各类学生优惠的钥匙；然后做 [GitHub Education 认证](/tutorial/github-education-verification)，解锁 Copilot 与 Student Developer Pack。
+先注册[教育邮箱](/tutorial/manual/edu-email)——它是各类学生优惠的钥匙；然后做 [GitHub Education 认证](/tutorial/manual/github-education-verification)，解锁 Copilot 与 Student Developer Pack。
 
 ## 我的电脑有问题 / 想折腾电脑
 
@@ -47,4 +55,4 @@ maintainers:
 
 ## 我想系统入门
 
-[CA101](/tutorial/manual/ca101)（零基础科普讲座）与 [CA102](/tutorial/manual/ca102)（进阶实操）是社团成体系的讲座；想配一台自己的服务器练手，可以从[快速上手 nginx](/tutorial/nginx-usage) 开始。
+[CA101](/tutorial/manual/ca101)（零基础科普讲座）与 [CA102](/tutorial/manual/ca102)（进阶实操）是社团成体系的讲座；想配一台自己的服务器练手，可以从[快速上手 nginx](/tutorial/manual/nginx-usage) 开始。

@@ -19,7 +19,7 @@ NBTCA 欢迎任何对计算机有兴趣的人——不论你是本校学生想�
 NBTCA 的[项目与基础设施](/about/infrastructure)都公开在 [GitHub](https://github.com/nbtca) 上，任何人都能参与：
 
 - 从 [dev101](https://github.com/nbtca/dev101) 了解开发上手；
-- 按 [GitHub 工作流](/tutorial/github-workflow)参与代码或文档；
+- 按 [GitHub 工作流](/tutorial/manual/github-workflow)参与代码或文档；
 - 或者[写一篇 NBTCA 博客](/process/2025/nbtca-post)投稿。
 
 ## 怎么找到我们
