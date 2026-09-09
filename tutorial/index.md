@@ -18,9 +18,21 @@ maintainers:
 
 ## 我想参与社团协作
 
+- 想改一页文档、补一段内容 → [文档编写与 Git 协作](/tutorial/manual/documents-git-workflow)，从网页上直接改起步，不用装任何东西
 - 第一次参与社团事务 → [GitHub 工作流](/tutorial/github-workflow)，先弄懂 Issue / 分支 / PR 三个词再动手
 - 想看社团日程、给活动排期 → [谷歌日历使用指南](/tutorial/google-calendar)，只想看日程订阅即可，不必申请权限
 - 在宿舍或家里访问社内服务 → [Tailscale 使用指南](/tutorial/tailscale-usage)
+
+## 我想把某个技术弄明白
+
+上一条那份手册管“怎么做”，下面这几篇管“为什么”，卡住时按需查阅：
+
+- 终端连不上、代理怎么配 → [计算机网络与代理](/tutorial/computer-networking-and-proxies)
+- 命令找不到、配置不生效 → [终端、shell 与 PATH](/tutorial/terminal-shell-and-path)
+- Homebrew、Scoop、npm、pnpm 的分工 → [包管理器与 Node 工具链](/tutorial/package-managers)
+- 分支、合并、变基到底在动什么 → [Git 的理念与模型](/tutorial/git-concepts)
+- 语法与那些渲染陷阱 → [Markdown](/tutorial/markdown)
+- 本站的构建与自有组件 → [VitePress](/tutorial/vitepress)
 
 ## 我想拿学生优惠
 
