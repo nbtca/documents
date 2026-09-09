@@ -7,7 +7,7 @@ maintainers:
 
 # 终端、shell 与 PATH
 
-本文讲 shell 的工作机制：终端模拟器与 shell 的分工、命令查找顺序、启动文件的读取时机、环境变量的继承、引号与展开规则。启动文件与展开规则以 zsh 为准，bash 与 fish 机制相近但文件名与语法不同，以各自手册为准。
+本文讲 shell 的工作机制：终端模拟器与 shell 的分工、命令查找顺序、启动文件的读取时机、环境变量的继承、引号与展开规则。启动文件与展开规则以 zsh 为准，bash 与 fish 机制相近但文件名与语法不同，以各自手册为准。文中结论均链到 zsh 官方手册或对应规范。
 
 ## 三个不同的东西
 
@@ -17,11 +17,11 @@ maintainers:
 
 换终端模拟器不影响配置，换 shell 才需要改配置。
 
-macOS 的默认 shell 是 zsh，Apple 的说明是“Starting with macOS 10.15, your Mac uses zsh as the default login shell and interactive shell”。Windows 上对应 PowerShell，终端模拟器为 Windows Terminal，操作见[基础操作系统的使用技术](/tutorial/manual/os-skills)。
+macOS 的默认 shell 是 zsh，[Apple 的说明](https://support.apple.com/en-us/102360)是“Starting with macOS 10.15, your Mac uses zsh as the default login shell and interactive shell”。Windows 上对应 PowerShell，终端模拟器为 Windows Terminal，操作见[基础操作系统的使用技术](/tutorial/manual/os-skills)。
 
 ## 命令查找顺序
 
-shell 先判断是否为内建命令或函数，否则按 `PATH` 中的目录从左到右查找，取第一个命中的。
+shell 先判断是否为内建命令或函数，否则按 `PATH` 中的目录从左到右查找，取第一个命中的。这套查找次序由 [POSIX 的 Shell Command Language](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html) 规定。
 
 ```bash
 echo $PATH
@@ -31,13 +31,13 @@ type -a git         # 列出所有命中，按优先级排列
 
 `type -a` 列出多行时，说明 `PATH` 中存在多个同名程序，靠前者生效——这是装了新版本而版本号不变的原因，解决办法是调整 `PATH` 顺序。
 
-zsh 会把查找结果缓存进哈希表，装入新命令后 shell 仍指向旧路径时用 `rehash` 清除。
+zsh 会把查找结果缓存进哈希表，装入新命令后 shell 仍指向旧路径时，用 [`rehash`](https://zsh.sourceforge.io/Doc/Release/Shell-Builtin-Commands.html) 清除。
 
 ## 启动文件的读取顺序
 
-zsh 手册定义的顺序：
+[zsh 手册的 Startup/Shutdown Files](https://zsh.sourceforge.io/Doc/Release/Files.html#Startup_002fShutdown-Files) 定义的顺序：
 
-1. `/etc/zshenv`，总是读取，无法关闭；
+1. `/etc/zshenv`，总是读取，手册明确写着 this cannot be overridden；
 2. `~/.zshenv`，总是读取；
 3. login shell：`/etc/zprofile`，然后 `~/.zprofile`；
 4. interactive shell：`/etc/zshrc`，然后 `~/.zshrc`；
@@ -53,6 +53,8 @@ zsh 手册定义的顺序：
 | `zsh -c '...'`       | 否    | 否          | 仅 `.zshenv` |
 
 包管理器的初始化写进 `.zprofile`，交互时才用的别名、函数、提示符写进 `.zshrc`。放错文件的症状是 source 一次就正常、新开窗口又失效，或者脚本里找不到该命令。
+
+同一节还说明，路径中的 `~` 实为 `$ZDOTDIR`，未设置时才回退到 `$HOME`。
 
 修改后开新窗口，或手动加载：
 
@@ -70,7 +72,7 @@ export FOO=bar   # 此后启动的程序可见
 env | grep FOO   # 查看当前进程环境
 ```
 
-由此：子进程拿到的是副本，它的修改不影响父进程；`export` 对已在运行的程序无效；关闭窗口后变量消失。代理环境变量的行为即源于此，见[计算机网络与代理](/tutorial/computer-networking-and-proxies)。
+由此：子进程拿到的是副本，它的修改不影响父进程；`export` 对已在运行的程序无效；关闭窗口后变量消失。代理环境变量的行为即源于此，见[计算机网络与代理](/tutorial/computer-networking-and-proxies#代理相关的环境变量)。
 
 ## 路径
 
@@ -84,7 +86,7 @@ cd "My Documents"
 
 ## 引号与展开
 
-同一字符串在三种写法下的处理不同：
+[zsh 手册的 Expansion 一章](https://zsh.sourceforge.io/Doc/Release/Expansion.html)列出了 shell 在执行前对命令行做的各类展开。落到日常，同一字符串在三种写法下的处理不同：
 
 | 写法      | 变量展开 | 通配符展开 | 按空格拆词 |
 | --------- | -------- | ---------- | ---------- |
@@ -125,7 +127,7 @@ cmd 2> file      # 只重定向错误输出
 | `grep`          | 在文本中查找                      |
 | `open .`        | macOS 用访达打开当前目录          |
 
-`rm` 不进回收站。执行前先用 `ls` 确认路径，`rm -r` 后的变量务必加引号。
+这些命令的行为以 [POSIX 的 Shell & Utilities](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/contents.html) 为准，各系统的实现会有扩展。`rm` 不进回收站，执行前先用 `ls` 确认路径，`rm -r` 后的变量务必加引号。
 
 ## 按需开关代理
 
@@ -144,11 +146,10 @@ proxyoff() {
 }
 ```
 
-`PORT` 换成本机代理实际监听的端口。写进 `.zshrc` 而非 `.zprofile`，因为这是交互时才用的。`proxyoff` 大小写两种都 `unset`，原因见[计算机网络与代理](/tutorial/computer-networking-and-proxies)中环境变量一节。
+`PORT` 换成本机代理实际监听的端口。写进 `.zshrc` 而非 `.zprofile`，因为这是交互时才用的。`proxyoff` 大小写两种都 `unset`，原因见[计算机网络与代理](/tutorial/computer-networking-and-proxies#代理相关的环境变量)。
 
-## 参考
+## 延伸阅读
 
-- [zsh 手册 — Startup/Shutdown Files](https://zsh.sourceforge.io/Doc/Release/Files.html)
-- [zsh 手册 — Expansion](https://zsh.sourceforge.io/Doc/Release/Expansion.html)
-- [Apple — Use zsh as the default shell on Mac](https://support.apple.com/en-us/102360)
-- [POSIX.1-2024 — Shell Command Language](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html)
+- [zsh 手册](https://zsh.sourceforge.io/Doc/Release/index.html)——上面引用的 Files、Expansion 两章都在这里
+- [POSIX.1-2024 Shell Command Language](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html)——各 shell 共同遵循的底线行为
+- [GNU Bash 手册](https://www.gnu.org/software/bash/manual/bash.html)——用 bash 的话对照这份
