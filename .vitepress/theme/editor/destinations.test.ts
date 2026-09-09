@@ -47,8 +47,8 @@ describe('new page destinations', () => {
 
   it('build the path and the route from the same choice', () => {
     const tutorial = DESTINATIONS.find(d => d.id === 'tutorial')!
-    expect(pathFor(tutorial, 'edu-email')).toBe('tutorial/2025/edu-email.md')
-    expect(routeFor(tutorial, 'edu-email')).toBe('/tutorial/2025/edu-email')
+    expect(pathFor(tutorial, 'edu-email')).toBe('tutorial/edu-email.md')
+    expect(routeFor(tutorial, 'edu-email')).toBe('/tutorial/edu-email')
   })
 })
 

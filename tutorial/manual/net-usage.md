@@ -1,5 +1,5 @@
 ---
-order: 6
+order: 16
 maintainers:
   - user: m1ngsama
     since: 2025-10
@@ -92,7 +92,7 @@ maintainers:
 - **VPN（虚拟专用网络）**：在公共网络上建立加密隧道，使通信数据受到保护。企业常用 VPN 让远程员工安全访问公司内网；
 - **代理服务器**：作为客户端和目标服务器之间的中转，代理服务器代替客户端发送请求并转发响应；
 - **正向代理**：客户端通过代理访问外部资源（如访问国际学术资源）；
-- **反向代理**：服务器端使用代理接收和分发请求（如 [Nginx](../../tutorial/2025/nginx-usage) 反向代理）。
+- **反向代理**：服务器端使用代理接收和分发请求（如 [Nginx](/tutorial/manual/nginx-usage) 反向代理）。
 
 ### 学术资源访问
 
@@ -101,7 +101,7 @@ maintainers:
 - 善用 Google Scholar、Sci-Hub、学校图书馆数据库等渠道获取学术文献。
 
 :::tip 提示
-关于更详细的国际互联网访问方案，可以参阅本站关于 [Tailscale](../../tutorial/2025/tailscale-usage) 等工具的使用教程。
+关于更详细的国际互联网访问方案，可以参阅本站关于 [Tailscale](/tutorial/manual/tailscale-usage) 等工具的使用教程。
 :::
 
 ## 网络安全与隐私保护

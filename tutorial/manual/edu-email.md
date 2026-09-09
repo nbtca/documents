@@ -1,5 +1,5 @@
 ---
-order: 3
+order: 5
 maintainers:
   - user: LazuliKao
     since: 2025-12
@@ -87,7 +87,7 @@ JetBrains 提供免费的全家桶许可证给符合条件的学生和教师，�
 
 ### GitHub Student Developer Pack（GitHub Copilot）
 
-> 学生身份认证的详细步骤（学信网证明、翻译、拍照等），另见 [GitHub Education 认证指南](/tutorial/2025/github-education-verification)。
+> 学生身份认证的详细步骤（学信网证明、翻译、拍照等），另见 [GitHub Education 认证指南](/tutorial/manual/github-education-verification)。
 
 - **用途**
   GitHub Student Developer Pack 提供众多开发工具和服务的免费或优惠使用权限，包括 GitHub Copilot、DigitalOcean、Namecheap 等。

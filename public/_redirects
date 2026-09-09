@@ -60,3 +60,8 @@
 /archived/2025/2025.12.26NWDC  /archived/2025/2025-12-26-nwdc  301
 /archived/2025/2025-01-24-meeting  /archived/2025/2025-01-24-dev-meeting  301
 /archived/2025/2025-10-11-meeting  /archived/2025/2025-10-11-first-meeting  301
+
+# Those seven pages walk through a task, so they moved to the manual group
+# when the year directory went away. Only archived/ is filed by year.
+
+/tutorial/2025/*  /tutorial/manual/:splat  301
