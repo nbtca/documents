@@ -195,7 +195,7 @@ curl 手册的 [ENVIRONMENT](https://curl.se/docs/manpage.html#ENVIRONMENT) 一�
 
 第二，`curl` 这个名字在两代 PowerShell 里指向不同的东西。
 
-- Windows 自带的 **PowerShell 5.1** 里，`curl` 是 `Invoke-WebRequest` 的别名，参数完全不同，`curl -I` 会报错。你要用真正的 curl 得写 `curl.exe`。
+- Windows 自带的 **PowerShell 5.1** 里，`curl` 是 `Invoke-WebRequest` 的别名。[该版本的文档](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/invoke-webrequest?view=powershell-5.1)写着 This command can be run using the `iwr`, `curl`, or `wget` aliases，两者参数完全不同，`curl -I` 会报错。你要用真正的 curl 得写 `curl.exe`。
 - **PowerShell 7 及以后**移除了这个别名，`curl` 就是 curl 本身。
 
 敲 `Get-Alias curl` 就知道你在哪一档。

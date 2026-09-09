@@ -47,7 +47,7 @@ Windows 上还要分清两代。系统自带的是 **Windows PowerShell 5.1**，
 
 > Alias → Function → Cmdlet → External executable files
 
-别名排在最前面。这解释了为什么在 Windows PowerShell 5.1 里敲 `curl` 跑的不是 curl，而是 `Invoke-WebRequest` 的别名，参数完全对不上。相关细节见[计算机网络与代理](/tutorial/computer-networking-and-proxies#powershell-用户要多注意两点)。
+别名排在最前面。这解释了为什么在 Windows PowerShell 5.1 里敲 `curl` 跑的不是 curl，而是 `Invoke-WebRequest`——[该版本的文档](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/invoke-webrequest?view=powershell-5.1)明确列出它接受 `iwr`、`curl`、`wget` 三个别名，参数与真正的 curl 完全对不上。相关细节见[计算机网络与代理](/tutorial/computer-networking-and-proxies#powershell-用户要多注意两点)。
 
 查一个名字实际会跑什么：
 

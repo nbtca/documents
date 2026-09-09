@@ -39,7 +39,9 @@ curl.exe -I https://github.com
 
 ## 第二步：装 Git 与 GitHub CLI
 
-最省事的是从官网下安装包：[git-scm.com/downloads](https://git-scm.com/downloads) 和 [cli.github.com](https://cli.github.com/)，双击装完。已经在用包管理器的话：
+Git 是必需的。GitHub CLI（`gh`）不是必需，但它能替你处理登录和开 PR，省掉不少手工步骤，建议装上。
+
+最省事的是从官网下安装包：[git-scm.com/downloads](https://git-scm.com/downloads) 和 [cli.github.com](https://cli.github.com/)，双击装完。用包管理器的话：
 
 ::: code-group
 
@@ -48,9 +50,9 @@ brew install git gh
 ```
 
 ```bash [Linux]
-sudo apt install git gh      # Debian、Ubuntu
-sudo dnf install git gh      # Fedora、RHEL
-sudo pacman -S git github-cli # Arch
+sudo apt install git            # Debian、Ubuntu
+sudo dnf install git            # Fedora、RHEL
+sudo pacman -S git github-cli   # Arch，gh 在官方库里
 ```
 
 ```powershell [Windows]
@@ -60,13 +62,15 @@ winget install GitHub.cli
 
 :::
 
+**Linux 上装 `gh` 要注意**：只有 Arch 的官方库带它。Debian、Ubuntu、Fedora 都需要先添加 GitHub 自己的软件源，步骤见 [gh 的官方 Linux 安装说明](https://github.com/cli/cli/blob/trunk/docs/install_linux.md)。嫌麻烦就跳过 `gh`，后面凡是用到它的地方都给了纯 Git 的替代写法。
+
 各条路的取舍见[包管理器与 Node 工具链](/tutorial/package-managers)。
 
-**验证**，两条都要打印出版本号：
+**验证**：
 
 ```bash
 git --version
-gh --version
+gh --version      # 没装 gh 的话这条会报找不到命令，不影响后面
 ```
 
 ## 第三步：登录 GitHub
@@ -78,21 +82,17 @@ git config --global user.name "你的 GitHub 用户名"
 git config --global user.email "你的 GitHub 邮箱"
 ```
 
-再登录：
+再登录。装了 `gh` 的话一条命令搞定：
 
 ```bash
 gh auth login
 ```
 
-依次选 `GitHub.com` → `HTTPS` → `Login with a web browser`，按提示在浏览器里完成。
+依次选 `GitHub.com` → `HTTPS` → `Login with a web browser`，按提示在浏览器里完成。**验证**用 `gh auth status`。
 
-**验证**：
+没装 `gh` 也可以：在 GitHub 网页上生成一个 personal access token，第一次 `git push` 时把它当密码填进去，系统的凭据存储会记住它。
 
-```bash
-gh auth status
-```
-
-`git config` 只是署名，不等于登录，两件事都要做。两种远程地址的认证差别见 [HTTPS 还是 SSH](/tutorial/git-concepts#https-还是-ssh)。
+`git config` 只是署名，不等于登录，两件事都要做。凭据存储的各平台实现与两种远程地址的认证差别，见 [HTTPS 还是 SSH](/tutorial/git-concepts#https-还是-ssh)。
 
 ## 第四步：装 Node 与 pnpm
 
@@ -107,7 +107,10 @@ brew install node@22
 ```
 
 ```bash [Linux]
-apt policy nodejs      # 发行版自带的版本常常太旧，先确认
+apt policy nodejs        # Debian、Ubuntu
+dnf info nodejs          # Fedora、RHEL
+pacman -Si nodejs        # Arch
+# 发行版自带的版本常常太旧，先确认再决定用不用
 ```
 
 ```powershell [Windows]
@@ -137,7 +140,7 @@ pnpm -v      # 9.0.0
 
 ```bash
 mkdir -p ~/Developer && cd ~/Developer
-gh repo clone nbtca/documents
+git clone https://github.com/nbtca/documents.git   # 装了 gh 也可以用 gh repo clone nbtca/documents
 cd documents
 pnpm install --frozen-lockfile
 ```
@@ -205,7 +208,7 @@ git push -u origin docs/你这次要做的事
 gh pr create --web
 ```
 
-第一次推送要带 `-u`，之后同一分支直接 `git push`。**验证**：GitHub 上能看到这个 PR，下方检查全部变绿。
+第一次推送要带 `-u`，之后同一分支直接 `git push`。没装 `gh` 的话，推送成功后终端会打印一个开 PR 的链接，点开即可；或者直接去仓库页面，GitHub 会在顶部提示你刚推的分支。**验证**：GitHub 上能看到这个 PR，下方检查全部变绿。
 
 ### 评审到合并
 
