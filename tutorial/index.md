@@ -24,7 +24,9 @@ maintainers:
 
 ## 我想参与社团协作
 
-- 想改一页文档、补一段内容 → [文档编写与 Git 协作](/tutorial/manual/documents-git-workflow)，从网页上直接改起步，不用装任何东西
+- 想改一页文档、补一段内容 → [写一页文档](/tutorial/manual/writing-documents)，在网页上直接改，不用装任何东西
+- 要改导航或站点代码 → [配一台能跑本站的电脑](/tutorial/manual/local-dev-setup)
+- 想让 AI 帮忙起草 → [用 AI 帮忙写文档](/tutorial/manual/ai-assisted-writing)
 - 第一次参与社团事务 → [GitHub 工作流](/tutorial/manual/github-workflow)，先弄懂 Issue / 分支 / PR 三个词再动手
 - 想看社团日程、给活动排期 → [谷歌日历使用指南](/tutorial/manual/google-calendar)，只想看日程订阅即可，不必申请权限
 - 在宿舍或家里访问社内服务 → [Tailscale 使用指南](/tutorial/manual/tailscale-usage)

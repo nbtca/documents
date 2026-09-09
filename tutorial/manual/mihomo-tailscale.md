@@ -1,5 +1,5 @@
 ---
-order: 7
+order: 9
 maintainers:
   - user: Yuna-Celisse
     since: 2026-09

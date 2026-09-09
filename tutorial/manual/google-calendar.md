@@ -1,5 +1,5 @@
 ---
-order: 5
+order: 7
 maintainers:
   - user: LazuliKao
     since: 2025-11
