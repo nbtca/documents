@@ -18,13 +18,13 @@ maintainers:
 
 ## 我想参与社团协作
 
-- 第一次参与社团事务 → [GitHub 工作流](/tutorial/2025/github-workflow)，先弄懂 Issue / 分支 / PR 三个词再动手
-- 想看社团日程、给活动排期 → [谷歌日历使用指南](/tutorial/2025/google-calendar)，只想看日程订阅即可，不必申请权限
-- 在宿舍或家里访问社内服务 → [Tailscale 使用指南](/tutorial/2025/tailscale-usage)
+- 第一次参与社团事务 → [GitHub 工作流](/tutorial/github-workflow)，先弄懂 Issue / 分支 / PR 三个词再动手
+- 想看社团日程、给活动排期 → [谷歌日历使用指南](/tutorial/google-calendar)，只想看日程订阅即可，不必申请权限
+- 在宿舍或家里访问社内服务 → [Tailscale 使用指南](/tutorial/tailscale-usage)
 
 ## 我想拿学生优惠
 
-先注册[教育邮箱](/tutorial/2025/edu-email)——它是各类学生优惠的钥匙；然后做 [GitHub Education 认证](/tutorial/2025/github-education-verification)，解锁 Copilot 与 Student Developer Pack。
+先注册[教育邮箱](/tutorial/edu-email)——它是各类学生优惠的钥匙；然后做 [GitHub Education 认证](/tutorial/github-education-verification)，解锁 Copilot 与 Student Developer Pack。
 
 ## 我的电脑有问题 / 想折腾电脑
 
@@ -35,4 +35,4 @@ maintainers:
 
 ## 我想系统入门
 
-[CA101](/tutorial/manual/ca101)（零基础科普讲座）与 [CA102](/tutorial/manual/ca102)（进阶实操）是社团成体系的讲座；想配一台自己的服务器练手，可以从[快速上手 nginx](/tutorial/2025/nginx-usage) 开始。
+[CA101](/tutorial/manual/ca101)（零基础科普讲座）与 [CA102](/tutorial/manual/ca102)（进阶实操）是社团成体系的讲座；想配一台自己的服务器练手，可以从[快速上手 nginx](/tutorial/nginx-usage) 开始。

@@ -7,7 +7,7 @@ maintainers:
 
 # GitHub Education 认证指南
 
-GitHub Education 面向在校学生提供 [GitHub Student Developer Pack](https://education.github.com/pack)——免费的 GitHub Pro、Copilot、Codespaces，以及一批合作厂商的开发工具与云资源。用[教育邮箱](/tutorial/2025/edu-email)完成学生身份认证即可领取。本文讲怎么通过这个认证。
+GitHub Education 面向在校学生提供 [GitHub Student Developer Pack](https://education.github.com/pack)——免费的 GitHub Pro、Copilot、Codespaces，以及一批合作厂商的开发工具与云资源。用[教育邮箱](/tutorial/edu-email)完成学生身份认证即可领取。本文讲怎么通过这个认证。
 
 ## 获取 GitHub Education 认证
 
@@ -26,7 +26,7 @@ GitHub Education 要求申请账号已开启两步验证：
 ### 3. 在账单信息中添加个人信息
 
 在[账单与付款信息](https://github.com/settings/billing/payment_information)中添加个人信息——审核会拿证明材料与这里的姓名比对，务必如实填写。此处以 `@nit.zju.edu.cn` 邮箱为例：
-![yes](../assets/Payment-information.webp)
+![yes](./assets/Payment-information.webp)
 此邮箱对应的学校信息为浙江大学紫金港校区，如为`@nbt.edu.cn`邮箱,对应的是浙大宁波理工学院，请在这些区域如下填写：
 
 - Address: 1 Qianhu South Road, Ningbo Institute of Technology, Zhejiang University ,Ningbo ,Zhejiang Province

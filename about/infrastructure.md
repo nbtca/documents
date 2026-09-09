@@ -29,7 +29,7 @@ NBTCA 最核心的自建系统，支撑[维修日](/repair/repair-day)和日常�
 - **校园网认证**：[nbtverify](https://github.com/nbtca/nbtverify)（Go）与 [luci-app-nbtverify](https://github.com/nbtca/luci-app-nbtverify)——对接学校的卓智网络接入门户，也适配 OpenWrt 路由器。
 - **文件与镜像站**：内网镜像站 i.nbtca.space（维修工具、系统镜像等，见[软件仓库索引](/repair/tools)），站内维修工具由 [Repair-Tools](https://github.com/nbtca/Repair-Tools) 仓库管理。这条线可以追到很早——2016 年的[装系统教学课件](/archived/2016/os-install-course)里，系统镜像的下载链接已经指向协会自建的内网 FTP（`ftp://10.80.6.166`）。
 - **无服务后端**：不少服务跑在 Cloudflare Workers 上，例如 [ServerlessMQ](https://github.com/nbtca/ServerlessMQ)（消息队列 / webhook 转 websocket）、[shortlink](https://github.com/nbtca/shortlink)（短链接）、[uptimeflare](https://github.com/nbtca/uptimeflare)（可用性监控）、[cloudflare-docker-proxy](https://github.com/nbtca/cloudflare-docker-proxy)（Docker 镜像仓库代理）。
-- **虚拟组网**：基于 Headscale 自建的 Tailscale 网络，中继节点也是[自建的](https://github.com/nbtca/tailscale-derp)，见 [Tailscale 使用指南](/tutorial/2025/tailscale-usage)。
+- **虚拟组网**：基于 Headscale 自建的 Tailscale 网络，中继节点也是[自建的](https://github.com/nbtca/tailscale-derp)，见 [Tailscale 使用指南](/tutorial/tailscale-usage)。
 - **编排与基础设施即代码**：用 Terraform（[infra](https://github.com/nbtca/infra)）和 Docker（[stacks](https://github.com/nbtca/stacks)）管理部署。两个仓库都是**私有**的。
 - **消息中转**：[notification-center](https://github.com/nbtca/notification-center)（Go）把各类 webhook 汇聚成统一消息中心。
 
@@ -46,7 +46,7 @@ NBTCA 最核心的自建系统，支撑[维修日](/repair/repair-day)和日常�
 
 ## 开发上手
 
-新加入开发的成员，可以从 [dev101](https://github.com/nbtca/dev101) 起步（"First day at NBTCA dev team"）。协作方式见 [GitHub 工作流](/tutorial/2025/github-workflow) 与 [Roadmap](/concepts/roadmap)。
+新加入开发的成员，可以从 [dev101](https://github.com/nbtca/dev101) 起步（"First day at NBTCA dev team"）。协作方式见 [GitHub 工作流](/tutorial/github-workflow) 与 [Roadmap](/concepts/roadmap)。
 
 ## 更多
 

@@ -23,7 +23,7 @@ export const DESTINATIONS: Destination[] = [
   {
     id: 'tutorial',
     label: '指南 · 教程',
-    dir: 'tutorial/2025',
+    dir: 'tutorial',
     what: '怎么做成一件具体的事',
     how: '一篇只解决一件事；先说清楚这篇要解决什么问题，再写步骤',
     outline: '# \n\n## 这篇解决什么问题\n\n## 步骤\n',

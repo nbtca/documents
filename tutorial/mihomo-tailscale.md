@@ -11,7 +11,7 @@ maintainers:
 
 本文根据 2026 年 9 月 4 日的实际排障整理，适用于 **Windows + Clash Party（Mihomo Party）+ Tailscale 客户端 + 社团 Headscale**。最终方案保留 TUN、DNS 覆写和普通网站的 Fake-IP：用 JS 覆写处理路由与直连规则，在 Party 的受控 DNS 配置中让 Headscale 域名返回真实 IP。
 
-首次接入请先完成 [Tailscale 使用指南](/tutorial/2025/tailscale-usage)。本文以未使用 Tailscale 出口节点（exit node）、通过 Tailnet IP 访问设备为前提；子网路由、MagicDNS 和多网卡出口见文末。
+首次接入请先完成 [Tailscale 使用指南](/tutorial/tailscale-usage)。本文以未使用 Tailscale 出口节点（exit node）、通过 Tailnet IP 访问设备为前提；子网路由、MagicDNS 和多网卡出口见文末。
 
 ## 先分清三种流量
 
@@ -201,7 +201,7 @@ Restart-Service Tailscale
 tailscale status
 ```
 
-服务初始化需要时间，稍后再次查看。已有账号应恢复正常状态；若提示需要登录，按 [接入指南](/tutorial/2025/tailscale-usage)完成认证。不要通过退出账号或删除状态文件来代替排障。
+服务初始化需要时间，稍后再次查看。已有账号应恢复正常状态；若提示需要登录，按 [接入指南](/tutorial/tailscale-usage)完成认证。不要通过退出账号或删除状态文件来代替排障。
 
 ### 3. 检查 Tailnet 路由与连接
 

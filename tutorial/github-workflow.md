@@ -66,23 +66,23 @@ flowchart TD
 
 **_访问 [Roadmap](/concepts/roadmap)_**
 
-![Roadmap主界面](../assets/Roadmap.webp)
+![Roadmap主界面](./assets/Roadmap.webp)
 
 **_找个感兴趣的Issue看看_**
 
-![MC服务器管理对接#63](../assets/Minecraft-Server-Management.webp)
+![MC服务器管理对接#63](./assets/Minecraft-Server-Management.webp)
 
 **_群贤毕至嗷_**
 
-![Assignees](../assets/Assignees.webp)
+![Assignees](./assets/Assignees.webp)
 
 **_设置个标签方便分类_**
 
-![Label-Setup](../assets/Label-Setup.webp)
+![Label-Setup](./assets/Label-Setup.webp)
 
 **_订阅通知，会发到邮箱去_**
 
-![Subscribe](../assets/Subs.webp)
+![Subscribe](./assets/Subs.webp)
 
 **_编辑内容支持markdown语法，所以几乎都能写_**
 
@@ -90,32 +90,32 @@ flowchart TD
 
 **_那当然也是有的看滴😋_**
 
-![gh-issue-list](../assets/gh-issue-list.webp)
+![gh-issue-list](./assets/gh-issue-list.webp)
 
-![gh-issue-view](../assets/gh-issue-view.webp)
+![gh-issue-view](./assets/gh-issue-view.webp)
 
 **_这个[wiki](https://github.com/nbtca/Minecraft/wiki)好像有点说法，看看怎么个事儿_**
 
-![Minecraft-Wiki](../assets/Minecraft-Wiki.webp)
+![Minecraft-Wiki](./assets/Minecraft-Wiki.webp)
 
 **_看看源码😋_**
 
-![Minecraft-Wiki-gh](../assets/Minecraft-Wiki-gh.webp)
+![Minecraft-Wiki-gh](./assets/Minecraft-Wiki-gh.webp)
 **_当然git命令同理_**
 
-![Minecraft-Wiki-git](../assets/Minecraft-Wiki-git.webp)
+![Minecraft-Wiki-git](./assets/Minecraft-Wiki-git.webp)
 
 **_一派胡言！我来写点😋_**
 
-![Edit](../assets/Edit.webp)
+![Edit](./assets/Edit.webp)
 
 **_经典丝滑连招_**
 
-![Commit](../assets/Commit.webp)
+![Commit](./assets/Commit.webp)
 
 **_经验+3，告辞😋_**
 
-![Success](../assets/Success.webp)
+![Success](./assets/Success.webp)
 
 ---
 
@@ -133,32 +133,32 @@ ps:你想更进一步？跟我一起来写手册吧😇
 
 **_那么在真正的正常提交流程中你一般是在你自己的分支编辑的_**
 
-![Branch](../assets/Branch.webp)
+![Branch](./assets/Branch.webp)
 
 **_所以你在自己的分支提交到Github后还需要向主分支发起合并请求（Pull Request）_**
 
 **_本次以这个教程文档的提交为例_**
 
-![Create-PR](../assets/Create-PR.webp)
+![Create-PR](./assets/Create-PR.webp)
 
 **_编辑此次PR的内容，并选择你希望审查你本次提交的人员（右上角Reviewers）_**
 
-![Reviewer-PR](../assets/Reviewer-PR.webp)
+![Reviewer-PR](./assets/Reviewer-PR.webp)
 
 **_你还可以启用Auto-Merge，即在审查通过后自动合并本次源代码提交_**
 
-![Auto-Merge](../assets/Auto-Merge.webp)
+![Auto-Merge](./assets/Auto-Merge.webp)
 
 **_Reviewer看到的大概是这样：_**
 
-![PR-Reviewer](../assets/PR-Reviewer.webp)
+![PR-Reviewer](./assets/PR-Reviewer.webp)
 
 **_批准_**
 
-![Approve](../assets/Approve.webp)
+![Approve](./assets/Approve.webp)
 
 **_合并_**
 
-![Merge](../assets/Merge.webp)
+![Merge](./assets/Merge.webp)
 
 🤓完成！
