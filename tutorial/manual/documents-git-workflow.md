@@ -124,7 +124,9 @@ gh auth status
 
 ### 第四步：装 Node 和 pnpm
 
-本站用 [VitePress](/tutorial/vitepress) 构建，需要 Node。本仓库要求 Node 22、pnpm 9.0.0。
+本站用 [VitePress](/tutorial/vitepress) 构建，需要 Node。本仓库要求 **Node 22** 和 **pnpm 9.0.0**，版本不对会出各种奇怪问题。
+
+最省事的装法是从[官方下载页](https://nodejs.org/en/download/prebuilt-installer)取安装包，选 22 那一条 LTS 线，macOS 下 `.pkg`，Windows 下 `.msi`，双击装完。已经在用包管理器的话，也可以用它装：
 
 ::: code-group
 
@@ -133,20 +135,23 @@ brew install node@22
 ```
 
 ```powershell [Windows]
-scoop install nodejs-lts
+winget install OpenJS.NodeJS.LTS
+```
+
+```bash [Linux]
+# 发行版自带的版本常常太旧，先确认再决定
+apt policy nodejs
 ```
 
 :::
 
-pnpm 的装法取决于你的 Node 版本，**不能一律用 `corepack enable`**：
+装完**开一个新的终端窗口**，然后启用 pnpm：
 
 ```bash
-node -v                                    # 先看版本
-corepack enable                            # Node 24 及以前
-npm install -g corepack && corepack enable # Node 25 及以后
+corepack enable
 ```
 
-原因见[包管理器与 Node 工具链](/tutorial/package-managers#corepack-现在不随-node-分发了)。
+Node 22 自带 corepack，这一条应当直接成功。它报“找不到命令”的话，说明你装的不是 22，先回头确认版本。其它情形与原理见[包管理器与 Node 工具链](/tutorial/package-managers#装-pnpm)。
 
 **验证**：
 
