@@ -10,4 +10,10 @@ export default antfu({
   rules: {
     'no-irregular-whitespace': 'off',
   },
+}, {
+  // checks/ holds command-line verifiers; their report is the output.
+  files: ['checks/**/*.mjs'],
+  rules: {
+    'no-console': 'off',
+  },
 })

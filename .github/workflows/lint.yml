@@ -4,9 +4,10 @@ on:
   push:
     branches:
       - main
+  # Every pull request, whatever it targets: work lands here in stacks, and a
+  # sub-pull-request against a feature branch needs the same checks as one
+  # against main.
   pull_request:
-    branches:
-      - main
 
 # The job only reads the checkout; nothing here writes back to the repository.
 permissions:

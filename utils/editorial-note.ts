@@ -3,8 +3,7 @@ export interface NoteBlock {
   text: string
 }
 
-// A note that never closes, or closes and hands back mid-paragraph, is left
-// alone: marking it would frame the document itself as commentary.
+// Marking an unclosed note would frame the document itself as commentary.
 export function noteRanges(blocks: NoteBlock[]): Array<[number, number]> {
   const ranges: Array<[number, number]> = []
   let i = 0
