@@ -112,13 +112,17 @@ export function extractMarkdownLinks(content: string, sourceRelativePath: string
     if (inFence)
       continue
 
+    // A page teaching Markdown writes `[text](url)` in a code span as an
+    // example; scanning it would report the example as a broken link.
+    const scannable = maskInlineCode(line)
+
     let searchFrom = 0
     while (searchFrom < line.length) {
-      const targetStart = line.indexOf('](', searchFrom)
+      const targetStart = scannable.indexOf('](', searchFrom)
       if (targetStart < 0)
         break
 
-      const targetEnd = line.indexOf(')', targetStart + 2)
+      const targetEnd = scannable.indexOf(')', targetStart + 2)
       if (targetEnd < 0)
         break
 
@@ -186,6 +190,47 @@ export function normalizeSiteRoute(link: string): string | undefined {
     route = `${route}index`
 
   return path.posix.normalize(route)
+}
+
+// Blanks code spans in place, so offsets into the line stay usable.
+function maskInlineCode(line: string): string {
+  const chars = [...line]
+  let index = 0
+
+  while (index < chars.length) {
+    if (chars[index] !== '`') {
+      index++
+      continue
+    }
+
+    const runLength = (from: number): number => {
+      let length = 0
+      while (from + length < chars.length && chars[from + length] === '`')
+        length++
+      return length
+    }
+
+    const open = runLength(index)
+    let close = index + open
+
+    while (close < chars.length) {
+      if (chars[close] !== '`') {
+        close++
+        continue
+      }
+
+      const length = runLength(close)
+      if (length === open) {
+        chars.fill(' ', index, close + length)
+        break
+      }
+      close += length
+    }
+
+    index = close < chars.length ? close + open : index + open
+  }
+
+  return chars.join('')
 }
 
 function cleanMarkdownTarget(rawTarget: string): string {
