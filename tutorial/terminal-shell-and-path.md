@@ -1,5 +1,5 @@
 ---
-order: 9
+order: 10
 maintainers:
   - user: m1ngsama
     since: 2026-09
@@ -8,16 +8,6 @@ maintainers:
 # 终端、shell 与 PATH
 
 弄清你敲下一行命令之后，shell 到底做了哪几件事。
-
-::: info 这篇写给谁
-
-只想改一页文档的话，你不需要读它。[在网页上编辑](/tutorial/manual/documents-git-workflow#路线-a-在网页上改)不需要你打开终端。
-
-装了新版本却发现版本号没变、配置写了却不生效、命令明明装了却说找不到，这三类问题的答案都在这里。
-
-zsh、bash、PowerShell 三者的规则各不相同，下面每处都分开写。你先看[概览](#概览)确认自己在用哪个。
-
-:::
 
 ## 概览
 

@@ -1,5 +1,5 @@
 ---
-order: 8
+order: 9
 maintainers:
   - user: m1ngsama
     since: 2026-09
@@ -8,16 +8,6 @@ maintainers:
 # 计算机网络与代理
 
 弄清终端连接一个网站要经过哪些环节，以及代理插在其中哪一环。
-
-::: info 这篇写给谁
-
-只想改一页文档的话，你不需要读它。[在网页上编辑](/tutorial/manual/documents-git-workflow#路线-a-在网页上改)不经过你本机的网络。
-
-终端连不上 GitHub 而你想自己弄明白，这篇从头讲到尾。急着解决问题，先跳到[常见报错对照](#常见报错对照)。
-
-命令都给出 macOS、Linux、Windows 三种写法。每处结论都链到规范条款或官方手册，你可以逐条核对。
-
-:::
 
 ## 概览
 
