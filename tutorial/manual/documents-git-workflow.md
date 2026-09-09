@@ -270,17 +270,17 @@ git switch -c docs/下一件事
 
 ## 卡住了看哪里
 
-| 症状                                 | 去这篇                                                                             |
-| ------------------------------------ | ---------------------------------------------------------------------------------- |
-| 浏览器能开 GitHub，终端连不上        | [计算机网络与代理](/tutorial/computer-networking-and-proxies)                      |
-| 换了代理之后 Git 突然连不上          | [Git 的代理配置层级](/tutorial/computer-networking-and-proxies#git-的代理配置层级) |
-| 命令找不到，或版本号跟装的对不上     | [终端、shell 与 PATH](/tutorial/terminal-shell-and-path#命令查找顺序)              |
-| 配置写了却不生效                     | [启动文件的读取顺序](/tutorial/terminal-shell-and-path#启动文件的读取顺序)         |
-| `pnpm -v` 不是 9.0.0                 | [包管理器与 Node 工具链](/tutorial/package-managers)                               |
-| 分支、合并、`fetch` 与 `pull` 分不清 | [Git 的理念与模型](/tutorial/git-concepts)                                         |
-| 加粗、表格、链接写法                 | [Markdown](/tutorial/markdown)                                                     |
-| 容器、代码组、组件、构建命令         | [VitePress](/tutorial/vitepress)                                                   |
-| Issue、标签、评审在 GitHub 上怎么点  | [GitHub 工作流](/tutorial/github-workflow)                                         |
+| 症状                                 | 去这篇                                                                           |
+| ------------------------------------ | -------------------------------------------------------------------------------- |
+| 浏览器能开 GitHub，终端连不上        | [计算机网络与代理](/tutorial/computer-networking-and-proxies)                    |
+| 换了代理之后 Git 突然连不上          | [给 Git 单独配代理](/tutorial/computer-networking-and-proxies#给-git-单独配代理) |
+| 命令找不到，或版本号跟装的对不上     | [终端、shell 与 PATH](/tutorial/terminal-shell-and-path#命令查找顺序)            |
+| 配置写了却不生效                     | [启动文件的读取顺序](/tutorial/terminal-shell-and-path#启动文件的读取顺序)       |
+| `pnpm -v` 不是 9.0.0                 | [包管理器与 Node 工具链](/tutorial/package-managers)                             |
+| 分支、合并、`fetch` 与 `pull` 分不清 | [Git 的理念与模型](/tutorial/git-concepts)                                       |
+| 加粗、表格、链接写法                 | [Markdown](/tutorial/markdown)                                                   |
+| 容器、代码组、组件、构建命令         | [VitePress](/tutorial/vitepress)                                                 |
+| Issue、标签、评审在 GitHub 上怎么点  | [GitHub 工作流](/tutorial/github-workflow)                                       |
 
 仍然解决不了就在群里问，或者直接开一个 [Issue](https://github.com/nbtca/documents/issues)。卡住不是你的问题，是这份手册没写清楚——欢迎顺手把它补上。
 

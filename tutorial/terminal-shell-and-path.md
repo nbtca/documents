@@ -72,7 +72,7 @@ export FOO=bar   # 此后启动的程序可见
 env | grep FOO   # 查看当前进程环境
 ```
 
-由此：子进程拿到的是副本，它的修改不影响父进程；`export` 对已在运行的程序无效；关闭窗口后变量消失。代理环境变量的行为即源于此，见[计算机网络与代理](/tutorial/computer-networking-and-proxies#代理相关的环境变量)。
+由此：子进程拿到的是副本，它的修改不影响父进程；`export` 对已在运行的程序无效；关闭窗口后变量消失。代理环境变量的行为即源于此，见[计算机网络与代理](/tutorial/computer-networking-and-proxies#同一个变量-不同程序读法不同)。
 
 ## 路径
 
@@ -146,7 +146,7 @@ proxyoff() {
 }
 ```
 
-`PORT` 换成本机代理实际监听的端口。写进 `.zshrc` 而非 `.zprofile`，因为这是交互时才用的。`proxyoff` 大小写两种都 `unset`，原因见[计算机网络与代理](/tutorial/computer-networking-and-proxies#代理相关的环境变量)。
+`PORT` 换成本机代理实际监听的端口。写进 `.zshrc` 而非 `.zprofile`，因为这是交互时才用的。`proxyoff` 大小写两种都 `unset`，原因见[计算机网络与代理](/tutorial/computer-networking-and-proxies#同一个变量-不同程序读法不同)。
 
 ## 延伸阅读
 
