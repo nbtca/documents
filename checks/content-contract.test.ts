@@ -104,6 +104,16 @@ describe('content contract', () => {
 
     expect(resolutions.map(resolution => resolution.status)).toEqual(['ok', 'ok'])
   })
+
+  it('leaves link syntax inside code spans alone, so a page may teach it', () => {
+    const links = extractMarkdownLinks(
+      'Write `[text](/nowhere)` for a link, as in [Repair](/repair/guide).\n'
+      + 'Nested backticks: `` `[a](/gone)` `` stay out of it too.',
+      'tutorial/markdown.md',
+    )
+
+    expect(links.map(link => link.target)).toEqual(['/repair/guide'])
+  })
 })
 
 function writeFixture(relativePath: string, content: string): void {

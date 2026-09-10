@@ -7,7 +7,7 @@ maintainers:
 
 # 撰写并发布你的第一篇 NBTCA 博客
 
-本指南带你用最主流的开源协作方式——**Git + Markdown + Pull Request**——撰写并发布你的第一篇 [NBTCA](/about/what-is-nbtca) 博客。若只想了解通用的 Git 协作流程，见[快速上手 GitHub 工作流](/tutorial/2025/github-workflow)；本文在其基础上，讲博客投稿特有的部分。
+本指南带你用最主流的开源协作方式——**Git + Markdown + Pull Request**——撰写并发布你的第一篇 [NBTCA](/about/what-is-nbtca) 博客。若只想了解通用的 Git 协作流程，见[快速上手 GitHub 工作流](/tutorial/manual/github-workflow)；本文在其基础上，讲博客投稿特有的部分。
 
 目标是：
 

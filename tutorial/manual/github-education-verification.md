@@ -1,5 +1,5 @@
 ---
-order: 2
+order: 6
 maintainers:
   - user: Yuna-Celisse
     since: 2025-12
@@ -7,7 +7,7 @@ maintainers:
 
 # GitHub Education 认证指南
 
-GitHub Education 面向在校学生提供 [GitHub Student Developer Pack](https://education.github.com/pack)——免费的 GitHub Pro、Copilot、Codespaces，以及一批合作厂商的开发工具与云资源。用[教育邮箱](/tutorial/2025/edu-email)完成学生身份认证即可领取。本文讲怎么通过这个认证。
+GitHub Education 面向在校学生提供 [GitHub Student Developer Pack](https://education.github.com/pack)——免费的 GitHub Pro、Copilot、Codespaces，以及一批合作厂商的开发工具与云资源。用[教育邮箱](/tutorial/manual/edu-email)完成学生身份认证即可领取。本文讲怎么通过这个认证。
 
 ## 获取 GitHub Education 认证
 
