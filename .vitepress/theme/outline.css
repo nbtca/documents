@@ -1,0 +1,27 @@
+/* Keep the native tree and active-anchor engine. The first two tree levels
+   stay visible; deeper lists open only along the active or focused branch.
+   Keeping links mounted lets the native bottom-of-page handling find them
+   before its marker measures their position. No height animation on scroll. */
+@supports selector(li:has(.active)) {
+  .VPDocAsideOutline :where(.VPDocOutlineItem.nested .VPDocOutlineItem.nested) {
+    display: none;
+  }
+
+  .VPDocAsideOutline li:has(.outline-link.active) > .VPDocOutlineItem.nested,
+  .VPDocAsideOutline li:focus-within > .VPDocOutlineItem.nested {
+    display: block;
+  }
+}
+
+/* Mobile keeps the same native data but shows only the first two tree levels,
+   avoiding a long, scroll-dependent dropdown. Skipped levels remain reachable
+   when VitePress promotes them into those first two levels. */
+.VPLocalNav .outline > .VPDocOutlineItem > li > .VPDocOutlineItem > li > .VPDocOutlineItem {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .VPDocAsideOutline .outline-marker {
+    transition: none;
+  }
+}

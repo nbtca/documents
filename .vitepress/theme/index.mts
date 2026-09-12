@@ -3,6 +3,7 @@ import DefaultTheme from 'vitepress/theme'
 import { components } from './components'
 import Layout from './Layout.vue'
 import './style.css'
+import './outline.css'
 
 let transitionTimer: number | undefined
 
