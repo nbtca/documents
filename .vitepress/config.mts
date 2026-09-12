@@ -98,7 +98,7 @@ export default withMermaid({
     },
     outline: {
       label: '本页目录',
-      level: [2, 4],
+      level: [2, 3],
     },
     docFooter: {
       prev: '上一页',
