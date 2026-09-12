@@ -12,6 +12,7 @@ import Split from './Split.vue'
 import Timeline from './Timeline.vue'
 import TimelineEntry from './TimelineEntry.vue'
 import './style.css'
+import './outline.css'
 
 let transitionTimer: number | undefined
 
