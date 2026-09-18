@@ -1,7 +1,7 @@
 // A transcription's typos are the record and must survive correction; a page
 // the association wrote itself has ordinary typos. Only provenance tells them
 // apart — archived/ holds both.
-const OWN_RECORD = '协会自有记录'
+export const OWN_RECORD = '协会自有记录'
 
 interface ArchiveNote {
   source?: string

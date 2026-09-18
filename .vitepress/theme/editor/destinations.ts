@@ -1,3 +1,5 @@
+import { OWN_RECORD } from './archive'
+
 export interface Destination {
   id: string
   label: string
@@ -9,6 +11,8 @@ export interface Destination {
   outline?: string
   // No sidebar, so a page here is an orphan until the section index links it.
   hub?: boolean
+  // Filed under the year its name starts with, and dated from it.
+  dated?: boolean
 }
 
 // Only what .vitepress/sidebars/ scans; elsewhere a page never reaches nav.
@@ -60,25 +64,61 @@ export const DESTINATIONS: Destination[] = [
     what: '维修队相关：怎么修、怎么办维修日、用什么工具',
     how: '开头一段要能独立读懂',
   },
+  {
+    id: 'archived',
+    label: '存档',
+    dir: 'archived',
+    dated: true,
+    what: '本届的会议纪要、活动记录，按年份归档',
+    how: '网址以事情发生那天的日期开头；只记当时发生了什么，不补写事后的判断',
+    outline: '# \n\n:::info 会议信息\n\n- 时间：\n- 地点：\n- 记录员：\n\n:::\n',
+  },
 ]
 
-export function draftSlug(now = new Date()): string {
-  return `draft-${now.toISOString().slice(0, 10).replace(/-/g, '')}`
+// The writer's calendar, not UTC: before 8am in China UTC is still yesterday.
+export function localDay(now = new Date()): string {
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
+}
+
+export function draftSlug(destination: Destination, now = new Date()): string {
+  return destination.dated ? `${localDay(now)}-meeting` : `draft-${localDay(now).replace(/-/g, '')}`
+}
+
+export function slugProblem(destination: Destination, slug: string): string {
+  if (!/^[a-z0-9][a-z0-9-]*$/.test(slug))
+    return '只能用小写字母、数字和连字符'
+  if (destination.dated && !/^\d{4}-\d{2}-\d{2}-[a-z0-9]/.test(slug))
+    return '以日期开头，例如 2026-09-16-meeting'
+  return ''
+}
+
+function dirFor(destination: Destination, slug: string): string {
+  return destination.dated ? `${destination.dir}/${slug.slice(0, 4)}` : destination.dir
 }
 
 export function pathFor(destination: Destination, slug: string): string {
-  return `${destination.dir}/${slug}.md`
+  return `${dirFor(destination, slug)}/${slug}.md`
 }
 
 export function routeFor(destination: Destination, slug: string): string {
-  return `/${destination.dir}/${slug}`
+  return `/${dirFor(destination, slug)}/${slug}`
 }
 
-export function frontmatterFor(login: string, now = new Date()): string {
-  const since = now.toISOString().slice(0, 7)
+export function frontmatterFor(
+  destination: Destination,
+  page: { login: string, slug: string, summary: string },
+  now = new Date(),
+): string {
   // Local development has no GitHub identity; leave something people notice.
-  const user = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(login) ? login : 'your-github-login'
-  return `---\nmaintainers:\n  - user: ${user}\n    since: ${since}\n---\n\n`
+  const user = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(page.login) ? page.login : 'your-github-login'
+
+  if (destination.dated) {
+    return `---\nsummary: ${JSON.stringify(page.summary)}\narchive:\n  date: "${page.slug.slice(0, 10)}"\n`
+      + `  source: "${OWN_RECORD}，随本仓库保存"\n  author: "${user}"\n---\n\n`
+  }
+
+  return `---\nmaintainers:\n  - user: ${user}\n    since: ${localDay(now).slice(0, 7)}\n---\n\n`
 }
 
 export function placeholderFor(destination: Destination): string {
