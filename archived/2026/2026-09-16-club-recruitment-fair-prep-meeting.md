@@ -34,8 +34,9 @@ archive:
 - [m1ngsama](https://github.com/m1ngsama)：可以让[whisper11111111111](https://github.com/whisper11111111111)展示机械臂
 
 ### 3. 紧急避险
-  [Lan-Yuri](https://github.com/Lan-Yuri)提出下雨紧急情况需要准备 。
-  若天气恶劣避免携带硬件，应取消硬件的展示。
+
+[Lan-Yuri](https://github.com/Lan-Yuri)提出下雨紧急情况需要准备 。
+若天气恶劣避免携带硬件，应取消硬件的展示。
 
 ---
 
@@ -58,7 +59,6 @@ archive:
 ## 附录
 
 - 本次会议与会人员
-
   - [m1ngsama](https://github.com/m1ngsama)
   - [Egger0](https://github.com/Egger0)
   - [sheepkinn](https://github.com/sheepkinn)
