@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Me, PendingImage } from './editor/backend'
+import type { Format } from './editor/codemirror'
 import type { Destination } from './editor/destinations'
 import { useData } from 'vitepress'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
@@ -15,7 +16,9 @@ import {
   pathFor,
   placeholderFor,
   routeFor,
+  slugProblem,
 } from './editor/destinations'
+import { forget, keep, recall } from './editor/drafts'
 
 type Stage = 'closed' | 'choosing' | 'loading' | 'editing' | 'previewing' | 'submitting' | 'failed'
 
@@ -39,14 +42,19 @@ let editor: { destroy: () => void } | undefined
 let preview: { update: (md: string) => void, close: () => void } | undefined
 let insertAt: ((snippet: string, caret?: number) => void) | undefined
 let showDiff: ((original: string | undefined) => void) | undefined
+let applyFormat: ((kind: Format) => void) | undefined
+let replaceAll: ((text: string) => void) | undefined
 
 const diffing = ref(false)
 
 const images = ref<PendingImage[]>([])
 const pendingUrls = new Map<string, string>()
 const picker = ref<HTMLInputElement>()
+const accepts = ref('image/*')
 const pending = ref<{ file: File, alt: string, caption: string } | undefined>()
 const busy = ref(false)
+
+const restored = ref(false)
 
 const destination = ref<Destination>()
 const slug = ref('')
@@ -57,7 +65,7 @@ const target = computed(() => destination.value
   : { path: page.value.filePath, route: '' })
 
 const titled = computed(() => Boolean(extractH1(draft.value)?.trim()))
-const slugOk = computed(() => /^[a-z0-9][a-z0-9-]*$/.test(slug.value))
+const slugBad = computed(() => destination.value ? slugProblem(destination.value, slug.value) : '')
 
 const heading = computed(() => {
   if (stage.value === 'choosing')
@@ -76,9 +84,7 @@ const slugIssue = computed(() => {
     return ''
   if (slugTaken.value)
     return `${slugTaken.value} 已经有人了，换一个名字`
-  if (!slugOk.value)
-    return '只能用小写字母、数字和连字符'
-  return ''
+  return slugBad.value
 })
 
 const blocker = computed(() => {
@@ -111,6 +117,51 @@ watch([draft, slug, summary], () => {
 
 watch(slug, () => (slugTaken.value = ''))
 
+const draftKey = computed(() => destination.value ? 'new' : page.value.filePath)
+let saving: ReturnType<typeof setTimeout> | undefined
+
+watch([draft, summary, slug, images], () => {
+  clearTimeout(saving)
+  if (stage.value !== 'editing')
+    return
+  const key = draftKey.value
+  saving = setTimeout(() => {
+    if (!changed.value)
+      return forget(key)
+    keep(key, {
+      draft: draft.value,
+      summary: summary.value,
+      base: base.value,
+      destination: destination.value?.id,
+      slug: slug.value,
+      images: images.value,
+    })
+  }, 400)
+}, { deep: true })
+
+function restore(key: string): boolean {
+  const saved = recall(key)
+  if (!saved || saved.draft === original.value)
+    return false
+  draft.value = saved.draft
+  summary.value = saved.summary
+  base.value = saved.base ?? base.value
+  images.value = saved.images
+  for (const image of saved.images)
+    pendingUrls.set(`/${image.path}`, `data:image/webp;base64,${image.base64}`)
+  restored.value = true
+  return true
+}
+
+function startOver() {
+  forget(draftKey.value)
+  restored.value = false
+  images.value = []
+  pendingUrls.clear()
+  summary.value = ''
+  replaceAll?.(original.value)
+}
+
 // Only a page that transcribes an original is held to the original; a record
 // this association wrote itself is just a page, wherever it is filed.
 const transcribed = computed(() => transcribedFrom(page.value.frontmatter))
@@ -129,10 +180,15 @@ watch([() => stage.value, host], async ([current, element]) => {
   const view = mountEditor(element, draft.value, value => (draft.value = value), () => {
     if (canSubmit.value)
       submit()
-  }, destination.value && placeholderFor(destination.value))
+  }, onFiles, destination.value && placeholderFor(destination.value))
   view.focus()
-  const { setDiff } = await import('./editor/codemirror')
+  const { format, setDiff } = await import('./editor/codemirror')
   showDiff = original => setDiff(view, original)
+  applyFormat = kind => format(view, kind)
+  replaceAll = (text) => {
+    view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: text } })
+    view.focus()
+  }
   insertAt = (snippet, caret) => {
     const at = view.state.selection.main.head
     view.dispatch({ changes: { from: at, insert: snippet }, selection: { anchor: at + (caret ?? snippet.length) } })
@@ -153,15 +209,48 @@ function toggleDiff() {
   showDiff?.(diffing.value ? original.value : undefined)
 }
 
-function pickImage() {
+const TEXT = '.md,.markdown,.txt,text/markdown,text/plain'
+
+async function pick(kind: 'image/*' | typeof TEXT) {
+  accepts.value = kind
+  await nextTick()
   picker.value?.click()
 }
 
 function onPicked(event: Event) {
-  const file = (event.target as HTMLInputElement).files?.[0]
-  if (file)
-    pending.value = { file, alt: '', caption: '' }
+  onFiles([...(event.target as HTMLInputElement).files ?? []])
   ;(event.target as HTMLInputElement).value = ''
+}
+
+function onFiles(files: File[]) {
+  const [image, ...more] = files.filter(file => file.type.startsWith('image/'))
+  const text = files.find(file => /\.(?:md|markdown|txt)$/i.test(file.name) || file.type.startsWith('text/'))
+  // Decoding happens before the resize, so a huge original can stall the tab.
+  if (image && image.size > 20e6) {
+    problem.value = `${image.name} 超过 20 MB，先缩小再插`
+  }
+  else if (image) {
+    pending.value = { file: image, alt: '', caption: '' }
+    if (more.length)
+      problem.value = `一次插一张：先给 ${image.name} 写说明，其余的再拖一次`
+  }
+  else if (text) {
+    importText(text)
+  }
+  else if (files.length) {
+    problem.value = `${files[0].name} 既不是图片也不是 Markdown，放不进来`
+  }
+}
+
+async function importText(file: File) {
+  const text = splitFrontmatter((await file.text()).replace(/\r\n?/g, '\n')).body.replace(/^\s+/, '')
+  const titledText = destination.value && !extractH1(text)
+    ? `# ${file.name.replace(/\.[^.]+$/, '')}\n\n${text}`
+    : text
+  if (draft.value.trim())
+    insertAt?.(`\n${titledText}\n`)
+  else
+    replaceAll?.(titledText)
 }
 
 async function insertImage() {
@@ -173,7 +262,7 @@ async function insertImage() {
   try {
     const { toWebp } = await import('./editor/image')
     const image = await toWebp(choice.file)
-    const dir = `${page.value.filePath.split('/')[0]}/assets`
+    const dir = `${target.value.path.split('/')[0]}/assets`
     const path = `/${dir}/${image.name}`
     images.value.push({ path: `${dir}/${image.name}`, base64: image.base64 })
     pendingUrls.set(path, image.url)
@@ -231,12 +320,16 @@ onMounted(async () => {
 
 // Filled after mount: the server renders for no particular keyboard, and
 // CodeMirror's Mod-s is ⌘ on a Mac and Ctrl everywhere else.
-const saveKey = ref('')
+const mod = ref('')
 onMounted(() => {
-  saveKey.value = /mac|iphone|ipad/i.test(navigator.userAgent) ? '⌘S' : 'Ctrl+S'
+  mod.value = /mac|iphone|ipad/i.test(navigator.userAgent) ? '⌘' : 'Ctrl+'
 })
+const saveKey = computed(() => mod.value && `${mod.value}S`)
 
 function reset() {
+  restored.value = false
+  images.value = []
+  pendingUrls.clear()
   problem.value = ''
   result.value = undefined
   summary.value = ''
@@ -257,15 +350,25 @@ async function startNew() {
     return
   }
   reset()
-  slug.value = draftSlug()
+  slug.value = ''
+  original.value = ''
+  draft.value = ''
+  const saved = recall('new')
+  const was = DESTINATIONS.find(d => d.id === saved?.destination)
+  if (was && restore('new')) {
+    destination.value = was
+    slug.value = saved!.slug ?? draftSlug(was)
+    stage.value = 'editing'
+    base.value = await startedAt().catch(() => undefined)
+    return
+  }
   chooseAgain()
 }
 
 async function chose(choice: Destination) {
+  if (!destination.value || slug.value === draftSlug(destination.value))
+    slug.value = draftSlug(choice)
   destination.value = choice
-  head.value = frontmatterFor(member.value?.name ?? '')
-  original.value = ''
-  draft.value = ''
   stage.value = 'editing'
   base.value = await startedAt().catch(() => undefined)
 }
@@ -285,6 +388,7 @@ async function open() {
     original.value = parts.body
     draft.value = parts.body
     base.value = from
+    restore(page.value.filePath)
     stage.value = 'editing'
   }
   catch (error) {
@@ -308,14 +412,18 @@ async function submit() {
       return
     }
 
+    const front = at
+      ? frontmatterFor(at, { login: member.value?.name ?? '', slug: slug.value, summary: summary.value.trim() })
+      : head.value
     result.value = await send(target.value.path, {
-      content: head.value + draft.value,
+      content: front + draft.value,
       summary: summary.value.trim(),
       author: member.value?.name ?? '',
       images: images.value,
       base: base.value,
       checklist: checklist.value,
     }, step => (progress.value = step))
+    forget(draftKey.value)
     for (const url of pendingUrls.values())
       URL.revokeObjectURL(url)
     pendingUrls.clear()
@@ -346,6 +454,7 @@ function close(andSignOut = false) {
 }
 
 function discard() {
+  forget(draftKey.value)
   const out = leaving.value
   teardown()
   armed.value = false
@@ -356,6 +465,18 @@ function discard() {
   if (out)
     signOut()
 }
+
+const TOOLS: { kind: Format, mark: string, name: string, key?: string }[] = [
+  { kind: 'h1', mark: '#', name: '标题' },
+  { kind: 'h2', mark: '##', name: '小标题' },
+  { kind: 'bold', mark: 'B', name: '加粗', key: 'B' },
+  { kind: 'italic', mark: 'I', name: '斜体', key: 'I' },
+  { kind: 'code', mark: '`', name: '代码', key: 'E' },
+  { kind: 'link', mark: '[ ]( )', name: '链接', key: 'K' },
+  { kind: 'list', mark: '-', name: '列表', key: '⇧8' },
+  { kind: 'ordered', mark: '1.', name: '编号列表', key: '⇧7' },
+  { kind: 'quote', mark: '>', name: '引用', key: '⇧.' },
+]
 
 function insertOutline() {
   const outline = destination.value?.outline
@@ -426,6 +547,13 @@ function insertOutline() {
             这一页照录自「{{ transcribed }}」。原文的笔误是有意留着的，改动请只用来修正转写本身的错误。
           </p>
 
+          <p v-if="restored && stage !== 'choosing'" class="nb-edit-origin">
+            接着上次没提交的草稿继续。
+            <button type="button" class="nb-edit-outline" @click="startOver">
+              {{ destination ? '清空重写' : '放弃草稿，回到原文' }}
+            </button>
+          </p>
+
           <div v-if="stage === 'choosing'" class="nb-pick">
             <p class="nb-pick-lead">
               这篇放哪里？每一栏收的东西和写法都不一样。
@@ -449,7 +577,7 @@ function insertOutline() {
               网址
               <input v-model="slug" spellcheck="false" placeholder="edu-email">
             </label>
-            <span class="nb-new-route" :class="{ 'is-bad': !slugOk }">{{ target.route }}</span>
+            <span class="nb-new-route" :class="{ 'is-bad': slugBad }">{{ target.route }}</span>
             <span v-if="slugIssue" class="nb-new-issue">{{ slugIssue }}</span>
           </div>
 
@@ -477,27 +605,43 @@ function insertOutline() {
               </div>
             </div>
 
-            <p v-if="!pending && !draft && destination?.outline" class="nb-edit-syntax">
-              <span>不知道从哪开始？</span>
-              <button type="button" class="nb-edit-outline" @click="insertOutline">
-                搭一个结构
+            <p v-if="!pending && !draft.trim() && destination" class="nb-edit-syntax">
+              <template v-if="destination.outline">
+                <span>不知道从哪开始？</span>
+                <button type="button" class="nb-edit-outline" @click="insertOutline">
+                  搭一个结构
+                </button>
+              </template>
+              <span>已经写好了 .md？</span>
+              <button type="button" class="nb-edit-outline" @click="pick(TEXT)">
+                导入文件
               </button>
+              <span>或直接拖进来</span>
             </p>
 
-            <p v-else-if="!pending" class="nb-edit-syntax">
-              <span><code># 标题</code></span>
-              <span><code>## 小标题</code></span>
-              <span><code>- 列表</code></span>
-              <span><code>**加粗**</code></span>
-              <span><code>[文字](/repair/)</code> 站内链接</span>
+            <div v-else-if="!pending" class="nb-edit-syntax">
+              <span class="nb-edit-tools" role="toolbar" aria-label="格式">
+                <button
+                  v-for="tool in TOOLS"
+                  :key="tool.kind"
+                  type="button"
+                  class="nb-edit-tool"
+                  :aria-label="tool.name"
+                  :title="tool.key && mod ? `${tool.name}（${mod}${tool.key}）` : tool.name"
+                  @click="applyFormat?.(tool.kind)"
+                >
+                  <code>{{ tool.mark }}</code>
+                </button>
+              </span>
+              <span class="nb-edit-key">图片和 .md 可以拖进来或粘贴</span>
               <span v-if="saveKey" class="nb-edit-key"><code>{{ saveKey }}</code> 提交</span>
-            </p>
+            </div>
 
             <div class="nb-edit-foot">
               <input
                 v-model="summary"
                 class="nb-edit-summary"
-                :placeholder="destination ? '这一页讲什么？一句话' : '这次改了什么？一句话'"
+                :placeholder="destination?.dated ? '这次记录了什么？一句话，会作为页面摘要' : destination ? '这一页讲什么？一句话' : '这次改了什么？一句话'"
                 :disabled="stage === 'submitting'"
               >
               <template v-if="armed">
@@ -513,7 +657,7 @@ function insertOutline() {
               </template>
 
               <template v-else>
-                <button type="button" class="nb-edit-ghost" :disabled="stage === 'submitting'" @click="pickImage">
+                <button type="button" class="nb-edit-ghost" :disabled="stage === 'submitting'" @click="pick('image/*')">
                   插图
                 </button>
                 <button
@@ -550,7 +694,7 @@ function insertOutline() {
                   ? '保存会直接写入这个 markdown 文件。'
                   : '提交会开一个 PR，交由维护者审阅后合并，不会直接改动线上页面。') }}
             </p>
-            <input ref="picker" type="file" accept="image/*" hidden @change="onPicked">
+            <input ref="picker" type="file" :accept="accepts" hidden @change="onPicked">
           </template>
 
           <div v-if="stage === 'failed'" class="nb-edit-failed">
@@ -571,7 +715,7 @@ function insertOutline() {
           继续编辑
         </button>
         <button type="button" class="nb-edit-submit" :disabled="!canSubmit" @click="submit">
-          {{ localMode ? '保存到本地' : '提交修改' }}
+          {{ localMode ? '保存到本地' : (destination ? '提交新页面' : '提交修改') }}
         </button>
       </div>
     </Teleport>
@@ -881,7 +1025,8 @@ function insertOutline() {
 
 .nb-pick-option {
   display: grid;
-  gap: 2px;
+  grid-template-columns: 7em 1fr;
+  gap: 2px 13px;
   width: 100%;
   padding: 13px 13px 13px 0;
   border: 0;
@@ -903,6 +1048,7 @@ function insertOutline() {
 }
 
 .nb-pick-label {
+  grid-row: span 2;
   font-size: 16px;
   font-weight: 600;
   color: var(--vp-c-text-1);
@@ -985,6 +1131,7 @@ function insertOutline() {
 .nb-edit-syntax {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 3px 16px;
   width: 100%;
   max-width: var(--nb-measure);
@@ -995,6 +1142,28 @@ function insertOutline() {
 }
 
 .nb-edit-syntax code {
+  color: var(--vp-c-text-2);
+  font-family: var(--nb-mono);
+}
+
+.nb-edit-tools {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -6px;
+}
+
+.nb-edit-tool {
+  min-width: 28px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.nb-edit-tool:hover {
+  background: var(--vp-c-bg-soft);
+}
+
+.nb-edit-tool code {
   color: var(--vp-c-text-2);
   font-family: var(--nb-mono);
 }
@@ -1085,6 +1254,19 @@ function insertOutline() {
 
   .nb-pick {
     padding: 21px 21px 0;
+  }
+
+  .nb-edit-tool {
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  .nb-pick-option {
+    grid-template-columns: 1fr;
+  }
+
+  .nb-pick-label {
+    grid-row: auto;
   }
 }
 </style>

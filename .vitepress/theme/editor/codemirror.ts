@@ -1,9 +1,9 @@
 import type { Extension, Range } from '@codemirror/state'
 import type { DecorationSet, ViewUpdate } from '@codemirror/view'
-import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
+import { defaultKeymap, history, historyKeymap, indentLess, indentMore } from '@codemirror/commands'
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
 import { syntaxTree } from '@codemirror/language'
-import { Compartment, EditorState, RangeSet } from '@codemirror/state'
+import { Compartment, EditorSelection, EditorState, RangeSet } from '@codemirror/state'
 import { Decoration, EditorView, keymap, placeholder, ViewPlugin } from '@codemirror/view'
 
 const HEADING = /^ATXHeading([1-6])$/
@@ -164,6 +164,131 @@ const theme = EditorView.theme({
   },
 })
 
+export type Format = 'h1' | 'h2' | 'bold' | 'italic' | 'code' | 'link' | 'list' | 'ordered' | 'quote'
+
+const WRAP: Partial<Record<Format, [string, string]>> = {
+  bold: ['**', '加粗'],
+  italic: ['*', '斜体'],
+  code: ['`', 'code'],
+}
+
+const PREFIX: Partial<Record<Format, string>> = {
+  h1: '# ',
+  h2: '## ',
+  list: '- ',
+  ordered: '1. ',
+  quote: '> ',
+}
+
+const LINE_MARK = /^(\s*)(#{1,6} |[-*+] |\d+\. |> )?/
+const LIST_LINE = /^\s*(?:[-*+]|\d+\.) /
+
+function wrap(view: EditorView, mark: string, filler: string): boolean {
+  view.dispatch(view.state.changeByRange((range) => {
+    const { from, to } = range
+    const doc = view.state.doc
+    if (doc.sliceString(from - mark.length, from) === mark && doc.sliceString(to, to + mark.length) === mark) {
+      return {
+        changes: [{ from: from - mark.length, to: from }, { from: to, to: to + mark.length }],
+        range: EditorSelection.range(from - mark.length, to - mark.length),
+      }
+    }
+    const text = from === to ? filler : doc.sliceString(from, to)
+    return {
+      changes: { from, to, insert: `${mark}${text}${mark}` },
+      range: EditorSelection.range(from + mark.length, from + mark.length + text.length),
+    }
+  }))
+  return true
+}
+
+function link(view: EditorView): boolean {
+  view.dispatch(view.state.changeByRange((range) => {
+    const text = range.empty ? '文字' : view.state.doc.sliceString(range.from, range.to)
+    const url = range.from + text.length + 3
+    return {
+      changes: { from: range.from, to: range.to, insert: `[${text}](url)` },
+      range: range.empty ? EditorSelection.range(range.from + 1, range.from + 1 + text.length) : EditorSelection.range(url, url + 3),
+    }
+  }))
+  return true
+}
+
+function prefix(view: EditorView, mark: string): boolean {
+  const { state } = view
+  const lines = new Set<number>()
+  for (const range of state.selection.ranges) {
+    for (let n = state.doc.lineAt(range.from).number; n <= state.doc.lineAt(range.to).number; n++)
+      lines.add(n)
+  }
+  const all = [...lines].map(n => state.doc.line(n))
+  const off = all.every(line => line.text.trimStart().startsWith(mark))
+  view.dispatch({
+    changes: all.map((line) => {
+      const [, indent, existing = ''] = line.text.match(LINE_MARK)!
+      const from = line.from + indent.length
+      return { from, to: from + existing.length, insert: off ? '' : mark }
+    }),
+  })
+  return true
+}
+
+export function format(view: EditorView, kind: Format): boolean {
+  const wrapper = WRAP[kind]
+  const done = wrapper ? wrap(view, ...wrapper) : kind === 'link' ? link(view) : prefix(view, PREFIX[kind]!)
+  view.focus()
+  return done
+}
+
+const onListLine = (view: EditorView) => LIST_LINE.test(view.state.doc.lineAt(view.state.selection.main.head).text)
+
+const formatKeymap = keymap.of([
+  { key: 'Mod-b', run: view => format(view, 'bold') },
+  { key: 'Mod-i', run: view => format(view, 'italic') },
+  { key: 'Mod-e', run: view => format(view, 'code') },
+  { key: 'Mod-k', run: view => format(view, 'link') },
+  { key: 'Mod-Shift-8', run: view => format(view, 'list') },
+  { key: 'Mod-Shift-7', run: view => format(view, 'ordered') },
+  { key: 'Mod-Shift-.', run: view => format(view, 'quote') },
+  // Only inside a list, so Tab still leaves the editor everywhere else.
+  { key: 'Tab', run: view => onListLine(view) && indentMore(view) },
+  { key: 'Shift-Tab', run: view => onListLine(view) && indentLess(view) },
+])
+
+const URL_ONLY = /^https?:\/\/\S+$/
+
+function files(handle: (files: File[]) => void) {
+  return EditorView.domEventHandlers({
+    paste(event, view) {
+      const dropped = [...event.clipboardData?.files ?? []]
+      if (dropped.length) {
+        event.preventDefault()
+        handle(dropped)
+        return true
+      }
+      const text = event.clipboardData?.getData('text/plain').trim() ?? ''
+      const range = view.state.selection.main
+      if (!URL_ONLY.test(text) || range.empty || view.state.doc.lineAt(range.from).number !== view.state.doc.lineAt(range.to).number)
+        return false
+      event.preventDefault()
+      const words = view.state.doc.sliceString(range.from, range.to)
+      view.dispatch({ changes: { from: range.from, to: range.to, insert: `[${words}](${text})` } })
+      return true
+    },
+    drop(event, view) {
+      const dropped = [...event.dataTransfer?.files ?? []]
+      if (!dropped.length)
+        return false
+      event.preventDefault()
+      const at = view.posAtCoords({ x: event.clientX, y: event.clientY })
+      if (at !== null)
+        view.dispatch({ selection: { anchor: at } })
+      handle(dropped)
+      return true
+    },
+  })
+}
+
 const diffing = new Compartment()
 
 export async function setDiff(view: EditorView, original: string | undefined): Promise<void> {
@@ -182,20 +307,23 @@ export function mountEditor(
   doc: string,
   onChange: (value: string) => void,
   onSave: () => void,
+  onFiles: (files: File[]) => void,
   hint?: string,
 ): EditorView {
   const extensions: Extension[] = [
     history(),
     placeholder(hint ?? ''),
+    formatKeymap,
+    files(onFiles),
     keymap.of([
-      {
-        key: 'Mod-s',
+      ...['Mod-s', 'Mod-Enter'].map(key => ({
+        key,
         preventDefault: true,
         run: () => {
           onSave()
           return true
         },
-      },
+      })),
       ...defaultKeymap,
       ...historyKeymap,
     ]),
