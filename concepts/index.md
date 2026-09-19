@@ -39,6 +39,7 @@ maintainers:
 - [CA103](./ca103)
 - [DEV101](./dev101) · 存根，待补充
 - [技术分享会](./tech-talk)
+- [NWDC](./nwdc)
 - [百团大战](./club-fair)
 - [迎新会](./welcome-party)
 - [每周学习日](./weekly-study)
