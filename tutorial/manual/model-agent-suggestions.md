@@ -58,31 +58,41 @@ DeepSeek V4.1 Flash（API 名 `deepseek-flash`）是当前最便宜的可用编�
 
 同一个模型在不同 harness 里的配置难度和实际效果差别不小，综合排序如下：
 
-| 排序 | harness                             | 配置难度 | 使用效果 | 说明                                                                                             |
-| ---- | ----------------------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------ |
-| 1    | Claude Code（CLI 与桌面版）         | 低       | 最好     | 官方给出完整的环境变量与模型映射，原生支持 Web Search、子代理，自动压缩窗口可按 1M 上下文调大    |
-| 2    | Codex（CLI、桌面端与 VS Code 插件） | 最低     | 好       | 一键脚本写 `~/.codex/config.toml`，三端共用一份；DeepSeek 侧没有联网搜索，要把 `web_search` 关掉 |
-| 3    | OpenCode                            | 低       | 中       | `/connect` 选 DeepSeek 填 Key，与 Zen 免费模型共用同一套 provider 配置                           |
-| 4    | Kimi Code（CLI 与桌面端）           | 最低     | 中       | DeepSeek 是预置供应商，模型列表里直接选再填 Key                                                  |
-| 5    | Qoder CN                            | 低       | 中       | 预置供应商，或按 OpenAI Compatible 自定义模型；自定义模型由服务商 API 账户结算，不消耗 Credits   |
+| 排序 | harness                             | 配置难度 | 使用效果 | 说明                                                                                                               |
+| ---- | ----------------------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------ |
+| 1    | Claude Code / Claude 桌面端         | 低       | 最好     | CLI 把变量写进 `settings.json` 的 `env` 块，删掉即恢复，不污染 shell；桌面端在开发者模式的第三方推理里填地址与 Key |
+| 2    | Codex（CLI、桌面端与 VS Code 插件） | 最低     | 好       | 一键脚本写 `~/.codex/config.toml`，三端共用一份；DeepSeek 侧没有联网搜索，要把 `web_search` 关掉                   |
+| 3    | OpenCode                            | 低       | 中       | `/connect` 选 DeepSeek 填 Key，与 Zen 免费模型共用同一套 provider 配置                                             |
+| 4    | Kimi Code（CLI 与桌面端）           | 最低     | 中       | DeepSeek 是预置供应商，模型列表里直接选再填 Key                                                                    |
+| 5    | Qoder CN                            | 低       | 中       | 预置供应商，或按 OpenAI Compatible 自定义模型；自定义模型由服务商 API 账户结算，不消耗 Credits                     |
 
-配置细节只有官方文档给全了前两家的，其余三家在界面里选 DeepSeek 填 Key 即可。
+配置细节列在下面：前两家给出可以直接照抄的内容，其余三家在界面里选 DeepSeek 填 Key 即可。
 
-**Claude Code**：DeepSeek 提供 Anthropic 兼容端点 `https://api.deepseek.com/anthropic`。CLI 侧用环境变量接通（Windows 把 `export` 换成 `$env:`）：
+**Claude Code**：DeepSeek 提供 Anthropic 兼容端点 `https://api.deepseek.com/anthropic`。变量不要写进 shell 配置文件（`~/.bashrc`、PowerShell 的 Profile）：它们会作用于所有终端和所有项目，之后换回官方登录时容易忘掉，出问题时也难定位。写进 Claude Code 自己的配置文件更干净，删掉 `env` 块就等于恢复原状：
 
-```bash
-export ANTHROPIC_BASE_URL=https://api.deepseek.com/anthropic
-export ANTHROPIC_AUTH_TOKEN=<你的 DeepSeek API Key>
-export ANTHROPIC_MODEL=deepseek-flash[1m]
-export ANTHROPIC_DEFAULT_OPUS_MODEL=deepseek-flash[1m]
-export ANTHROPIC_DEFAULT_SONNET_MODEL=deepseek-flash[1m]
-export ANTHROPIC_DEFAULT_HAIKU_MODEL=deepseek-flash
-export CLAUDE_CODE_SUBAGENT_MODEL=deepseek-flash
-export CLAUDE_CODE_EFFORT_LEVEL=max
-export CLAUDE_CODE_AUTO_COMPACT_WINDOW=786432
+- 用户级 `~/.claude/settings.json`：对所有项目生效
+- 项目级 `.claude/settings.json`，或只在本机生效的 `.claude/settings.local.json`：只在某个仓库里生效
+- 只想临时试一次：`claude --settings <配置文件路径>`
+
+```json
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.deepseek.com/anthropic",
+    "ANTHROPIC_AUTH_TOKEN": "<你的 DeepSeek API Key>",
+    "ANTHROPIC_MODEL": "deepseek-flash[1m]",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "deepseek-flash[1m]",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-flash[1m]",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "deepseek-flash",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "deepseek-flash",
+    "CLAUDE_CODE_EFFORT_LEVEL": "max",
+    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "786432"
+  }
+}
 ```
 
-桌面版不用另装一套：桌面应用读的是同一份 `~/.claude/settings.json`，把上面这些变量原样写进它的 `env` 块即可生效。官方原文是桌面版只需改 `base_url` 与 `api_key`。做法见 [Integrate with Claude Code](https://api-docs.deepseek.com/quick_start/agent_integrations/claude_code)。
+变量名与取值来自 DeepSeek 官方的 [Integrate with Claude Code](https://api-docs.deepseek.com/quick_start/agent_integrations/claude_code)，官方给的是 shell 写法，改成上面的 `env` 块即可。
+
+**Claude 桌面端**：桌面端不需要改配置文件，用客户端自带的第三方推理入口。先停在登录页别点继续，打开左上角菜单 Help → Troubleshooting → Enable developer mode，再进 Developer → Configure third-party inference，Gateway Base URL 填 `https://api.deepseek.com/anthropic`，API Key 填 DeepSeek 的 Key，选 Apply locally，客户端会自动重启生效。要改回官方登录，回到同一个位置把这份配置重置掉即可，过程见[这篇图文步骤](https://cloud.tencent.com/developer/article/2667350)。
 
 **Codex**：DeepSeek 原生支持 Responses API，官方一键脚本会备份原配置并写入 `~/.codex/models.json` 与 `config.toml`。手动配置时在 `config.toml` 里改成：
 
