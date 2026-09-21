@@ -66,7 +66,7 @@ DeepSeek V4.1 Flash（API 名 `deepseek-flash`）是当前最便宜的可用编�
 | 4 | Kimi Code（CLI 与桌面端） | 最低 | 中 | DeepSeek 是预置供应商，模型列表里直接选再填 Key |
 | 5 | Qoder CN | 低 | 中 | 预置供应商，或按 OpenAI Compatible 自定义模型；自定义模型由服务商 API 账户结算，不消耗 Credits |
 
-配置细节列在下面：前两家给出可以直接照抄的内容，其余三家在界面里选 DeepSeek 填 Key 即可。
+配置细节列在下面：前两家给出可以直接照抄的内容，其余三家在界面里选 DeepSeek 填 Key 即可。不想在每台机器、每个工具里分别填上游地址与 Key，可以自建一个中转站把上游收拢成一个入口，见[自建中转站（AxonHub）](/tutorial/manual/self-hosted-relay)。
 
 **Claude Code**：DeepSeek 提供 Anthropic 兼容端点 `https://api.deepseek.com/anthropic`。变量不要写进 shell 配置文件（`~/.bashrc`、PowerShell 的 Profile）：它们会作用于所有终端和所有项目，之后换回官方登录时容易忘掉，出问题时也难定位。写进 Claude Code 自己的配置文件更干净，删掉 `env` 块就等于恢复原状：
 
