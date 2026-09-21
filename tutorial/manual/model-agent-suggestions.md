@@ -11,11 +11,11 @@ maintainers:
 
 ## 概览
 
-| 情况         | 走哪档     | 代表组合                                                                                  |
-| ------------ | ---------- | ----------------------------------------------------------------------------------------- |
-| 零预算       | 免费档     | OpenCode Zen 免费模型，WorkBuddy 体验版                                                   |
-| 按量付费     | 便宜按量档 | DeepSeek V4.1 Flash 配 Claude Code / Codex / OpenCode / Kimi Code / Qoder CN，OpenCode Go |
-| 长期高频使用 | 订阅包量档 | 阿里云百炼 Token Plan，Qoder CN 订阅，ChatGPT Plus / Pro 含 Codex，Copilot Pro / Pro+     |
+| 情况 | 走哪档 | 代表组合 |
+| --- | --- | --- |
+| 零预算 | 免费档 | OpenCode Zen 免费模型，WorkBuddy 体验版 |
+| 按量付费 | 便宜按量档 | DeepSeek V4.1 Flash 配 Claude Code / Codex / OpenCode / Kimi Code / Qoder CN，OpenCode Go |
+| 长期高频使用 | 订阅包量档 | 阿里云百炼 Token Plan，Qoder CN 订阅，ChatGPT Plus / Pro 含 Codex，Copilot Pro / Pro+ |
 
 价格与免费额度变得很快。下文数字都是 2026 年 9 月核实过的快照，下单前以各官方定价页为准。本文涉及的国内工具与国内订阅（Qoder CN、阿里云百炼、WorkBuddy）一律按国内站的人民币费率列出；境外服务（OpenCode Go、ChatGPT、Copilot）仍按官网美元价。
 
@@ -58,13 +58,13 @@ DeepSeek V4.1 Flash（API 名 `deepseek-flash`）是当前最便宜的可用编�
 
 同一个模型在不同 harness 里的配置难度和实际效果差别不小，综合排序如下：
 
-| 排序 | harness                             | 配置难度 | 使用效果 | 说明                                                                                                               |
-| ---- | ----------------------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------ |
-| 1    | Claude Code / Claude 桌面端         | 低       | 最好     | CLI 把变量写进 `settings.json` 的 `env` 块，删掉即恢复，不污染 shell；桌面端在开发者模式的第三方推理里填地址与 Key |
-| 2    | Codex（CLI、桌面端与 VS Code 插件） | 最低     | 好       | 一键脚本写 `~/.codex/config.toml`，三端共用一份；DeepSeek 侧没有联网搜索，要把 `web_search` 关掉                   |
-| 3    | OpenCode                            | 低       | 中       | `/connect` 选 DeepSeek 填 Key，与 Zen 免费模型共用同一套 provider 配置                                             |
-| 4    | Kimi Code（CLI 与桌面端）           | 最低     | 中       | DeepSeek 是预置供应商，模型列表里直接选再填 Key                                                                    |
-| 5    | Qoder CN                            | 低       | 中       | 预置供应商，或按 OpenAI Compatible 自定义模型；自定义模型由服务商 API 账户结算，不消耗 Credits                     |
+| 排序 | harness | 配置难度 | 使用效果 | 说明 |
+| --- | --- | --- | --- | --- |
+| 1 | Claude Code / Claude 桌面端 | 低 | 最好 | CLI 把变量写进 `settings.json` 的 `env` 块，删掉即恢复，不污染 shell；桌面端在开发者模式的第三方推理里填地址与 Key |
+| 2 | Codex（CLI、桌面端与 VS Code 插件） | 最低 | 好 | 一键脚本写 `~/.codex/config.toml`，三端共用一份；DeepSeek 侧没有联网搜索，要把 `web_search` 关掉 |
+| 3 | OpenCode | 低 | 中 | `/connect` 选 DeepSeek 填 Key，与 Zen 免费模型共用同一套 provider 配置 |
+| 4 | Kimi Code（CLI 与桌面端） | 最低 | 中 | DeepSeek 是预置供应商，模型列表里直接选再填 Key |
+| 5 | Qoder CN | 低 | 中 | 预置供应商，或按 OpenAI Compatible 自定义模型；自定义模型由服务商 API 账户结算，不消耗 Credits |
 
 配置细节列在下面：前两家给出可以直接照抄的内容，其余三家在界面里选 DeepSeek 填 Key 即可。
 
