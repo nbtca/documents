@@ -32,3 +32,7 @@ maintainers:
 邀请给你写权限，订阅是只读镜像——只想看日程，订阅就够了，不必找人邀请。任何支持日历订阅的软件（iCloud、Outlook 等）都能添加，此后由软件定期自动同步。
 
 订阅链接：<https://ical.nbtca.space>
+
+在电脑或手机上打开协会主页的[日历页](https://nbtca.space/calendar)，点页面上方的“订阅”按钮。它是一个 `webcal://` 链接，在 macOS、iOS 等支持这类链接的系统上会直接调起日历应用并填好地址；不支持的，手动把上面的地址粘贴到日历应用的“订阅”或“从网址添加”里即可。只想订阅校历的，用 `https://ical.nbtca.space/school.ics`，两份日历的区别见[协会日历](/concepts/calendar-feeds)。
+
+<Figure src="../assets/calendar-subscribe-button.webp" alt="协会主页日历页上方的提示条，左侧写着“你可以在日历 App 中订阅我们的日程”，右侧是一个“订阅”按钮" caption="协会主页日历页上方的订阅入口。" date="2026-09" wide />

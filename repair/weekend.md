@@ -14,7 +14,7 @@ maintainers:
 - **报修与工单管理都收敛到了协会主页的 [/repair](https://nbtca.space/repair)**。本文写作时的入口——[微信小程序](/concepts/repair-miniprogram)与 repair.nbtca.space——都已不再维护（[Roadmap#64](https://github.com/nbtca/Roadmap/issues/64)）。
 - **工单不再走 GitHub Issue**。下文“在 Github 上处理维修”整节所描述的做法（`@nbtca-bot` 命令、用标签记工作量）目前没有在跑，队员改在主页的维修面板上接单与结单。
 
-其余部分——事件状态机、角色权限——仍是这套系统的骨架。〔待核实：下文的 `size` 分档与时长上限是否照旧，以及在维修面板上怎么记工作量。〕**最后核对：2026-08**。
+其余部分——事件状态机、角色权限——仍是这套系统的骨架。工作量分档与时长规则也照旧：队员在维修面板上提交维修记录时选择 `xs` 到 `xl` 的工作量，导出时按下文的基础时长和上限计算，实现见 [Saturday](/concepts/saturday)。**最后核对：2026-09**。
 :::
 
 ## 总览
@@ -65,11 +65,12 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    A[Open] --> |Drop| B[Canceled]
+    A[Open] --> |Cancel| B[Cancelled]
     A --> |Accept| C[Accepted]
-    C --> |Commit| D[Commited]
+    C --> |Drop| A
+    C --> |Commit| D[Committed]
     D --> |AlterCommit| D
-    D --> |Approve| E[Closed]
+    D --> |Close| E[Closed]
     D --> |Reject| C
 ```
 
@@ -88,13 +89,14 @@ flowchart LR
 | 操作名   | action      | 操作权限       | 事件状态变更           | 描述                                         |
 | -------- | ----------- | -------------- | ---------------------- | -------------------------------------------- |
 | 创建     | create      | client         | nil => open            | 用户创建了维修事件                           |
-| 受理     | accept      | member         | open => accepted       | 成员接受了维修事件                           |
-| 取消     | cancel      | current client | open => canceled       | 用户取消了自己创建的维修事件                 |
-| 放弃     | drop        | current member | accept => open         | 成员放弃了自己接受的维修事件                 |
-| 提交     | commit      | current member | accept => committed    | 成员维修完成，添加维修描述后提交给管理员审核 |
+| 受理     | accept      | member, admin  | open => accepted       | 成员接受了维修事件                           |
+| 取消     | cancel      | current client | open => cancelled      | 用户取消了自己创建的维修事件                 |
+| 放弃     | drop        | current member | accepted => open       | 成员放弃了自己接受的维修事件                 |
+| 提交     | commit      | current member | accepted => committed  | 成员维修完成，添加维修描述后提交给管理员审核 |
 | 修改提交 | alterCommit | current member | committed => committed | 成员修改 未被审核的维修提交                  |
 | 拒绝提交 | reject      | admin          | committed => accepted  | 管理员拒绝提交                               |
 | 关闭     | close       | admin          | committed => closed    | 管理员通过提交                               |
+| 修改     | update      | current client | open => open           | 用户修改自己尚未被受理的维修事件             |
 
 ## 在Github上处理维修
 
@@ -112,7 +114,7 @@ sequenceDiagram
 ```
 
 ::: info 这一节的做法已经停用
-自动建单的量被 GitHub 判定为滥用，[repair-tickets](https://github.com/nbtca/repair-tickets) 的 issue 随之受限，邮件申诉未能恢复，工单管理因此迁回协会主页的[维修面板](https://nbtca.space/repair/admin)。同步逻辑仍留在 [Saturday](https://github.com/nbtca/Saturday) 的代码里（`util/github.go`），只是没有在跑。
+自动建单的量被 GitHub 判定为滥用，[repair-tickets](https://github.com/nbtca/repair-tickets) 的 issue 随之受限，邮件申诉未能恢复，工单管理因此迁回协会主页的[维修面板](https://nbtca.space/repair/admin)。同步逻辑仍留在 [Saturday](https://github.com/nbtca/Saturday) 的代码里（`util/github.go`），每个动作都还会尝试同步，但 2025 年 5 月之后创建的工单已经关联不上 issue。
 
 这一节留作记录：它说明了当初为什么选 GitHub Issue，也留下了把工单托管在外部平台会遇到什么。**最后核对：2026-08**。
 :::
@@ -212,7 +214,7 @@ console.log('Calculated time:', time) // Output: 5
 | 上一次统计日期 | 2025.4.21 | 上一次统计时长的日期     |
 
 统计时长时，获取自从上一次统计日期以来的维修记录，统计完成后将上一次统计日期更新为当前日期。
-时长计算参考以上代码中的 `calculateTime` 函数。
+时长计算参考以上代码中的 `calculateTime` 函数。Saturday 的实际实现与这段示意代码有两处不同：`xs` 计 0.5 小时；没有标工作量的工单也按 0.5 小时计，而不是 0。
 
 #### 例子
 
