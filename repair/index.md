@@ -30,6 +30,19 @@ maintainers:
 
 电脑坏了，去协会主页的[预约维修](https://nbtca.space/repair/create-ticket)建单，之后在[维修记录](https://nbtca.space/repair/history)里看进度。队员那一侧是[维修管理](https://nbtca.space/repair/admin)，需要登录。
 
+第一次报修要先登录 [NBTCA 账号](/concepts/nbtca-account)，没有账号的在登录页注册即可：
+
+1. 打开 [nbtca.space/repair](https://nbtca.space/repair)，点“预约维修”；
+2. 没登录时会先看到登录提示，点“登入”；
+3. 在账号登录页用邮箱注册或登录，也可以直接用 GitHub 或 Passkey 登录；登录后自动回到报修表单。
+
+<FigureGrid>
+  <Figure src="../concepts/assets/project-home-repair.webp" alt="协会主页维修板块的入口页，一幅蓝色线描插画下写着“我们提供免费的电脑维修服务”，下方是“预约维修”按钮" caption="第 1 步：维修板块入口，点“预约维修”。" date="2026-09" />
+  <Figure src="./assets/booking-login-hint.webp" alt="提示页标题为“登入账号后继续操作”，说明为了验证身份和记录维修信息需要先登录，下方是一个蓝色的“登入”按钮" caption="第 2 步：未登录时的提示页，点“登入”。" date="2026-09" />
+</FigureGrid>
+
+<Figure src="../concepts/assets/project-account-sign-in.webp" alt="NBTCA 账号的登录页，有用户名或邮箱输入框、登录按钮、注册链接，以及“通过 GitHub 继续”和“通过 通行证 继续”两个按钮" caption="第 3 步：NBTCA 账号登录页。没有账号的点“注册”，用邮箱收验证码即可。" date="2026-09" wide />
+
 队员在面板上接单、提交维修描述、由管理员审核结单，工作量按 `size` 分档折算[志愿者时长](/concepts/volunteer-hours)。系统怎么运转，见 [工单系统](./weekend)。
 
 早年还有[微信小程序“NBT电脑维修”](/concepts/repair-miniprogram)和 repair.nbtca.space 两个入口，都已不再维护、计划下线，报修请走上面那条。
