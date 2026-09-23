@@ -80,7 +80,7 @@ npm install @nbtca/nbtcal
 
 ## 沿革
 
-ical.nbtca.space 至少在 2024 年 5 月就已上线，协会主页的日历页从那时起读取它；当时的 Worker 代码没有进仓库，校历也和活动混在同一个 Google 日历里，标题带 `[NBT]` 前缀。2026 年 9 月，Worker 的代码进了 calendar 仓库，校历改由 YAML 生成、独立发布。[calendar#1](https://github.com/nbtca/calendar/issues/1) 计划把活动、校历和成员生日彻底拆成三份独立的日历。
+ical.nbtca.space 至少在 2024 年 5 月就已上线，协会主页的日历页从那时起读取它；当时的 Worker 代码没有进仓库，校历也和活动混在同一个 Google 日历里，标题带 `[NBT]` 前缀。2026 年 9 月，Worker 的代码进了 calendar 仓库，校历改由 YAML 生成、独立发布。
 
 nbtcal 于 2026 年 1 月以命令行工具起步，6 月改写为只处理数据的库，7 月加入课表支持。
 
