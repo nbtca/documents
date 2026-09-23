@@ -82,7 +82,7 @@ git config --global user.email "你的邮箱"
 
 一般的工作流程是把源代码仓库 [Fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo) 一份到自己名下，得到一个下游仓库；在下游仓库里编写内容，再通过[创建 PR](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests) 把更新提交回上游仓库。
 
-博客所在的 [Home 项目](https://github.com/nbtca/home)集成了 [CI/CD](https://github.com/resources/articles/ci-cd)。为了保证交付安全，默认只有源仓库分支提交的 PR 会触发 [GitHub Actions](https://github.com/features/actions)；从下游（Fork）仓库提交的 PR 在合并后不会触发构建。因此**推荐直接在源仓库上创建分支再提交 PR**。
+博客所在的 [Home 项目](https://github.com/nbtca/home)集成了 [CI/CD](https://github.com/resources/articles/ci-cd)：PR 合并进 `main` 后，[GitHub Actions](https://github.com/features/actions) 自动构建并上线，不论 PR 来自源仓库的分支还是 Fork。PR 本身不会触发构建，所以提交前请在本地跑一遍 `pnpm build`。有 Home 仓库写权限的成员可以直接在源仓库建分支，其他同学 Fork 后提交 PR 即可。
 
 ### Clone
 

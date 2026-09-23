@@ -46,6 +46,7 @@ maintainers:
 
 ## 开源项目
 
+- [NBTCA 账号](./nbtca-account)
 - [Saturday（维修后端）](./saturday)
 - [Home（协会主页）](./home)
 - [heartbeat（状态页）](./heartbeat)

@@ -237,6 +237,85 @@
       ]
     },
     {
+      "id": "concepts-project-screenshots",
+      "domain": "concepts",
+      "purpose": "documentation-image",
+      "canonical": true,
+      "compatibilityNote": "Screenshots and photos of NBTCA projects, taken from the live sites or the project repositories.",
+      "assets": [
+        {
+          "path": "concepts/assets/project-home.webp",
+          "title": "协会主页首页",
+          "notes": "Captured from https://nbtca.space on 2026-09-23."
+        },
+        {
+          "path": "concepts/assets/project-home-repair.webp",
+          "title": "主页维修板块落地页",
+          "notes": "Captured from https://nbtca.space/repair on 2026-09-23."
+        },
+        {
+          "path": "concepts/assets/project-saturday-api-docs.webp",
+          "title": "Saturday 接口文档中的 Commit event 页",
+          "notes": "Captured from https://api.nbtca.space/docs#/operations/commit-event on 2026-09-23."
+        },
+        {
+          "path": "concepts/assets/project-heartbeat.webp",
+          "title": "服务状态页中文版",
+          "notes": "Captured from https://status.nbtca.space/zh on 2026-09-23."
+        },
+        {
+          "path": "concepts/assets/project-account-sign-in.webp",
+          "title": "NBTCA 账号登录页",
+          "notes": "Captured from the Logto sign-in page on 2026-09-23."
+        },
+        {
+          "path": "concepts/assets/project-huajibot-calendar.webp",
+          "title": "群机器人的活动提醒",
+          "notes": "From HuaJiBot.NET issue #15 (2026-03); no personal data."
+        },
+        {
+          "path": "concepts/assets/project-cabadge-control.webp",
+          "title": "CABadge 控制中心页",
+          "notes": "Cropped from the CABadge README photo; only a hand is visible."
+        },
+        {
+          "path": "concepts/assets/project-cabadge-card.webp",
+          "title": "CABadge 名片页",
+          "notes": "Cropped from the CABadge README photo; the name is the maintainer's public handle."
+        },
+        {
+          "path": "concepts/assets/project-home-thumb.webp",
+          "title": "协会主页（卡片缩略图）",
+          "notes": "Cropped to the 2.55:1 card ratio used on /about/infrastructure."
+        },
+        {
+          "path": "concepts/assets/project-saturday-thumb.webp",
+          "title": "Saturday 接口文档（卡片缩略图）",
+          "notes": "Cropped to the 2.55:1 card ratio used on /about/infrastructure."
+        },
+        {
+          "path": "concepts/assets/project-heartbeat-thumb.webp",
+          "title": "状态页（卡片缩略图）",
+          "notes": "Cropped to the 2.55:1 card ratio used on /about/infrastructure."
+        },
+        {
+          "path": "concepts/assets/project-account-thumb.webp",
+          "title": "NBTCA 账号登录页（卡片缩略图）",
+          "notes": "Cropped to the 2.55:1 card ratio used on /about/infrastructure."
+        },
+        {
+          "path": "concepts/assets/project-huajibot-thumb.webp",
+          "title": "群机器人活动提醒（卡片缩略图）",
+          "notes": "Cropped to the 2.55:1 card ratio used on /about/infrastructure."
+        },
+        {
+          "path": "concepts/assets/project-cabadge-thumb.webp",
+          "title": "CABadge 名片页（卡片缩略图）",
+          "notes": "Cropped to the 2.55:1 card ratio used on /about/infrastructure."
+        }
+      ]
+    },
+    {
       "id": "repair-photographs",
       "domain": "repair",
       "purpose": "photograph",
