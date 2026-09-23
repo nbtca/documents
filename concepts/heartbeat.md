@@ -43,6 +43,10 @@ npm run dev
 
 维护者是 [m1ngsama](https://github.com/m1ngsama)。仓库地址：[github.com/nbtca/heartbeat](https://github.com/nbtca/heartbeat)。
 
+## 沿革
+
+[2025 年 12 月的技术分享会](/archived/2025/2025-12-26-nwdc)以可观测性为主题，会后的行动计划之一是“配置公开可访问的监控仪表盘，替代现有 Uptime 监控工具”。
+
 ## 相关
 
 其他项目见[基础设施与项目](/about/infrastructure)。

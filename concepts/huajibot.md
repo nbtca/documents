@@ -36,6 +36,10 @@ dotnet build
 
 主要维护者是 [LazuliKao](https://github.com/LazuliKao)，贡献者还有 [m1ngsama](https://github.com/m1ngsama)。仓库地址：[github.com/nbtca/HuaJiBot.NET](https://github.com/nbtca/HuaJiBot.NET)。
 
+## 沿革
+
+2023 年 10 月的[开发组规划](/archived/2023/developer/2023-10-dev-roadmap)给 QQ 机器人列了两条路：一条是用 C# 重构，另起项目 `huaji-bot-dotnet`，也就是本仓库改名前的名字；另一条是继续维护 Go 写的旧版 huaji-bot，但它依赖的 GoCQ 上游协议已经受到限制，原文估计“可能要动大刀”。“同步日历”当时就列为待实现功能。同年 11 月的[例会](/archived/2023/meetings/2023-11-04-meeting)讨论成员生日提醒时，QQ 机器人也是候选方案之一。[2025 年 1 月的部长会议](/archived/2025/2025-01-25-officers-meeting)回顾开发部一年多的工作，把 QQ 机器人的迭代列在基础设施建设之下。
+
 ## 相关
 
 其他项目见[基础设施与项目](/about/infrastructure)。

@@ -39,6 +39,12 @@ go run main.go
 
 主要维护者是 [wen-templari](https://github.com/wen-templari)。仓库地址：[github.com/nbtca/Saturday](https://github.com/nbtca/Saturday)。
 
+## 沿革
+
+Saturday 与管理页 Sunday、报修小程序 Hawaii 同属学长留下的 weekend 项目。2023 年 10 月的[开发组新人学习路线](/archived/2023/developer/2023-10-newcomer-training)把“接手学长的 weekend 项目后端”列为新人入口之一，同期的[开发组规划](/archived/2023/developer/2023-10-dev-roadmap)则把迁移维修报修后端的服务器和数据列为待办。
+
+[2025 年 1 月的部长会议](/archived/2025/2025-01-25-officers-meeting)总结维修日时，提议给维修事件加上工单号作唯一标识，并在报修单上增加问题类型勾选，方便做简单的数据聚类。
+
 ## 相关
 
 - 用 AI 助手调用这套 API：[nbtca/skills](https://github.com/nbtca/skills) 收录了一个管理维修工单的 Agent Skill。

@@ -45,6 +45,10 @@ npm install @nbtca/nbtcal
 
 维护者是 [m1ngsama](https://github.com/m1ngsama)。仓库地址：[github.com/nbtca/nbtcal](https://github.com/nbtca/nbtcal)。
 
+## 沿革
+
+[2023 年 11 月的例会](/archived/2023/meetings/2023-11-04-meeting)讨论过成员生日提醒：当时日程只放在苹果日历里，提醒方案在 QQ 机器人、钉钉和内网主页之间还没有定。现在的 calendar 仓库明确不发布生日，等隐私规则商定后再议。
+
 ## 相关
 
 其他项目见[基础设施与项目](/about/infrastructure)。

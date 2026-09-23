@@ -49,6 +49,10 @@ go build .
 
 维护者是 [LazuliKao](https://github.com/LazuliKao)。仓库地址：[github.com/nbtca/nbtverify](https://github.com/nbtca/nbtverify)。
 
+## 沿革
+
+[2026 年 9 月的新学期招新交流会](/archived/2026/2026-09-02-recruitment-meeting)整理新人感兴趣的话题时，把“nbt 校园网自动登录”列为推荐给新人的开源项目之一。
+
 ## 相关
 
 其他项目见[基础设施与项目](/about/infrastructure)。

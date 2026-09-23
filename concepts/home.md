@@ -38,6 +38,12 @@ Home 的 CI 只对仓库内分支提交的 PR 触发构建，从 fork 提交的 
 
 主要维护者是 [wen-templari](https://github.com/wen-templari)，贡献者还有 [LazuliKao](https://github.com/LazuliKao) 和 [m1ngsama](https://github.com/m1ngsama)。仓库地址：[github.com/nbtca/Home](https://github.com/nbtca/Home)。
 
+## 沿革
+
+2023 年 10 月的[开发组规划](/archived/2023/developer/2023-10-dev-roadmap)里，“外网主页”还是一项待定工作：备案的公网服务器、海外服务器、Cloudflare Pages 或 GitHub Pages 静态托管三种方案都列了出来，前端框架也还在 Vue 3 和 React 之间。
+
+主页上线后逐渐承担起更多事务。[2024 年 9 月 14 日的例会](/archived/2024/meetings/2024-09-14-online-meeting)鼓励成员学习 Git 与 Markdown，把自己的文章发到主页上，并指定了文章审核人；[2025 年 1 月的开发部例会](/archived/2025/2025-01-24-dev-meeting)提出在主页加一个“新年愿望”板块；[2025 年 10 月 11 日的例会](/archived/2025/2025-10-11-first-meeting)把新人在主页登记排进了迎新安排。[2026 年 9 月的百团招新安排会议](/archived/2026/2026-09-16-club-recruitment-fair-prep-meeting)安排教电竞社的同学用主页的维修网页接单，并引导新人在上面预约维修；同一次会上还有人建议在主页顶部加一条横幅，即时展示最新活动。
+
 ## 相关
 
 其他项目见[基础设施与项目](/about/infrastructure)。
