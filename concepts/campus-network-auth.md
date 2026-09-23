@@ -14,4 +14,4 @@ maintainers:
 
 ## NBTCA 的自建工具
 
-NBTCA 做了适配校园网认证的开源工具，方便路由器等设备接入：[nbtverify](https://github.com/nbtca/nbtverify) 与 [luci-app-nbtverify](https://github.com/nbtca/luci-app-nbtverify)（用于 OpenWrt 路由器）。更多见[基础设施与项目](/about/infrastructure)。
+NBTCA 做了适配校园网认证的开源工具，方便路由器等设备接入：[nbtverify](./nbtverify) 与 [luci-app-nbtverify](https://github.com/nbtca/luci-app-nbtverify)（用于 OpenWrt 路由器）。更多见[基础设施与项目](/about/infrastructure)。

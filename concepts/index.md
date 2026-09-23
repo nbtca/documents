@@ -44,6 +44,19 @@ maintainers:
 - [每周学习日](./weekly-study)
 - [计算机知识竞赛](./knowledge-contest) · 历史活动
 
+## 开源项目
+
+- [Saturday（维修后端）](./saturday)
+- [Home（协会主页）](./home)
+- [heartbeat（状态页）](./heartbeat)
+- [协会日历](./calendar-feeds)
+- [Prompt（命令行客户端）](./prompt)
+- [HuaJiBot.NET（群机器人）](./huajibot)
+- [ServerlessMQ（消息中转）](./serverlessmq)
+- [shortlink（短链接）](./shortlink)
+- [nbtverify（校园网认证工具）](./nbtverify)
+- [CABadge（计协电子吧唧）](./cabadge)
+
 ## 维修与技术
 
 - [理工服务日](./service-day) · 历史活动
