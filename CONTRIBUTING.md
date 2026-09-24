@@ -24,10 +24,15 @@ functions/              Pages Functions
 ```
 
 `pnpm docs:dev` gives a working in-page editor that reads and writes local
-files. Deployed, it signs in through a GitHub OAuth App and opens a pull
-request from the member's own fork. The only deployment setting is
-`GITHUB_CLIENT_SECRET` on the Pages project; the client id is public and lives
-in the source.
+files, including images. Deployed, it signs in through a GitHub OAuth App and
+opens a pull request from the member's own fork. Images inserted there are
+uploaded when the edit is submitted, and the page keeps a `/media/…` reference
+instead of a file in the repository. An abandoned draft never uploads.
+
+Deployment settings on the Pages project:
+
+- `GITHUB_CLIENT_SECRET` — GitHub OAuth App secret. The client id is public and lives in the source. An upload is accepted only when that secret can vouch for the editor's token.
+- R2 binding `ASSETS` — bucket for those uploads. `GET /media/…` reads the object back. Without the binding, uploads answer 503 and the rest of the site keeps working. Existing pictures stay in the repository.
 
 ## Where content goes
 

@@ -590,7 +590,7 @@ function insertOutline() {
 
             <div v-if="pending" class="nb-image-form">
               <p class="nb-image-file">
-                {{ pending.file.name }} — 会转成 WebP，随这次修改一起提交
+                {{ pending.file.name }} — {{ localMode ? '会转成 WebP，随这次修改一起写入仓库' : '会转成 WebP，提交时上传，正文里只留链接' }}
               </p>
               <input v-model="pending.alt" class="nb-edit-summary" placeholder="图里是什么？看不见图的人靠它">
               <input v-model="pending.caption" class="nb-edit-summary" placeholder="图注（可选）">
@@ -692,7 +692,7 @@ function insertOutline() {
                 || progress
                 || blocker || (localMode
                   ? '保存会直接写入这个 markdown 文件。'
-                  : '提交会开一个 PR，交由维护者审阅后合并，不会直接改动线上页面。') }}
+                  : '提交会开一个 PR，交由维护者审阅后合并，不会直接改动线上页面。图片在提交时上传，合并前就能通过链接打开。') }}
             </p>
             <input ref="picker" type="file" :accept="accepts" hidden @change="onPicked">
           </template>

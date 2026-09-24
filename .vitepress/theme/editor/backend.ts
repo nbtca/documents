@@ -3,6 +3,7 @@ import type { FileChange } from '../../../utils/github'
 import { addAsset } from '../../../utils/asset-manifest'
 import { branchNameFor, ensureFork, getFile, GitHubError, headSha, openPullRequest } from '../../../utils/github'
 import { tidyBody } from '../../../utils/markdown'
+import { isRemoteAsset, placeRemoteImages, referencedImages } from '../../../utils/remote-asset'
 import { currentMember, forgetToken, githubToken } from './auth'
 
 const REPO = { owner: 'nbtca', name: 'documents' }
@@ -117,11 +118,47 @@ function changesFor(
   return files
 }
 
-function bodyFor(edit: { summary: string, author: string, checklist?: string[] }): string {
+const SITE = 'https://docs.nbtca.space'
+
+function bodyFor(edit: { summary: string, author: string, checklist?: string[], uploaded?: string[] }): string {
   const opening = `${edit.summary}\n\n由 ${edit.author} 在 docs.nbtca.space 上编辑。`
-  return edit.checklist?.length
-    ? `${opening}\n\n合并前请确认：\n\n${edit.checklist.map(item => `- [ ] ${item}`).join('\n')}`
-    : opening
+  const uploaded = edit.uploaded?.length
+    ? `\n\n图片已上传，合并前即可打开：\n\n${edit.uploaded.map(url => `- ${SITE}${url}`).join('\n')}`
+    : ''
+  const checklist = edit.checklist?.length
+    ? `\n\n合并前请确认：\n\n${edit.checklist.map(item => `- [ ] ${item}`).join('\n')}`
+    : ''
+  return opening + uploaded + checklist
+}
+
+function bytesFromBase64(base64: string): Uint8Array {
+  const binary = atob(base64)
+  const bytes = new Uint8Array(binary.length)
+  for (let index = 0; index < binary.length; index++)
+    bytes[index] = binary.charCodeAt(index)
+  return bytes
+}
+
+// The draft cites a repo path until submit. Uploading then, and only then,
+// keeps an abandoned edit out of the bucket.
+async function uploadImage(token: string, image: PendingImage): Promise<string> {
+  const response = await fetch('/api/assets', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'image/webp',
+    },
+    body: new Blob([bytesFromBase64(image.base64)], { type: 'image/webp' }),
+  })
+
+  const body = await response.json().catch(() => undefined) as { url?: string, message?: string } | undefined
+  if (response.status === 401) {
+    forgetToken()
+    throw new EditorError('登录已失效，请重新登录。')
+  }
+  if (!response.ok || !body?.url || !isRemoteAsset(body.url))
+    throw new EditorError(body?.message || '图片上传失败，稍后再试。')
+  return body.url
 }
 
 export async function submit(
@@ -147,7 +184,16 @@ export async function submit(
   }
 
   return withToken(async (token) => {
-    const registry = edit.images.length ? await registryWith(token, edit.images) : undefined
+    // Images go to R2. The pull request carries the page, not the bytes, so
+    // the repository stops growing with every picture.
+    let content = edit.content
+    let uploaded: string[] | undefined
+    if (referencedImages(content, edit.images).length) {
+      onStep('正在上传图片……')
+      const placed = await placeRemoteImages(content, edit.images, image => uploadImage(token, image))
+      content = placed.content
+      uploaded = placed.urls
+    }
 
     // A first-time fork is queued and can take half a minute; say so.
     onStep('正在准备你名下的仓库副本……')
@@ -155,9 +201,9 @@ export async function submit(
 
     onStep('正在开 Pull Request……')
     const pull = await openPullRequest(token, REPO, fork, {
-      files: changesFor(path, edit.content, edit.images, registry),
+      files: changesFor(path, content, [], undefined),
       title: `docs: ${edit.summary}`,
-      body: bodyFor(edit),
+      body: bodyFor({ ...edit, uploaded }),
       branch: branchNameFor(path),
       base: edit.base,
     })

@@ -1,6 +1,7 @@
 import { existsSync, globSync, readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
 import { extractH1, extractTitle, isFenceMarker } from '../utils/markdown'
+import { isRemoteAsset } from '../utils/remote-asset'
 
 export const ACTIVE_DOC_DIRS = ['about', 'tutorial', 'process'] as const
 
@@ -149,6 +150,11 @@ export function resolveInternalLink(link: MarkdownLink, root = DEFAULT_ROOT): Li
     return { link, reason: 'same-page anchor', status: 'skipped' }
 
   const decodedTargetPath = decodeLinkPath(targetPath)
+  // /media/<key> is an object in R2, served by a Pages Function. It is not a
+  // file in the repository, and it is not an arbitrary external URL either.
+  if (isRemoteAsset(decodedTargetPath))
+    return { link, reason: 'uploaded asset', status: 'skipped' }
+
   const sourceDir = path.posix.dirname(toPosixPath(link.sourceRelativePath))
   // VitePress serves public/ from the site root.
   const candidatePaths = decodedTargetPath.startsWith('/')
