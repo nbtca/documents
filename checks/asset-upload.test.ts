@@ -32,12 +32,23 @@ function bucket() {
   }
 }
 
+function encode(bytes: Uint8Array): string {
+  const parts: string[] = []
+  for (let index = 0; index < bytes.length; index += 0x8000)
+    parts.push(String.fromCharCode(...bytes.subarray(index, index + 0x8000)))
+  return btoa(parts.join(''))
+}
+
 function post(body: BodyInit, headers: Record<string, string> = {}): Request {
   return new Request('https://docs.nbtca.space/api/assets', {
     method: 'POST',
     headers,
     body,
   })
+}
+
+function postJson(payload: unknown, headers: Record<string, string> = {}): Request {
+  return post(JSON.stringify(payload), { 'Content-Type': 'application/json', ...headers })
 }
 
 describe('asset upload', () => {
@@ -72,10 +83,7 @@ describe('asset upload', () => {
     const bytes = webp()
 
     const response = await onRequestPost({
-      request: post(bytes, {
-        'Authorization': 'Bearer gho_member',
-        'Content-Type': 'image/webp',
-      }),
+      request: postJson({ base64: encode(bytes) }, { Authorization: 'Bearer gho_member' }),
       env: { MEDIA: assets, GITHUB_CLIENT_SECRET: SECRET },
     })
 
@@ -144,20 +152,25 @@ describe('asset upload', () => {
     expect(assets.store.size).toBe(0)
   })
 
-  it('rejects a body that is not a webp, and one that is too large', async () => {
+  it('rejects a body that is not a webp, an empty one, and one that is too large', async () => {
     allowGitHub()
     const assets = bucket()
     const env = { MEDIA: assets, GITHUB_CLIENT_SECRET: SECRET }
-    const headers = { 'Authorization': 'Bearer gho_member', 'Content-Type': 'image/webp' }
+    const headers = { Authorization: 'Bearer gho_member' }
+
+    const empty = await onRequestPost({ request: postJson({ base64: '' }, headers), env })
+    expect(empty.status).toBe(400)
+    expect(await empty.json()).toMatchObject({ message: '没有收到图片。' })
 
     const disguised = await onRequestPost({
-      request: post(new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]), headers),
+      request: postJson({ base64: encode(new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])) }, headers),
       env,
     })
     expect(disguised.status).toBe(415)
+    expect(await disguised.json()).toMatchObject({ message: '图片没有转换成功，请重新插入。' })
 
     const huge = await onRequestPost({
-      request: post(webp(MAX_ASSET_BYTES + 1), headers),
+      request: postJson({ base64: encode(webp(MAX_ASSET_BYTES + 1)) }, headers),
       env,
     })
     expect(huge.status).toBe(413)

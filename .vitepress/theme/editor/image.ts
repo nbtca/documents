@@ -30,6 +30,7 @@ function load(file: File): Promise<HTMLImageElement> {
   })
 }
 
+// PNG, JPEG and a still GIF all become one WebP. Animation is not kept.
 export async function toWebp(file: File): Promise<PreparedImage> {
   const image = await load(file)
   const scale = Math.min(1, MAX_EDGE / Math.max(image.naturalWidth, image.naturalHeight))
