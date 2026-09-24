@@ -1,3 +1,5 @@
+import { isWebp } from '../../../utils/remote-asset'
+
 const MAX_EDGE = 1600
 const QUALITY = 0.85
 
@@ -37,15 +39,28 @@ export async function toWebp(file: File): Promise<PreparedImage> {
   const canvas = document.createElement('canvas')
   canvas.width = Math.round(image.naturalWidth * scale)
   canvas.height = Math.round(image.naturalHeight * scale)
-  canvas.getContext('2d')?.drawImage(image, 0, 0, canvas.width, canvas.height)
+  const context = canvas.getContext('2d')
+  if (!context)
+    throw new Error('浏览器无法处理这张图片')
+  context.drawImage(image, 0, 0, canvas.width, canvas.height)
 
-  const blob = await new Promise<Blob | null>(resolve =>
+  let blob = await new Promise<Blob | null>(resolve =>
     canvas.toBlob(resolve, 'image/webp', QUALITY),
   )
   if (!blob)
     throw new Error('转换 WebP 失败')
 
-  const bytes = new Uint8Array(await blob.arrayBuffer())
+  let bytes = new Uint8Array(await blob.arrayBuffer())
+  // Unsupported canvas formats silently fall back to PNG (notably in Safari).
+  // Use the bundled encoder only in that case, so every uploaded .webp is WebP.
+  if (!isWebp(bytes)) {
+    const { default: encode } = await import('@jsquash/webp/encode')
+    bytes = new Uint8Array(await encode(context.getImageData(0, 0, canvas.width, canvas.height), { quality: QUALITY * 100 }))
+    if (!isWebp(bytes))
+      throw new Error('转换 WebP 失败')
+    blob = new Blob([bytes], { type: 'image/webp' })
+  }
+
   let binary = ''
   for (const byte of bytes)
     binary += String.fromCharCode(byte)
