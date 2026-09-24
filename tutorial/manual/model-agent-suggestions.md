@@ -30,7 +30,7 @@ OpenCode Zen 是 OpenCode 官方的网关，只收经过实测的编码模型。
 注意三件事：
 
 - 免费模型是限时提供，名单会变。用 `/models` 看实时列表。
-- 免费模型在 TUI 与桌面端的模型列表里直接可选，不需要登录 Zen。
+- 免费模型只能在 OpenCode 的 TUI 或桌面端中调用，在这两端的模型列表里直接可选，不需要登录 Zen。
 - 免费期提交的数据可能被用于改进模型。Zen 隐私条款里对 Big Pickle、MiMo 等免费模型写明了这一点，机密代码不要走免费模型。
 
 ### WorkBuddy 体验与认证福利
@@ -62,11 +62,11 @@ DeepSeek V4.1 Flash（API 名 `deepseek-flash`）是当前最便宜的可用编�
 | --- | --- | --- | --- | --- |
 | 1 | Claude Code / Claude 桌面端 | 低 | 最好 | CLI 把变量写进 `settings.json` 的 `env` 块，删掉即恢复，不污染 shell；桌面端在开发者模式的第三方推理里填地址与 Key |
 | 2 | Codex（CLI、桌面端与 VS Code 插件） | 最低 | 好 | 一键脚本写 `~/.codex/config.toml`，三端共用一份；DeepSeek 侧没有联网搜索，要把 `web_search` 关掉 |
-| 3 | OpenCode | 低 | 中 | `/connect` 选 DeepSeek 填 Key，与 Zen 免费模型共用同一套 provider 配置 |
+| 3 | OpenCode | 低 | 中 | `/connect` 选 DeepSeek 填 Key；Zen 免费模型在 TUI 或桌面端的模型列表里另选 |
 | 4 | Kimi Code（CLI 与桌面端） | 最低 | 中 | DeepSeek 是预置供应商，模型列表里直接选再填 Key |
 | 5 | Qoder CN | 低 | 中 | 预置供应商，或按 OpenAI Compatible 自定义模型；自定义模型由服务商 API 账户结算，不消耗 Credits |
 
-配置细节列在下面：前两家给出可以直接照抄的内容，其余三家在界面里选 DeepSeek 填 Key 即可。不想在每台机器、每个工具里分别填上游地址与 Key，可以自建一个中转站把上游收拢成一个入口，见[自建中转站（AxonHub）](/tutorial/manual/self-hosted-relay)。
+配置细节列在下面：前两家给出可以直接照抄的内容，其余三家在界面里选 DeepSeek 填 Key 即可。如果希望在同一个工具里同时使用不同供应商的模型，可以自建一个中转站，把多家上游收在同一个入口后面，见[自建中转站（AxonHub）](/tutorial/manual/self-hosted-relay)。
 
 **Claude Code**：DeepSeek 提供 Anthropic 兼容端点 `https://api.deepseek.com/anthropic`。变量不要写进 shell 配置文件（`~/.bashrc`、PowerShell 的 Profile）：它们会作用于所有终端和所有项目，之后换回官方登录时容易忘掉，出问题时也难定位。写进 Claude Code 自己的配置文件更干净，删掉 `env` 块就等于恢复原状：
 
@@ -118,7 +118,7 @@ experimental_bearer_token = "<你的 DeepSeek API Key>"
 
 不想调 Key 的人看 [Go](https://opencode.ai/docs/go)。$10 / 月订阅，拿到一批开源编码模型，含 DeepSeek V4.1 Flash、Kimi K2.7 Code、Qwen、GLM、MiniMax、Muse Spark Contributor 等。
 
-限额按美元用量折算：约 5 小时 $12、每周 $30、每月 $60。模型越便宜，同样的钱能跑的请求数越多。超限后可以继续用免费模型，或打开余额兜底。
+限额按美元用量折算：约 5 小时 $12、每周 $30、每月 $60。模型越便宜，同样的钱能跑的请求数越多。超限后可以继续用免费模型，这些模型仍然只能在 OpenCode 的 TUI 或桌面端里调用；也可以打开余额兜底。
 
 ### Qoder CN 订阅
 
@@ -152,7 +152,7 @@ Codex 包含在 ChatGPT 订阅里，网页、CLI、IDE 插件、iOS 共用额度
 
 ## 怎么选
 
-- 先零成本把工作流跑通：OpenCode Zen 免费模型写一个小需求，WorkBuddy 体验版在 IDE 里补全同一段代码，对比哪个顺手。
+- 先零成本把工作流跑通：在 OpenCode 的 TUI 或桌面端里用 Zen 免费模型写一个小需求，WorkBuddy 体验版在 IDE 里补全同一段代码，对比哪个顺手。
 - 再按量验证：充少量 DeepSeek 余额，分别在 Claude Code 与 Codex 里跑一周真实任务，哪个中断少就留哪个。
 - 用量稳定后再上订阅：单人看百炼 Token Plan 个人版、Qoder CN 或 ChatGPT Plus，团队看百炼 Token Plan 团队版。
 - 隐私红线：免费模型与 contributor 档会拿数据改进模型，课程设计、毕设核心代码、含密钥的仓库不要走这类通道。
