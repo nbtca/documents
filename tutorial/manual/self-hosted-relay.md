@@ -15,11 +15,43 @@ AxonHub 目前发布的都是 `v1.0.0-beta` 系列，还没有正式版；本文
 
 ## 前置条件
 
-- 一台能跑 Docker 与 Docker Compose v2 的机器（本文命令在 Linux 上验证过；Windows 用 Docker Desktop 或 WSL，注意卷路径）
+- 一台 Windows、Linux 或 macOS。没有 Docker 就用下面的二进制；有 Docker 再用 Compose
 - 至少一个上游服务商的 API Key，例如 DeepSeek 或阿里云百炼
-- 先想清楚谁能访问：默认只监听 `127.0.0.1`，对外开放放到第五步再做
+- 先想清楚谁能访问。二进制默认监听 `0.0.0.0:8090`；Compose 默认只绑定 `127.0.0.1`。对外开放放到第五步
 
 ## 第一步：部署
+
+两条路选一条。后面的初始化、渠道和工具配置相同，本机都用 `http://127.0.0.1:8090`。
+
+### 二进制
+
+到 [v1.0.0-beta10](https://github.com/looplj/axonhub/releases/tag/v1.0.0-beta10) 下载对应系统的 zip 并解压。在解压目录里跑安装脚本，它用的是包内这份二进制。
+
+Windows：
+
+```bat
+install.bat
+start.bat
+```
+
+程序、`config.yml` 和 SQLite 数据库都在 `%LOCALAPPDATA%\AxonHub`。
+
+Linux / macOS：
+
+```bash
+sudo ./install.sh
+./start.sh
+```
+
+二进制在 `/usr/local/bin/axonhub`，配置和数据库在 `~/.config/axonhub`。
+
+```bash
+curl --fail --silent --show-error http://127.0.0.1:8090/health
+```
+
+只给本机用时，在 `config.yml` 里把 `server.host` 改成 `127.0.0.1` 再重启。这是单机 SQLite，够一个人用。要 PostgreSQL 就走下面的 Compose，或自己改 `db.dialect` 和 `db.dsn`。
+
+### Docker Compose
 
 取一份与要部署版本一致的 Compose 文件，不要凭记忆重写：
 
@@ -116,9 +148,9 @@ query_params = {}
 
 ## 第五步：对外开放与访问控制
 
-默认只有本机能连。要给同一局域网或 Tailnet 里的设备用，按暴露面从小到大选一种：
+Compose 默认只有本机能连。二进制默认听在 `0.0.0.0`，同一局域网也能访问；只给本机用时先按第一步把 `server.host` 改成 `127.0.0.1`。要给 Tailnet 或公网用，按暴露面从小到大选一种：
 
-1. **只给 Tailnet 里的设备用**：把 `AXONHUB_BIND_ADDRESS` 改成 Tailscale 网卡地址，再按 [Tailscale 使用指南](/tutorial/manual/tailscale-usage)把对端接进来。不要把端口直接映射到公网。
+1. **只给 Tailnet 里的设备用**：Compose 把 `AXONHUB_BIND_ADDRESS` 改成 Tailscale 网卡地址，二进制把 `server.host` 改成该地址，再按 [Tailscale 使用指南](/tutorial/manual/tailscale-usage)把对端接进来。不要把端口直接映射到公网。
 2. **本机反代 + TLS**：保持绑定在 `127.0.0.1`，前面放反向代理终止 TLS，并把 `server.trusted_proxies`、`ip_access_control.allowed_ips` 按实际环境配好。参见 [Nginx 使用指南](/tutorial/manual/nginx-usage)。
 3. **SSH 隧道**：临时给一两台机器用，`ssh -N -L 8090:127.0.0.1:8090 <服务器>`，本机按 `http://127.0.0.1:8090` 访问。
 
@@ -134,8 +166,24 @@ query_params = {}
 - **连通**：先看 AxonHub 的 **Traces（追踪）** 页面有没有请求进来，比在客户端反复改配置猜要快
 - **用量**：**Requests（请求监控）** 与成本追踪能按 Key、按渠道看消耗，这是自建中转站相对各家官方后台最直接的收益
 - **缓存命中**：打开 `server.trace.claude_code_trace_enabled` 或 `codex_trace_enabled` 后，同一次会话的请求会归并到一条 Trace，并优先打到同一个上游渠道，能提高上游的缓存命中率
-- **备份**：PostgreSQL 数据卷、`.env`、`config.yml` 三样一起备，恢复时版本要对得上
-- **升级**：把 `AXONHUB_IMAGE` 改到目标版本 → `docker compose --env-file .env config --quiet` → `up -d` → 再看 `/health` 与日志。回滚就是把镜像引用改回去，数据库只有在确认不兼容时再动
+- **备份**：二进制备 `%LOCALAPPDATA%\AxonHub`（或 `~/.config/axonhub`）里的数据库文件和 `config.yml`。Compose 则备 PostgreSQL 数据卷、`.env`、`config.yml`。恢复时版本要对得上
+- **升级**：二进制在解压目录执行 `upgrade.bat` 或 `./upgrade.sh`，要跟 beta 就加上 `--beta`。Compose 把 `AXONHUB_IMAGE` 改到目标版本 → `docker compose --env-file .env config --quiet` → `up -d` → 再看 `/health` 与日志。回滚就是把镜像或二进制换回去，数据库只有在确认不兼容时再动
+
+## 开机自启动
+
+Compose 里 AxonHub 和 PostgreSQL 已经是 `restart: unless-stopped`。Linux 再执行 `sudo systemctl enable --now docker`；Windows 打开 Docker Desktop 的登录时启动。
+
+Windows 上的二进制要注册成开机自启的服务。程序本身没有服务接口，用 [NSSM](https://nssm.cc/download) 包一层。管理员 PowerShell：
+
+```powershell
+nssm install AxonHub "$env:LOCALAPPDATA\AxonHub\axonhub.exe"
+nssm set AxonHub AppDirectory "$env:LOCALAPPDATA\AxonHub"
+nssm start AxonHub
+```
+
+`install` 的启动类型默认是自动，开机即起，不用先登录。工作目录必须是安装目录，否则读不到旁边的 `config.yml`。卸掉：`nssm remove AxonHub confirm`。
+
+Linux / macOS 的二进制在仓库 `deploy/` 里执行 `./setup.sh install-autostart`（发行 zip 未附带这个脚本）。Linux 要开机启动就加 `sudo`；不加则下次登录才起。macOS 是下次登录启动。
 
 ## 常见问题
 
