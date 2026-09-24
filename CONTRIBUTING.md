@@ -32,7 +32,7 @@ instead of a file in the repository. An abandoned draft never uploads.
 Deployment settings on the Pages project:
 
 - `GITHUB_CLIENT_SECRET` — GitHub OAuth App secret. The client id is public and lives in the source. An upload is accepted only when that secret can vouch for the editor's token.
-- R2 binding `ASSETS` — bucket for those uploads. `GET /media/…` reads the object back. Without the binding, uploads answer 503 and the rest of the site keeps working. Existing pictures stay in the repository.
+- R2 binding `MEDIA` — bucket for those uploads. `GET /media/…` reads the object back. The name is not `ASSETS`: Pages already uses that for the site files, and a second binding with the same name fails the deploy. Without `MEDIA`, uploads answer 503 and the rest of the site keeps working. Existing pictures stay in the repository.
 
 ## Where content goes
 

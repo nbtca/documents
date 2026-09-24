@@ -92,8 +92,8 @@ async function githubAllows(
 export async function onRequestPost(
   { request, env }: { request: Request, env: Env },
 ): Promise<Response> {
-  if (!env.ASSETS)
-    return json({ message: '图片存储还没配好。告诉维护者检查 R2 绑定 ASSETS。' }, 503)
+  if (!env.MEDIA)
+    return json({ message: '图片存储还没配好。告诉维护者检查 R2 绑定 MEDIA。' }, 503)
 
   const allowed = await githubAllows(request, env.GITHUB_CLIENT_SECRET)
   if (allowed === 'unconfigured')
@@ -114,6 +114,6 @@ export async function onRequestPost(
     return json({ message: '只接受 WebP 图片。' }, 415)
 
   const key = assetKey()
-  await env.ASSETS.put(key, bytes, { httpMetadata: { contentType: 'image/webp' } })
+  await env.MEDIA.put(key, bytes, { httpMetadata: { contentType: 'image/webp' } })
   return json({ url: mediaUrl(key) }, 201)
 }

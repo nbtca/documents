@@ -76,7 +76,7 @@ describe('asset upload', () => {
         'Authorization': 'Bearer gho_member',
         'Content-Type': 'image/webp',
       }),
-      env: { ASSETS: assets, GITHUB_CLIENT_SECRET: SECRET },
+      env: { MEDIA: assets, GITHUB_CLIENT_SECRET: SECRET },
     })
 
     expect(response.status).toBe(201)
@@ -97,14 +97,14 @@ describe('asset upload', () => {
 
     const missing = await onRequestPost({
       request: post(webp(), { 'Content-Type': 'image/webp' }),
-      env: { ASSETS: assets, GITHUB_CLIENT_SECRET: SECRET },
+      env: { MEDIA: assets, GITHUB_CLIENT_SECRET: SECRET },
     })
     const foreign = await onRequestPost({
       request: post(webp(), {
         'Authorization': 'Bearer gho_other',
         'Content-Type': 'image/webp',
       }),
-      env: { ASSETS: assets, GITHUB_CLIENT_SECRET: SECRET },
+      env: { MEDIA: assets, GITHUB_CLIENT_SECRET: SECRET },
     })
 
     expect(missing.status).toBe(401)
@@ -121,7 +121,7 @@ describe('asset upload', () => {
         'Authorization': 'Bearer gho_member',
         'Content-Type': 'image/webp',
       }),
-      env: { ASSETS: assets, GITHUB_CLIENT_SECRET: SECRET },
+      env: { MEDIA: assets, GITHUB_CLIENT_SECRET: SECRET },
     })
 
     expect(response.status).toBe(502)
@@ -136,7 +136,7 @@ describe('asset upload', () => {
     })
     const noSecret = await onRequestPost({
       request: post(webp(), { 'Authorization': 'Bearer gho_member', 'Content-Type': 'image/webp' }),
-      env: { ASSETS: assets },
+      env: { MEDIA: assets },
     })
 
     expect(noBucket.status).toBe(503)
@@ -147,7 +147,7 @@ describe('asset upload', () => {
   it('rejects a body that is not a webp, and one that is too large', async () => {
     allowGitHub()
     const assets = bucket()
-    const env = { ASSETS: assets, GITHUB_CLIENT_SECRET: SECRET }
+    const env = { MEDIA: assets, GITHUB_CLIENT_SECRET: SECRET }
     const headers = { 'Authorization': 'Bearer gho_member', 'Content-Type': 'image/webp' }
 
     const disguised = await onRequestPost({
@@ -172,7 +172,7 @@ describe('asset read', () => {
 
     expect(routedGet).toBe(onRequestGet)
 
-    const found = await onRequestGet({ params: { path: ['2026', '09', `${ID}.webp`] }, env: { ASSETS: assets } })
+    const found = await onRequestGet({ params: { path: ['2026', '09', `${ID}.webp`] }, env: { MEDIA: assets } })
     expect(found.status).toBe(200)
     expect(found.headers.get('Content-Type')).toBe('image/webp')
     expect(found.headers.get('Cache-Control')).toContain('immutable')
@@ -181,14 +181,14 @@ describe('asset read', () => {
 
     const escaped = await onRequestGet({
       params: { path: ['..', '..', 'package.json'] },
-      env: { ASSETS: assets },
+      env: { MEDIA: assets },
     })
     expect(escaped.status).toBe(404)
   })
 
   it('distinguishes a missing object from a missing bucket', async () => {
     const assets = bucket()
-    const missing = await onRequestGet({ params: { path: KEY }, env: { ASSETS: assets } })
+    const missing = await onRequestGet({ params: { path: KEY }, env: { MEDIA: assets } })
     expect(missing.status).toBe(404)
 
     const unconfigured = await onRequestGet({ params: { path: KEY }, env: {} })

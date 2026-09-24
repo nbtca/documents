@@ -1,5 +1,6 @@
-// The Pages project binds its R2 bucket as `ASSETS`. That binding is the only
-// credential these functions hold.
+// Pages already binds the uploaded site as ASSETS. The image bucket uses
+// MEDIA so the two do not collide. That binding is the only credential
+// these functions hold.
 
 export interface StoredObject {
   body: ReadableStream | ArrayBuffer | Uint8Array
@@ -14,5 +15,5 @@ export interface AssetBucket {
 }
 
 export interface AssetEnv {
-  ASSETS?: AssetBucket
+  MEDIA?: AssetBucket
 }

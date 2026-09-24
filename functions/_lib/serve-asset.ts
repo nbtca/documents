@@ -9,10 +9,10 @@ export async function onRequestGet(
   const key = keyFromMediaPath(params.path)
   if (!key)
     return new Response('找不到这张图。', { status: 404 })
-  if (!env.ASSETS)
+  if (!env.MEDIA)
     return new Response('图片存储还没配好。', { status: 503 })
 
-  const object = await env.ASSETS.get(key)
+  const object = await env.MEDIA.get(key)
   if (!object)
     return new Response('找不到这张图。', { status: 404 })
 
