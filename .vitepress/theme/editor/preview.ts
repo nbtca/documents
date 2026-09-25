@@ -1,5 +1,6 @@
 import type { App } from 'vue'
 import { stripFrontmatter } from '../../../utils/markdown'
+import { previewSources, publishedAssetMap } from '../../../utils/published-asset'
 import { renderMarkdown } from '../../../utils/render-markdown'
 import { components } from '../components'
 
@@ -30,17 +31,20 @@ export async function openPreview(
 
   let app: App | undefined
 
-  // Images added in this session are not on disk until the change is submitted.
-  const withPending = (html: string) => {
-    let out = html
-    for (const [path, url] of pending)
-      out = out.replaceAll(`"${path}"`, `"${url}"`)
-    return out
-  }
+  // The built page already resolved ./assets/name.webp to a hashed URL.
+  // Recompiling the source would ask for /about/assets/name.webp, which was
+  // never deployed. Pictures added in this session are not on that page yet.
+  const published = publishedAssetMap(
+    [...article.querySelectorAll('img')].flatMap((img) => {
+      const src = img.getAttribute('src')
+      return src ? [src] : []
+    }),
+  )
 
   const render = (source: string) => {
     app?.unmount()
-    const { code } = compile(`<div>${withPending(renderMarkdown(stripFrontmatter(source)))}</div>`, {
+    const html = previewSources(renderMarkdown(stripFrontmatter(source)), published, pending)
+    const { code } = compile(`<div>${html}</div>`, {
       mode: 'function',
       hoistStatic: true,
       onError: () => {},

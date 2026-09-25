@@ -1,6 +1,9 @@
 import type { AssetEnv } from '../_lib/bucket'
 import { assetKey, isWebp, MAX_ASSET_BYTES, mediaUrl } from '../../utils/remote-asset'
 
+// Base64 is about 4/3 of the bytes, plus the JSON wrapper.
+const MAX_JSON_BYTES = MAX_ASSET_BYTES * 2
+
 // Public by design, same value as the OAuth exchange. The secret stays in env.
 const CLIENT_ID = 'Ov23liLyXZEIgI9vKNV6'
 const CHECK_TOKEN = `https://api.github.com/applications/${CLIENT_ID}/token`
@@ -16,36 +19,17 @@ function json(body: unknown, status: number): Response {
   })
 }
 
-// Stop once the cap is passed, instead of buffering a body up to the platform limit.
-async function readLimited(request: Request, max: number): Promise<Uint8Array | undefined> {
-  const declared = Number(request.headers.get('Content-Length'))
-  if (Number.isFinite(declared) && declared > max)
+function bytesFromBase64(value: string): Uint8Array | undefined {
+  try {
+    const binary = atob(value.replace(/\s/g, ''))
+    const bytes = new Uint8Array(binary.length)
+    for (let index = 0; index < binary.length; index++)
+      bytes[index] = binary.charCodeAt(index)
+    return bytes
+  }
+  catch {
     return undefined
-  if (!request.body)
-    return new Uint8Array()
-
-  const reader = request.body.getReader()
-  const chunks: Uint8Array[] = []
-  let total = 0
-  for (;;) {
-    const { done, value } = await reader.read()
-    if (done)
-      break
-    total += value.byteLength
-    if (total > max) {
-      await reader.cancel()
-      return undefined
-    }
-    chunks.push(value)
   }
-
-  const bytes = new Uint8Array(total)
-  let offset = 0
-  for (const chunk of chunks) {
-    bytes.set(chunk, offset)
-    offset += chunk.byteLength
-  }
-  return bytes
 }
 
 // A personal access token would also pass GET /user. This asks GitHub whether
@@ -103,15 +87,20 @@ export async function onRequestPost(
   if (allowed === 'unreachable')
     return json({ message: '暂时没法确认登录，稍后再试。' }, 502)
 
-  const type = request.headers.get('Content-Type') ?? ''
-  if (!type.startsWith('image/webp'))
-    return json({ message: '只接受 WebP 图片。' }, 415)
-
-  const bytes = await readLimited(request, MAX_ASSET_BYTES)
-  if (bytes === undefined)
+  const declared = Number(request.headers.get('Content-Length'))
+  if (Number.isFinite(declared) && declared > MAX_JSON_BYTES)
     return json({ message: '这张图太大了。' }, 413)
+
+  const payload = await request.json().catch(() => undefined) as { base64?: unknown } | undefined
+  const encoded = typeof payload?.base64 === 'string' ? payload.base64 : ''
+  const bytes = encoded ? bytesFromBase64(encoded) : undefined
+  if (!bytes?.byteLength)
+    return json({ message: '没有收到图片。' }, 400)
+  if (bytes.byteLength > MAX_ASSET_BYTES)
+    return json({ message: '这张图太大了。' }, 413)
+  // The editor has already flattened PNG, JPEG and GIF to one WebP frame.
   if (!isWebp(bytes))
-    return json({ message: '只接受 WebP 图片。' }, 415)
+    return json({ message: '图片没有转换成功，请重新插入。' }, 415)
 
   const key = assetKey()
   await env.MEDIA.put(key, bytes, { httpMetadata: { contentType: 'image/webp' } })

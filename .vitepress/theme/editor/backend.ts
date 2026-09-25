@@ -131,24 +131,17 @@ function bodyFor(edit: { summary: string, author: string, checklist?: string[], 
   return opening + uploaded + checklist
 }
 
-function bytesFromBase64(base64: string): Uint8Array {
-  const binary = atob(base64)
-  const bytes = new Uint8Array(binary.length)
-  for (let index = 0; index < binary.length; index++)
-    bytes[index] = binary.charCodeAt(index)
-  return bytes
-}
-
 // The draft cites a repo path until submit. Uploading then, and only then,
-// keeps an abandoned edit out of the bucket.
+// keeps an abandoned edit out of the bucket. The bytes go as JSON so the
+// request is not a raw image body, which the Pages runtime can drop.
 async function uploadImage(token: string, image: PendingImage): Promise<string> {
   const response = await fetch('/api/assets', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${token}`,
-      'Content-Type': 'image/webp',
+      'Content-Type': 'application/json',
     },
-    body: new Blob([bytesFromBase64(image.base64)], { type: 'image/webp' }),
+    body: JSON.stringify({ base64: image.base64 }),
   })
 
   const body = await response.json().catch(() => undefined) as { url?: string, message?: string } | undefined
