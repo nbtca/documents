@@ -58,3 +58,5 @@ maintainers:
 ## 我想系统入门
 
 [CA101](/tutorial/manual/ca101)（零基础科普讲座）与 [CA102](/tutorial/manual/ca102)（进阶实操）是社团成体系的讲座；想配一台自己的服务器练手，可以从[快速上手 nginx](/tutorial/manual/nginx-usage) 开始。
+
+<Figure src="/media/2026/09/bc9639d2-7af1-452f-be6f-40c08aace42f.webp" alt="test" caption="test" />
