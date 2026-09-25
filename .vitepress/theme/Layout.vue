@@ -10,6 +10,9 @@ const { Layout } = DefaultTheme
 
 <template>
   <Layout>
+    <template #layout-top>
+      <div id="nb-preview-top" class="nb-preview-top" />
+    </template>
     <!-- The card rides the right rail where there is one, and falls back to a
          block above the title where the rail is hidden. -->
     <template #doc-before>
@@ -25,3 +28,11 @@ const { Layout } = DefaultTheme
     </template>
   </Layout>
 </template>
+
+<style scoped>
+.nb-preview-top {
+  position: sticky;
+  z-index: 100;
+  top: 0;
+}
+</style>
