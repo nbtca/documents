@@ -11,6 +11,14 @@ export default antfu({
     'no-irregular-whitespace': 'off',
   },
 }, {
+  // Markdown tables stay compact (`| --- |`), which is what readers write by
+  // hand. Prettier pads every cell to the column width and offers no switch
+  // for it, so markdown files skip the formatter.
+  files: ['**/*.md'],
+  rules: {
+    'format/prettier': 'off',
+  },
+}, {
   // checks/ holds command-line verifiers; their report is the output.
   files: ['checks/**/*.mjs'],
   rules: {
