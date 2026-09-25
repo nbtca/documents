@@ -105,6 +105,20 @@ describe('content contract', () => {
     expect(resolutions.map(resolution => resolution.status)).toEqual(['ok', 'ok'])
   })
 
+  it('accepts an uploaded image without a file in the repository', () => {
+    const target = '/media/2026/09/00000000-0000-4000-8000-000000000000.webp'
+    const [link] = extractMarkdownLinks(`[图](${target})`, 'tutorial/index.md')
+
+    expect(resolveInternalLink(link).status).toBe('skipped')
+    expect(resolveInternalLink(link).reason).toBe('uploaded asset')
+  })
+
+  it('still rejects a /media path that is not an uploaded object', () => {
+    const [link] = extractMarkdownLinks('[图](/media/not-a-key.webp)', 'tutorial/index.md')
+
+    expect(resolveInternalLink(link).status).toBe('broken')
+  })
+
   it('leaves link syntax inside code spans alone, so a page may teach it', () => {
     const links = extractMarkdownLinks(
       'Write `[text](/nowhere)` for a link, as in [Repair](/repair/guide).\n'
