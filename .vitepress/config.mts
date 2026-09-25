@@ -137,6 +137,11 @@ export default withMermaid({
   // The stock component leaves <time> empty until hydration formats it, so a
   // page whose script does not run shows the label with no date.
   vite: {
+    // jSquash resolves its encoder WASM relative to the package module. Vite's
+    // dev optimizer moves that module into its cache without the WASM asset.
+    optimizeDeps: {
+      exclude: ['@jsquash/webp'],
+    },
     plugins: [devEditor()],
     resolve: {
       alias: [{
