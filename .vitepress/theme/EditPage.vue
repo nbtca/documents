@@ -1,7 +1,24 @@
 <script setup lang="ts">
+import type { Component } from 'vue'
 import type { Me, PendingImage } from './editor/backend'
 import type { Format } from './editor/codemirror'
 import type { Destination } from './editor/destinations'
+import {
+  Bold,
+  Code2,
+  Eye,
+  FileDiff,
+  Heading1,
+  Heading2,
+  ImagePlus,
+  Italic,
+  Link,
+  List,
+  ListOrdered,
+  Quote,
+  RotateCcw,
+  Trash2,
+} from '@lucide/vue'
 import { useData } from 'vitepress'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { extractH1, splitFrontmatter } from '../../utils/markdown'
@@ -38,6 +55,10 @@ const head = ref('')
 const problem = ref('')
 const result = ref<{ label: string, url?: string } | undefined>()
 const host = ref<HTMLElement>()
+const editSheet = ref<HTMLElement>()
+const toolbar = ref<HTMLElement>()
+const toolbarStuck = ref(false)
+const saveOpen = ref(false)
 let editor: { destroy: () => void } | undefined
 let preview: { update: (md: string) => void, close: () => void } | undefined
 let insertAt: ((snippet: string, caret?: number) => void) | undefined
@@ -55,6 +76,22 @@ const pending = ref<{ file: File, alt: string, caption: string } | undefined>()
 const busy = ref(false)
 
 const restored = ref(false)
+
+watch(stage, (current) => {
+  if (current === 'closed')
+    toolbarStuck.value = false
+})
+
+function updateToolbarStuck() {
+  const sheet = editSheet.value
+  const bar = toolbar.value
+  if (!sheet || !bar) {
+    toolbarStuck.value = false
+    return
+  }
+  toolbarStuck.value = sheet.scrollTop > 0
+    && bar.getBoundingClientRect().top <= sheet.getBoundingClientRect().top + 0.5
+}
 
 const destination = ref<Destination>()
 const slug = ref('')
@@ -87,26 +124,27 @@ const slugIssue = computed(() => {
   return slugBad.value
 })
 
-const blocker = computed(() => {
+const contentBlocker = computed(() => {
   if (!changed.value)
     return '还没有改动'
   if (destination.value && !titled.value)
     return '正文第一行写 # 标题，它同时是页面标题和边栏上的名字'
+  return ''
+})
+
+const blocker = computed(() => {
+  if (contentBlocker.value)
+    return contentBlocker.value
   if (!summary.value.trim())
     return destination.value ? '写一句话说明这一页讲什么' : '写一句话说明这次改了什么'
   return ''
 })
 
 const canSubmit = computed(() => !blocker.value && !slugIssue.value)
+const canOpenSave = computed(() => !contentBlocker.value && !slugIssue.value)
 
 const armedLead = computed(() => {
-  const verb = localMode ? '保存' : '提交'
-  const lead = leaving.value ? '退出登录会一起丢掉未保存的改动。' : '有未保存的改动。'
-  if (blocker.value)
-    return `${lead}${blocker.value}，才能${verb}。`
-  if (slugIssue.value)
-    return `${lead}上面的网址名改好才能${verb}。`
-  return lead
+  return leaving.value ? '退出登录会放弃这些修改。' : '现在退出会放弃这些修改。'
 })
 
 watch([draft, slug, summary], () => {
@@ -178,8 +216,7 @@ watch([() => stage.value, host], async ([current, element]) => {
   await nextTick()
   const { mountEditor } = await import('./editor/codemirror')
   const view = mountEditor(element, draft.value, value => (draft.value = value), () => {
-    if (canSubmit.value)
-      submit()
+    openSave()
   }, onFiles, destination.value && placeholderFor(destination.value))
   view.focus()
   const { format, setDiff } = await import('./editor/codemirror')
@@ -209,9 +246,16 @@ function toggleDiff() {
   showDiff?.(diffing.value ? original.value : undefined)
 }
 
-const TEXT = '.md,.markdown,.txt,text/markdown,text/plain'
+function openSave() {
+  if (!canOpenSave.value || stage.value === 'submitting')
+    return
+  armed.value = false
+  leaving.value = false
+  problem.value = ''
+  saveOpen.value = true
+}
 
-async function pick(kind: 'image/*' | typeof TEXT) {
+async function pick(kind: string) {
   accepts.value = kind
   await nextTick()
   picker.value?.click()
@@ -294,7 +338,13 @@ function backToEditing() {
 function onKey(event: KeyboardEvent) {
   if (event.key !== 'Escape')
     return
-  if (stage.value === 'previewing') {
+  if (saveOpen.value) {
+    saveOpen.value = false
+  }
+  else if (pending.value) {
+    pending.value = undefined
+  }
+  else if (stage.value === 'previewing') {
     backToEditing()
   }
   else if (armed.value) {
@@ -324,7 +374,20 @@ const mod = ref('')
 onMounted(() => {
   mod.value = /mac|iphone|ipad/i.test(navigator.userAgent) ? '⌘' : 'Ctrl+'
 })
-const saveKey = computed(() => mod.value && `${mod.value}S`)
+// VitePress uses this variable to move its fixed navigation and sidebars below
+// anything mounted in the layout-top slot.
+watch(stage, async (current) => {
+  if (current !== 'previewing') {
+    document.documentElement.style.removeProperty('--vp-layout-top-height')
+    return
+  }
+  await nextTick()
+  const bar = document.querySelector<HTMLElement>('#nb-preview-top .nb-preview-bar')
+  if (bar)
+    document.documentElement.style.setProperty('--vp-layout-top-height', `${bar.offsetHeight}px`)
+})
+
+onBeforeUnmount(() => document.documentElement.style.removeProperty('--vp-layout-top-height'))
 
 function reset() {
   restored.value = false
@@ -336,6 +399,8 @@ function reset() {
   destination.value = undefined
   head.value = ''
   base.value = undefined
+  saveOpen.value = false
+  pending.value = undefined
 }
 
 // The editor mounts once per sheet; a second choice needs a fresh one.
@@ -428,6 +493,7 @@ async function submit() {
       URL.revokeObjectURL(url)
     pendingUrls.clear()
     images.value = []
+    saveOpen.value = false
     teardown()
     stage.value = 'closed'
   }
@@ -459,6 +525,8 @@ function discard() {
   teardown()
   armed.value = false
   leaving.value = false
+  saveOpen.value = false
+  pending.value = undefined
   progress.value = ''
   stage.value = 'closed'
   result.value = undefined
@@ -466,16 +534,16 @@ function discard() {
     signOut()
 }
 
-const TOOLS: { kind: Format, mark: string, name: string, key?: string }[] = [
-  { kind: 'h1', mark: '#', name: '标题' },
-  { kind: 'h2', mark: '##', name: '小标题' },
-  { kind: 'bold', mark: 'B', name: '加粗', key: 'B' },
-  { kind: 'italic', mark: 'I', name: '斜体', key: 'I' },
-  { kind: 'code', mark: '`', name: '代码', key: 'E' },
-  { kind: 'link', mark: '[ ]( )', name: '链接', key: 'K' },
-  { kind: 'list', mark: '-', name: '列表', key: '⇧8' },
-  { kind: 'ordered', mark: '1.', name: '编号列表', key: '⇧7' },
-  { kind: 'quote', mark: '>', name: '引用', key: '⇧.' },
+const TOOLS: { kind: Format, icon: Component, name: string, key?: string }[] = [
+  { kind: 'h1', icon: Heading1, name: '标题' },
+  { kind: 'h2', icon: Heading2, name: '小标题' },
+  { kind: 'bold', icon: Bold, name: '加粗', key: 'B' },
+  { kind: 'italic', icon: Italic, name: '斜体', key: 'I' },
+  { kind: 'code', icon: Code2, name: '代码', key: 'E' },
+  { kind: 'link', icon: Link, name: '链接', key: 'K' },
+  { kind: 'list', icon: List, name: '列表', key: '⇧8' },
+  { kind: 'ordered', icon: ListOrdered, name: '编号列表', key: '⇧7' },
+  { kind: 'quote', icon: Quote, name: '引用', key: '⇧.' },
 ]
 
 function insertOutline() {
@@ -504,11 +572,13 @@ function insertOutline() {
     <Teleport to="body">
       <div
         v-if="stage !== 'closed'"
+        ref="editSheet"
         class="nb-edit-sheet"
         :class="{ 'is-away': stage === 'previewing' }"
         role="dialog"
         aria-modal="true"
         aria-label="编辑页面"
+        @scroll.passive="updateToolbarStuck"
       >
         <div class="nb-edit-inner">
           <header class="nb-edit-head">
@@ -531,27 +601,11 @@ function insertOutline() {
               <button v-if="!localMode && member?.name" type="button" class="nb-edit-signout" @click="close(true)">
                 退出登录
               </button>
-              <button
-                type="button"
-                class="nb-edit-close"
-                :aria-label="armed ? '再点一次放弃改动并关闭' : '关闭编辑器'"
-                title="关闭编辑器"
-                @click="close()"
-              >
-                ✕
-              </button>
             </div>
           </header>
 
           <p v-if="transcribed && stage !== 'choosing'" class="nb-edit-origin">
             这一页照录自「{{ transcribed }}」。原文的笔误是有意留着的，改动请只用来修正转写本身的错误。
-          </p>
-
-          <p v-if="restored && stage !== 'choosing'" class="nb-edit-origin">
-            接着上次没提交的草稿继续。
-            <button type="button" class="nb-edit-outline" @click="startOver">
-              {{ destination ? '清空重写' : '放弃草稿，回到原文' }}
-            </button>
           </p>
 
           <div v-if="stage === 'choosing'" class="nb-pick">
@@ -586,114 +640,101 @@ function insertOutline() {
           </p>
 
           <template v-if="stage !== 'choosing' && stage !== 'loading' && stage !== 'failed'">
-            <div ref="host" class="nb-edit-area" :class="{ 'is-busy': stage === 'submitting' }" />
-
-            <div v-if="pending" class="nb-image-form">
-              <p class="nb-image-file">
-                {{ pending.file.name }} — {{ localMode ? '会转成 WebP，随这次修改一起写入仓库' : '会转成 WebP，提交时上传，正文里只留链接' }}
-              </p>
-              <input v-model="pending.alt" class="nb-edit-summary" placeholder="图里是什么？看不见图的人靠它">
-              <input v-model="pending.caption" class="nb-edit-summary" placeholder="图注（可选）">
-              <div class="nb-image-actions">
-                <span class="nb-edit-why">{{ pending.alt.trim() ? '' : '先写一句图里是什么' }}</span>
-                <button type="button" class="nb-edit-ghost" @click="pending = undefined">
-                  取消
-                </button>
-                <button type="button" class="nb-edit-submit" :disabled="!pending.alt.trim() || busy" @click="insertImage">
-                  {{ busy ? '转换中……' : '插入' }}
-                </button>
+            <div
+              ref="toolbar"
+              class="nb-edit-toolbar-shell"
+              :class="{ 'is-stuck': toolbarStuck }"
+            >
+              <div class="nb-edit-toolbar" role="toolbar" aria-label="编辑工具">
+                <span class="nb-edit-tools" role="toolbar" aria-label="格式">
+                  <button
+                    v-for="tool in TOOLS"
+                    :key="tool.kind"
+                    type="button"
+                    class="nb-edit-tool"
+                    :aria-label="tool.name"
+                    :title="tool.key && mod ? `${tool.name}（${mod}${tool.key}）` : tool.name"
+                    @click="applyFormat?.(tool.kind)"
+                  >
+                    <component
+                      :is="tool.icon"
+                      :size="tool.kind === 'h1' || tool.kind === 'h2' ? 20 : 18"
+                      :stroke-width="1.8"
+                      aria-hidden="true"
+                    />
+                  </button>
+                  <button
+                    type="button"
+                    class="nb-edit-tool"
+                    aria-label="插入图片"
+                    title="插入图片"
+                    :disabled="stage === 'submitting'"
+                    @click="pick('image/*')"
+                  >
+                    <ImagePlus :size="18" :stroke-width="1.8" aria-hidden="true" />
+                  </button>
+                  <button
+                    v-if="!draft.trim() && destination?.outline"
+                    type="button"
+                    class="nb-edit-tool is-wide"
+                    title="插入文档结构"
+                    @click="insertOutline"
+                  >
+                    结构
+                  </button>
+                </span>
+                <span class="nb-edit-toolbar-actions">
+                  <span class="nb-edit-toolbar-space" />
+                  <span v-if="restored" class="nb-edit-restored" role="status">
+                    <span>已恢复上次的草稿。</span>
+                    <button
+                      type="button"
+                      :aria-label="destination ? '清空草稿' : '恢复原文'"
+                      :title="destination ? '清空草稿' : '恢复原文'"
+                      @click="startOver"
+                    >
+                      <Trash2 v-if="destination" :size="16" :stroke-width="1.8" aria-hidden="true" />
+                      <RotateCcw v-else :size="16" :stroke-width="1.8" aria-hidden="true" />
+                      <span class="nb-edit-restored-action-label">
+                        {{ destination ? '清空草稿' : '恢复原文' }}
+                      </span>
+                    </button>
+                  </span>
+                  <button type="button" class="nb-edit-action" :disabled="stage === 'submitting'" @click="showPreview">
+                    <Eye :size="17" :stroke-width="1.8" aria-hidden="true" />
+                    预览
+                  </button>
+                  <button
+                    v-if="!destination"
+                    type="button"
+                    class="nb-edit-action"
+                    :class="{ 'is-on': diffing }"
+                    :disabled="!changed || stage === 'submitting'"
+                    @click="toggleDiff"
+                  >
+                    <FileDiff :size="17" :stroke-width="1.8" aria-hidden="true" />
+                    变更
+                  </button>
+                  <span class="nb-edit-separator" aria-hidden="true" />
+                  <button type="button" class="nb-edit-action" :disabled="stage === 'submitting'" @click="close()">
+                    取消
+                  </button>
+                  <button
+                    type="button"
+                    class="nb-edit-submit"
+                    :disabled="!canOpenSave || stage === 'submitting'"
+                    @click="openSave"
+                  >
+                    {{ localMode ? '保存' : '提交' }}
+                  </button>
+                </span>
               </div>
             </div>
 
-            <p v-if="!pending && !draft.trim() && destination" class="nb-edit-syntax">
-              <template v-if="destination.outline">
-                <span>不知道从哪开始？</span>
-                <button type="button" class="nb-edit-outline" @click="insertOutline">
-                  搭一个结构
-                </button>
-              </template>
-              <span>已经写好了 .md？</span>
-              <button type="button" class="nb-edit-outline" @click="pick(TEXT)">
-                导入文件
-              </button>
-              <span>或直接拖进来</span>
+            <p v-if="problem" class="nb-edit-why is-bad">
+              {{ problem }}
             </p>
-
-            <div v-else-if="!pending" class="nb-edit-syntax">
-              <span class="nb-edit-tools" role="toolbar" aria-label="格式">
-                <button
-                  v-for="tool in TOOLS"
-                  :key="tool.kind"
-                  type="button"
-                  class="nb-edit-tool"
-                  :aria-label="tool.name"
-                  :title="tool.key && mod ? `${tool.name}（${mod}${tool.key}）` : tool.name"
-                  @click="applyFormat?.(tool.kind)"
-                >
-                  <code>{{ tool.mark }}</code>
-                </button>
-              </span>
-              <span class="nb-edit-key">图片和 .md 可以拖进来或粘贴</span>
-              <span v-if="saveKey" class="nb-edit-key"><code>{{ saveKey }}</code> 提交</span>
-            </div>
-
-            <div class="nb-edit-foot">
-              <input
-                v-model="summary"
-                class="nb-edit-summary"
-                :placeholder="destination?.dated ? '这次记录了什么？一句话，会作为页面摘要' : destination ? '这一页讲什么？一句话' : '这次改了什么？一句话'"
-                :disabled="stage === 'submitting'"
-              >
-              <template v-if="armed">
-                <button type="button" class="nb-edit-ghost is-danger" @click="discard">
-                  丢弃改动
-                </button>
-                <button type="button" class="nb-edit-ghost" @click="armed = false">
-                  继续编辑
-                </button>
-                <button type="button" class="nb-edit-submit" :disabled="!canSubmit" @click="submit">
-                  {{ localMode ? '先保存' : '先提交' }}
-                </button>
-              </template>
-
-              <template v-else>
-                <button type="button" class="nb-edit-ghost" :disabled="stage === 'submitting'" @click="pick('image/*')">
-                  插图
-                </button>
-                <button
-                  v-if="!destination"
-                  type="button"
-                  class="nb-edit-ghost"
-                  :class="{ 'is-on': diffing }"
-                  :disabled="!changed"
-                  @click="toggleDiff"
-                >
-                  改动
-                </button>
-                <button type="button" class="nb-edit-ghost" :disabled="stage === 'submitting'" @click="showPreview">
-                  预览
-                </button>
-                <button
-                  type="button"
-                  class="nb-edit-submit"
-                  :disabled="!canSubmit || stage === 'submitting'"
-                  @click="submit"
-                >
-                  {{ stage === 'submitting'
-                    ? '提交中……'
-                    : localMode ? '保存到本地' : (destination ? '提交新页面' : '提交修改') }}
-                </button>
-              </template>
-            </div>
-
-            <p class="nb-edit-why" :class="{ 'is-bad': problem || armed }">
-              {{ problem
-                || (armed ? armedLead : '')
-                || progress
-                || blocker || (localMode
-                  ? '保存会直接写入这个 markdown 文件。'
-                  : '提交会开一个 PR，交由维护者审阅后合并，不会直接改动线上页面。图片在提交时上传，合并前就能通过链接打开。') }}
-            </p>
+            <div ref="host" class="nb-edit-area" :class="{ 'is-busy': stage === 'submitting' }" />
             <input ref="picker" type="file" :accept="accepts" hidden @change="onPicked">
           </template>
 
@@ -708,16 +749,111 @@ function insertOutline() {
         </div>
       </div>
 
-      <div v-if="stage === 'previewing'" class="nb-preview-bar">
-        <span class="nb-preview-tag">预览中</span>
-        <span class="nb-preview-note">这就是提交后读者看到的样子</span>
-        <button type="button" class="nb-edit-ghost" @click="backToEditing">
-          继续编辑
-        </button>
-        <button type="button" class="nb-edit-submit" :disabled="!canSubmit" @click="submit">
-          {{ localMode ? '保存到本地' : (destination ? '提交新页面' : '提交修改') }}
-        </button>
+      <div v-if="pending" class="nb-edit-modal" role="presentation">
+        <form class="nb-edit-dialog" role="dialog" aria-modal="true" aria-labelledby="nb-image-title" @submit.prevent="insertImage">
+          <div>
+            <h2 id="nb-image-title" class="nb-edit-dialog-title">
+              插入图片
+            </h2>
+            <p class="nb-edit-dialog-note">
+              {{ pending.file.name }}
+            </p>
+          </div>
+          <label class="nb-edit-field">
+            <span>图片描述 <small>必填</small></span>
+            <input v-model="pending.alt" class="nb-edit-summary" placeholder="图里是什么？" autofocus>
+            <small>帮助看不见图片的读者理解内容。</small>
+          </label>
+          <label class="nb-edit-field">
+            <span>图注 <small>可选</small></span>
+            <input v-model="pending.caption" class="nb-edit-summary" placeholder="显示在图片下方">
+          </label>
+          <div class="nb-edit-dialog-actions">
+            <button type="button" class="nb-edit-ghost" :disabled="busy" @click="pending = undefined">
+              取消
+            </button>
+            <button type="submit" class="nb-edit-submit" :disabled="!pending.alt.trim() || busy">
+              {{ busy ? '转换中……' : '插入图片' }}
+            </button>
+          </div>
+        </form>
       </div>
+
+      <div v-if="saveOpen" class="nb-edit-modal" role="presentation">
+        <form class="nb-edit-dialog" role="dialog" aria-modal="true" aria-labelledby="nb-save-title" @submit.prevent="canSubmit && submit()">
+          <div>
+            <h2 id="nb-save-title" class="nb-edit-dialog-title">
+              {{ localMode
+                ? (destination ? '保存新页面' : '保存修改')
+                : (destination ? '提交新页面' : '提交修改') }}
+            </h2>
+            <p v-if="!localMode" class="nb-edit-dialog-note">
+              维护者会先审阅；通过后才会更新线上页面。
+            </p>
+          </div>
+          <label class="nb-edit-field">
+            <span>{{ destination ? '页面摘要' : '修改说明' }}</span>
+            <input
+              v-model="summary"
+              class="nb-edit-summary"
+              :placeholder="destination?.dated ? '简要说明这次记录的内容' : destination ? '简要说明这一页的内容' : '简要说明这次修改'"
+              :disabled="stage === 'submitting'"
+              autofocus
+            >
+          </label>
+          <p v-if="problem || progress" class="nb-edit-dialog-status" :class="{ 'is-bad': problem }">
+            {{ problem || progress }}
+          </p>
+          <div class="nb-edit-dialog-actions">
+            <button type="button" class="nb-edit-ghost" :disabled="stage === 'submitting'" @click="saveOpen = false">
+              取消
+            </button>
+            <button type="submit" class="nb-edit-submit" :disabled="!canSubmit || stage === 'submitting'">
+              {{ stage === 'submitting'
+                ? (localMode ? '保存中……' : '提交中……')
+                : localMode
+                  ? (destination ? '保存页面' : '保存修改')
+                  : (destination ? '提交页面' : '提交修改') }}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div v-if="armed" class="nb-edit-modal" role="presentation">
+        <div class="nb-edit-dialog" role="alertdialog" aria-modal="true" aria-labelledby="nb-discard-title">
+          <div>
+            <h2 id="nb-discard-title" class="nb-edit-dialog-title">
+              修改尚未保存
+            </h2>
+            <p class="nb-edit-dialog-note">
+              {{ armedLead }}
+            </p>
+          </div>
+          <div class="nb-edit-dialog-actions">
+            <button type="button" class="nb-edit-ghost" @click="armed = false; leaving = false">
+              继续编辑
+            </button>
+            <button type="button" class="nb-edit-ghost is-danger" @click="discard">
+              放弃修改
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <Teleport v-if="stage === 'previewing'" to="#nb-preview-top">
+        <div class="nb-preview-bar">
+          <span class="nb-preview-mode">
+            <Eye :size="18" :stroke-width="1.8" aria-hidden="true" />
+            预览模式
+          </span>
+          <button type="button" class="nb-edit-ghost" @click="backToEditing">
+            继续编辑
+          </button>
+          <button type="button" class="nb-edit-submit" :disabled="!canOpenSave" @click="openSave">
+            {{ localMode ? '保存' : '提交' }}
+          </button>
+        </div>
+      </Teleport>
     </Teleport>
   </div>
 </template>
@@ -757,7 +893,8 @@ function insertOutline() {
   position: fixed;
   inset: 0;
   z-index: 60;
-  padding: 21px;
+  padding: 0 21px 21px;
+  overflow-y: auto;
   background: var(--vp-c-bg);
   animation: nb-sheet-in 180ms cubic-bezier(0.2, 0, 0.2, 1);
 
@@ -785,7 +922,7 @@ function insertOutline() {
   gap: 13px;
   width: 100%;
   max-width: 76rem;
-  height: 100%;
+  min-height: 100%;
   margin: 0 auto;
 }
 
@@ -794,8 +931,7 @@ function insertOutline() {
   align-items: baseline;
   justify-content: space-between;
   gap: 21px;
-  padding-bottom: 13px;
-  border-bottom: 1px solid var(--vp-c-divider);
+  padding: 21px 8px 0;
 }
 
 .nb-edit-title {
@@ -839,28 +975,9 @@ function insertOutline() {
   color: var(--vp-c-text-1);
 }
 
-/* A 14px glyph next to a worded button reads as that button's icon. Give it
-   the 44px target the guidelines ask for, and room of its own. */
-.nb-edit-close {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  margin: -10px -13px -10px 8px;
-  font-size: 18px;
-  color: var(--vp-c-text-3);
-}
-
-.nb-edit-close:hover {
-  color: var(--vp-c-text-1);
-}
-
 .nb-edit-area {
-  overflow: hidden;
-  flex: 1;
-  min-height: 0;
-  border-top: 1px solid var(--vp-c-divider);
-  border-bottom: 1px solid var(--vp-c-divider);
+  flex: none;
+  min-height: calc(100vh - 10rem);
 }
 
 .nb-edit-area.is-busy {
@@ -868,43 +985,120 @@ function insertOutline() {
   pointer-events: none;
 }
 
-.nb-edit-foot {
+.nb-edit-toolbar-shell {
+  position: sticky;
+  z-index: 2;
+  top: 0;
+  isolation: isolate;
+  width: 100%;
+}
+
+.nb-edit-toolbar {
   display: flex;
+  flex: none;
+  flex-wrap: nowrap;
   gap: 8px;
   align-items: center;
   width: 100%;
-  max-width: var(--nb-measure);
   margin: 0 auto;
-  padding: 0 21px;
+  padding: 10px 8px;
+  overflow-x: auto;
+  background: transparent;
+  scrollbar-width: none;
 }
 
-.nb-image-form {
-  display: flex;
-  flex-direction: column;
+.nb-edit-toolbar-shell.is-stuck::before {
+  position: absolute;
+  z-index: -1;
+  inset-block: 0;
+  left: 50%;
+  width: 100vw;
+  border-bottom: 1px solid var(--vp-c-divider);
+  background: color-mix(in srgb, var(--vp-c-bg) 82%, transparent);
+  backdrop-filter: blur(12px);
+  content: '';
+  transform: translateX(-50%);
+}
+
+.nb-edit-toolbar::-webkit-scrollbar {
+  display: none;
+}
+
+.nb-edit-toolbar-space {
+  flex: 1 1 auto;
+  min-width: 21px;
+}
+
+.nb-edit-toolbar-actions {
+  display: contents;
+}
+
+.nb-edit-restored {
+  display: inline-flex;
+  flex: none;
   gap: 8px;
-  width: 100%;
-  max-width: var(--nb-measure);
-  margin: 0 auto;
-  padding: 13px 21px;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 4px;
   background: var(--vp-c-bg-soft);
+  font-size: 12px;
+  color: var(--vp-c-text-3);
+  white-space: nowrap;
 }
 
-.nb-image-file {
+.nb-edit-restored button {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  color: var(--vp-c-brand-1);
+  font-weight: 600;
+}
+
+.nb-edit-restored button:hover {
+  color: var(--vp-c-brand-2);
+}
+
+.nb-edit-action {
+  display: inline-flex;
+  flex: none;
+  gap: 7px;
+  align-items: center;
+  padding: 5px 7px;
+  border-radius: 4px;
   font-size: 13px;
+  color: var(--vp-c-text-2);
+}
+
+.nb-edit-action svg {
   color: var(--vp-c-text-3);
 }
 
-.nb-image-actions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  justify-content: flex-end;
+.nb-edit-action:hover:not(:disabled),
+.nb-edit-action.is-on {
+  color: var(--vp-c-brand-1);
+  background: var(--vp-c-bg-soft);
 }
 
-.nb-image-actions .nb-edit-why {
-  flex: 1;
-  max-width: none;
-  padding: 0;
+.nb-edit-action:hover:not(:disabled) svg,
+.nb-edit-action.is-on svg {
+  color: var(--vp-c-brand-1);
+}
+
+.nb-edit-action:disabled {
+  opacity: 0.4;
+}
+
+.nb-edit-separator {
+  flex: none;
+  width: 1px;
+  height: 20px;
+  margin: 0 3px;
+  background: var(--vp-c-divider);
+}
+
+.nb-edit-toolbar .nb-edit-submit {
+  flex: none;
+  padding: 6px 16px;
 }
 
 .nb-edit-summary {
@@ -955,31 +1149,100 @@ function insertOutline() {
 }
 
 .nb-preview-bar {
-  position: fixed;
-  inset: auto 0 0;
-  z-index: 60;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 13px;
   align-items: center;
-  padding: 13px 21px;
-  border-top: 1px solid var(--vp-c-divider);
+  width: 100%;
+  padding: 14px 21px;
+  background: var(--vp-c-bg-soft);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 10%);
+}
+
+.nb-edit-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 21px;
+  background: color-mix(in srgb, var(--vp-c-bg) 72%, transparent);
+  backdrop-filter: blur(3px);
+}
+
+.nb-edit-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 21px;
+  width: min(100%, 32rem);
+  max-height: calc(100vh - 42px);
+  padding: 26px;
+  overflow-y: auto;
   background: var(--vp-c-bg);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  box-shadow: var(--vp-shadow-4);
 }
 
-.nb-preview-tag {
-  font-family: var(--nb-mono);
-  font-size: 11px;
+.nb-edit-dialog-title {
+  margin: 0;
+  font-size: 18px;
   font-weight: 600;
-  letter-spacing: 0.1em;
-  color: var(--vp-c-brand-1);
-  text-transform: uppercase;
+  color: var(--vp-c-text-1);
 }
 
-.nb-preview-note {
-  flex: 1;
+.nb-edit-dialog-note {
+  margin: 5px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--vp-c-text-3);
+}
+
+.nb-edit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vp-c-text-2);
+}
+
+.nb-edit-field small {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--vp-c-text-3);
+}
+
+.nb-edit-dialog-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.nb-edit-dialog-actions > button {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.nb-edit-dialog-status {
+  margin: -8px 0;
   font-size: 13px;
   color: var(--vp-c-text-3);
+}
+
+.nb-edit-dialog-status.is-bad {
+  color: var(--vp-c-danger-1);
+}
+
+.nb-preview-mode {
+  display: inline-flex;
+  flex: 1;
+  gap: 7px;
+  align-items: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--vp-c-brand-1);
 }
 
 .nb-edit-note {
@@ -1148,19 +1411,25 @@ function insertOutline() {
 
 .nb-edit-tools {
   display: flex;
-  flex-wrap: wrap;
-  margin-left: -6px;
+  flex: none;
+  flex-wrap: nowrap;
+  gap: 3px;
 }
 
 .nb-edit-tool {
+  display: grid;
+  place-items: center;
   min-width: 28px;
-  padding: 2px 6px;
+  min-height: 28px;
+  padding: 4px 6px;
   border-radius: 4px;
   font-size: 12px;
+  color: var(--vp-c-text-3);
 }
 
 .nb-edit-tool:hover {
   background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
 }
 
 .nb-edit-tool code {
@@ -1216,20 +1485,106 @@ function insertOutline() {
 
 @media (max-width: 640px) {
   .nb-edit-sheet {
-    padding: 13px 0;
+    padding: 0 0 13px;
   }
 
   .nb-edit-head {
-    padding: 0 21px 13px;
+    padding: 13px 8px 0;
+  }
+
+  .nb-edit-toolbar {
+    flex-wrap: wrap;
+    column-gap: 3px;
+    row-gap: 8px;
+    padding: 6px 8px;
+    overflow-x: hidden;
+  }
+
+  .nb-edit-tools {
+    flex: 0 0 100%;
+    gap: 2px;
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .nb-edit-tools::-webkit-scrollbar,
+  .nb-edit-toolbar-actions::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nb-edit-toolbar-actions {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .nb-edit-toolbar-actions .nb-edit-toolbar-space {
+    display: none;
+  }
+
+  .nb-edit-restored {
+    gap: 0;
+    min-height: 40px;
+    padding: 0;
+    background: transparent;
+  }
+
+  .nb-edit-restored > span {
+    display: none;
+  }
+
+  .nb-edit-restored button {
+    justify-content: center;
+    width: 40px;
+    min-height: 40px;
+    padding: 0;
+    border-radius: 4px;
+    color: var(--vp-c-text-2);
+    font-weight: 400;
+  }
+
+  .nb-edit-restored button svg {
+    color: var(--vp-c-text-3);
+  }
+
+  .nb-edit-restored button:hover {
+    background: var(--vp-c-bg-soft);
+    color: var(--vp-c-brand-1);
+  }
+
+  .nb-edit-restored button:hover svg {
+    color: var(--vp-c-brand-1);
+  }
+
+  .nb-edit-restored-action-label {
+    display: none;
+  }
+
+  .nb-edit-action {
+    gap: 4px;
+    min-height: 40px;
+    padding: 6px 8px;
+  }
+
+  .nb-edit-separator {
+    width: 0;
+    height: 0;
+    margin: 0 0 0 auto;
+    background: transparent;
+  }
+
+  .nb-edit-toolbar .nb-edit-submit {
+    min-height: 40px;
+    margin-left: 5px;
+    padding: 6px 14px;
   }
 
   /* A writer does not need the file path; the screen is worth more. */
   .nb-edit-path {
-    display: none;
-  }
-
-  /* No keyboard to press it on. */
-  .nb-edit-key {
     display: none;
   }
 
@@ -1259,6 +1614,7 @@ function insertOutline() {
   .nb-edit-tool {
     min-width: 40px;
     min-height: 40px;
+    padding: 4px 6px;
   }
 
   .nb-pick-option {
