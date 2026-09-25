@@ -126,7 +126,7 @@ const liveStyling = ViewPlugin.fromClass(
 )
 
 const theme = EditorView.theme({
-  '&': { height: '100%', fontSize: '16px', color: 'var(--vp-c-text-1)' },
+  '&': { minHeight: 'calc(100vh - 10rem)', fontSize: '16px', color: 'var(--vp-c-text-1)' },
   '.cm-content': {
     fontFamily: 'var(--vp-font-family-base)',
     lineHeight: '1.75',
@@ -135,7 +135,7 @@ const theme = EditorView.theme({
     margin: '0 auto',
     caretColor: 'var(--vp-c-brand-1)',
   },
-  '.cm-scroller': { overflow: 'auto' },
+  '.cm-scroller': { overflow: 'visible' },
   '&.cm-focused': { outline: 'none' },
   '.cm-line': { padding: '0 21px' },
   '.cm-placeholder': { color: 'var(--vp-c-text-3)' },

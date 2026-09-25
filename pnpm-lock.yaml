@@ -30,6 +30,9 @@ importers:
 
   .:
     dependencies:
+      '@lucide/vue':
+        specifier: ^1.48.0
+        version: 1.48.0(vue@3.5.22(typescript@6.0.3))
       vue:
         specifier: ^3.5.17
         version: 3.5.22(typescript@6.0.3)
@@ -800,6 +803,11 @@ packages:
 
   '@lezer/markdown@1.7.2':
     resolution: {integrity: sha512-iTkYvoVcKt3WkeL7qUDyXHONZEwLio4wj8KTNi2dnjQEXBZKMV63BpQrPqfsM+OkvuRbiSTAcycYAsQzLhRNoQ==}
+
+  '@lucide/vue@1.48.0':
+    resolution: {integrity: sha512-3/Nwx/RsqQ4ZrrSML1GNsSWCSDyLnBgoF/eEr1q9G6iZymn3+WKtzIj7Dbc/Nxrt9WOPuGrJ58S+CBiamK+36w==}
+    peerDependencies:
+      vue: '>=3.0.1'
 
   '@marijn/find-cluster-break@1.0.4':
     resolution: {integrity: sha512-Wy0V7+SGUjnF9/TkiM1hKVDPj7jKXduPNboMVtHTA8dySMURWqfg/JZ9E2Sq8JgSJmkl7k7Qe9FLeMSrSraWmQ==}
@@ -4053,6 +4061,10 @@ snapshots:
     dependencies:
       '@lezer/common': 1.5.2
       '@lezer/highlight': 1.2.3
+
+  '@lucide/vue@1.48.0(vue@3.5.22(typescript@6.0.3))':
+    dependencies:
+      vue: 3.5.22(typescript@6.0.3)
 
   '@marijn/find-cluster-break@1.0.4': {}
 
