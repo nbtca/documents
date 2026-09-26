@@ -32,4 +32,17 @@ describe('docs api', () => {
       expect(item).toEqual({ path: item.path, type: 'blob', sha: blobSha(raw) })
     }
   })
+
+  it('bundles every source with the sha git would give it', async () => {
+    const outDir = await mkdtemp(path.join(tmpdir(), 'docs-api-'))
+    outDirs.push(outDir)
+    await publishSources('.', outDir, ['index.md', 'about/index.md'])
+
+    const bundle = JSON.parse(await readFile(path.join(outDir, 'docs-api/bundle.json'), 'utf8'))
+    expect(bundle.files.map((file: { path: string }) => file.path)).toEqual(['about/index.md', 'index.md'])
+    for (const file of bundle.files) {
+      const expected = execFileSync('git', ['hash-object', file.path], { encoding: 'utf8' }).trim()
+      expect(file).toEqual({ path: file.path, sha: expected, content: await readFile(file.path, 'utf8') })
+    }
+  })
 })
