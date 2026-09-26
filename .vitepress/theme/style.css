@@ -463,6 +463,15 @@
   isolation: isolate;
 }
 
+/* The pull above only reaches the top of the page while the hero is first.
+   Below 1280px the card is mounted in doc-before ahead of it, and the two
+   margins collapse into one negative gap, so the photo cuts the card off. */
+@media screen and (max-width: 1279.98px) {
+  .nb-page-card-inline + main .vp-doc .nb-hero {
+    margin-top: 20px;
+  }
+}
+
 /* With a sidebar there is no viewport to bleed into on the left, so fill the
    content area instead of sliding under the sidebar. */
 @media (min-width: 960px) {
