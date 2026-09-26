@@ -34,6 +34,8 @@ Deployment settings on the Pages project:
 - `GITHUB_CLIENT_SECRET` — GitHub OAuth App secret. The client id is public and lives in the source. An upload is accepted only when that secret can vouch for the editor's token.
 - R2 binding `MEDIA` — bucket for those uploads. `GET /media/…` reads the object back. The name is not `ASSETS`: Pages already uses that for the site files, and a second binding with the same name fails the deploy. Without `MEDIA`, uploads answer 503 and the rest of the site keeps working. Existing pictures stay in the repository.
 
+The build also publishes every page's markdown source under `/docs-api/raw/<path>`, listed with its git blob sha in `/docs-api/index.json`. The [Prompt](https://github.com/nbtca/Prompt) terminal client reads them there because GitHub is unreachable from much of mainland China. The index has the shape of GitHub's recursive tree response, so keep both URLs and that shape stable.
+
 ## Where content goes
 
 - `about/`, `tutorial/`, `process/` and `archived/` build their sidebars by scanning the directory. Add a markdown file and it appears; nothing else to edit.
