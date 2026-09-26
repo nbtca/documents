@@ -1,5 +1,6 @@
 import { fileURLToPath, URL } from 'node:url'
 import { withMermaid } from 'vitepress-plugin-mermaid'
+import { publishSources } from '../utils/docs-api'
 import { recentCommitsFor } from '../utils/git-history'
 import { applyEditorialRules } from '../utils/markdown-pipeline'
 import { devEditor } from './dev-editor.mjs'
@@ -188,6 +189,7 @@ export default withMermaid({
   ],
   lastUpdated: true,
   sitemap: { hostname: siteUrl },
+  buildEnd: ({ srcDir, outDir, pages }) => publishSources(srcDir, outDir, pages),
   transformPageData(pageData) {
     const commits = recentCommitsFor(pageData.filePath)
     if (commits.length)
