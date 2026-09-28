@@ -92,11 +92,21 @@
 
   --nb-mono: var(--vp-font-family-mono);
 
+  /* .VPDoc's own top inset, which is what sits above the page card. */
+  --nb-doc-top: 32px;
+
   /* Latin first, then explicit CJK sans: without these, zh-CN text on
      Windows can fall back to a serif default for Han glyphs. */
   --vp-font-family-base:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC',
     'Microsoft YaHei', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+}
+
+/* .VPDoc widens that inset along with its own padding. */
+@media (min-width: 768px) {
+  :root {
+    --nb-doc-top: 48px;
+  }
 }
 
 .dark {
@@ -465,10 +475,11 @@
 
 /* The pull above only reaches the top of the page while the hero is first.
    Below 1280px the card is mounted in doc-before ahead of it, and the two
-   margins collapse into one negative gap, so the photo cuts the card off. */
+   margins collapse into one negative gap, so the photo cuts the card off.
+   Matched to the inset above the card, so the card sits between equal space. */
 @media screen and (max-width: 1279.98px) {
   .nb-page-card-inline + main .vp-doc .nb-hero {
-    margin-top: 20px;
+    margin-top: var(--nb-doc-top);
   }
 }
 
