@@ -1,20 +1,17 @@
 ---
-summary: 学习会：计算机协会9月项目茶谈
+summary: 9 月的项目茶谈学习会：CABadge 电子吧唧的样机进展与复刻计划、下一次维修日的展示内容与拆机记录，以及协会文档、工单、HuajiBot.NET、Prompt 与协会日历等软件项目的现状。
 archive:
   date: "2026-09-28"
   source: "协会自有记录，随本仓库保存"
-  transcriber: "sheepkinn"
-  transcribed: "2026.09"
+  author: "sheepkinn"
 ---
 
-# 学习会：计算机协会9月项目茶谈
+# 2026.09.28 9 月项目茶谈学习会
 
 :::info 会议信息
 
 - 地点：线上腾讯会议
-
 - 时间：Sep 28 20:30 - Sep 28 21:27 CST 2026
-
 - 记录员：[sheepkinn](https://github.com/sheepkinn)
 
 :::
@@ -25,8 +22,8 @@ archive:
 
 ### 1. 项目进展
 
-- [Egger0](https://github.com/Egger0)展示[CABadge](https://github.com/nbtca/CABadge)首版样机及项目仓库。目前样机已经可以正常点亮，Wi-Fi、蓝牙、触摸屏等基本功能可以使用，固件与 UI 仍在继续完善。
-- [Egger0](https://github.com/Egger0)介绍目前项目整体进度约为七至八成，后续还需要继续调整部分 PCB 器件布局、电池与外壳尺寸，并进一步减薄外壳。
+- [Egger0](https://github.com/Egger0) 展示 [CABadge](https://github.com/nbtca/CABadge) 首版样机及项目仓库。目前样机已经可以正常点亮，Wi-Fi、蓝牙、触摸屏等基本功能可以使用，固件与 UI 仍在继续完善。
+- [Egger0](https://github.com/Egger0) 介绍目前项目整体进度约为七至八成，后续还需要继续调整部分 PCB 器件布局、电池与外壳尺寸，并进一步减薄外壳。
 - 目前电池规格仍为暂定方案，具体尺寸与适配情况需要等待实际到货和装配后进一步确认。有兴趣复刻的同学可以等待后续硬件与物料文档更新。
 
 ### 2. 软件与应用方向
@@ -36,8 +33,8 @@ archive:
 
 ### 3. 后续分享
 
-- 现场邀请[Egger0](https://github.com/Egger0)在本学年面向全校开展一次 [CA102](/concepts/ca102.html)分享，介绍 CABadge 从创意、画板、焊接到软件实现的完整过程。
-- [Egger0](https://github.com/Egger0)表示有兴趣参与，具体讲座时间与组织安排后续再确定。
+- 现场邀请 [Egger0](https://github.com/Egger0) 在本学年面向全校开展一次 [CA102](/concepts/ca102) 分享，介绍 CABadge 从创意、画板、焊接到软件实现的完整过程。
+- [Egger0](https://github.com/Egger0) 表示有兴趣参与，具体讲座时间与组织安排后续再确定。
 
 ---
 
@@ -45,7 +42,7 @@ archive:
 
 ### 1. 活动内容设想
 
-- [Lan-Yur](https://github.com/Lan-Yuri)提出下一次维修日可以尝试现场演示制作个性化光盘。
+- [Lan-Yuri](https://github.com/Lan-Yuri) 提出下一次维修日可以尝试现场演示制作个性化光盘。
 - 可以准备一些低成本、有趣的旧硬件平台，在现场进行实物展示与简单介绍。
 - 可以介绍如何检查 CPU、GPU 的散热状态，以及如何判断硅脂是否需要更换。
 - 与会者建议结合现场能够提供的设备和实物，提前确认各项内容是否具有实际操作条件。
@@ -57,8 +54,8 @@ archive:
 
 ### 3. 后续安排
 
-- 会议中提到下一次[维修日](/repair/repair-day.html#维修日)可能安排在 **10 月 17 日**，目前仅为初步设想，活动日期尚未最终确认。
-- [Lan-Yur](https://github.com/Lan-Yuri)后续与维修队相关同学线下沟通[维修日](/repair/repair-day.html#维修日)具体活动形式、所需硬件以及现场分工。
+- 会议中提到下一次[维修日](/repair/repair-day)可能安排在 **10 月 17 日**，目前仅为初步设想，活动日期尚未最终确认。
+- [Lan-Yuri](https://github.com/Lan-Yuri) 后续与维修队相关同学线下沟通[维修日](/repair/repair-day)具体活动形式、所需硬件以及现场分工。
 
 ---
 
@@ -66,7 +63,7 @@ archive:
 
 ### 1. NBTCA Documents
 
-- [m1ngsama](https://github.com/m1ngsama)介绍 [NBTCA Documents](https://docs.nbtca.space) 的使用与目前的归档情况。协会已经整理自 2007 年以来的大部分历史资料。
+- [m1ngsama](https://github.com/m1ngsama) 介绍 [NBTCA Documents](https://docs.nbtca.space) 的使用与目前的归档情况。协会已经整理自 2007 年以来的大部分历史资料。
 - 文档站可以搜索协会相关概念、人物与活动，也可以查看指南、维修资料、历史记录以及项目仓库说明。
 - 登录 GitHub 后，可以直接从网页编辑现有文档或新建文档，修改内容会通过 PR 提交并经过审核。
 - 针对现场提出的“如何新增文档”的问题，分享过程中演示了文档站的“新建一页”入口。
@@ -74,39 +71,39 @@ archive:
 ### 2. 报修与工单
 
 - 普通用户可以使用邮箱注册并提交报修，维修队通过工单系统以及群机器人查看待处理事项。
-- [m1ngsama](https://github.com/m1ngsama)建议维修队员在维修完成结单时写清楚电脑出现的问题以及具体处理经过，方便后续查询与经验积累。
+- [m1ngsama](https://github.com/m1ngsama) 建议维修队员在维修完成结单时写清楚电脑出现的问题以及具体处理经过，方便后续查询与经验积累。
 - 同时说明当前系统中联系人信息仅接单者可见。
 
 ### 3. 英文版文档
 
 - 小臭影提出是否可以为协会文档提供英文主页。
-- [m1ngsama](https://github.com/m1ngsama)认为技术上可以实现，但全文翻译、校对以及后续维护需要较多工作，目前实际使用需求和负责人员尚未明确，因此暂时没有列为确定任务。
+- [m1ngsama](https://github.com/m1ngsama) 认为技术上可以实现，但全文翻译、校对以及后续维护需要较多工作，目前实际使用需求和负责人员尚未明确，因此暂时没有列为确定任务。
 
 ### 4. HuajiBot.NET
 
-- [m1ngsama](https://github.com/m1ngsama)分享了 [HuajiBot.NET](https://github.com/nbtca/HuaJiBot.NET) 在不同 QQ 群和 Telegram 群中的使用方式。
+- [m1ngsama](https://github.com/m1ngsama) 分享了 [HuajiBot.NET](https://github.com/nbtca/HuaJiBot.NET) 在不同 QQ 群和 Telegram 群中的使用方式。
 - 机器人目前可以提供日程、聊天摘要、维修工单、项目通知等功能。
 - 不同群根据实际用途接收不同类型的通知，减少与群聊主题无关的信息刷屏。
 
 ### 5. Prompt
 
-- [m1ngsama](https://github.com/m1ngsama)现场演示了协会的命令行工具 [Prompt](https://github.com/nbtca/Prompt)。
+- [m1ngsama](https://github.com/m1ngsama) 现场演示了协会的命令行工具 [Prompt](https://github.com/nbtca/Prompt)。
 - 目前可以将课表导出为可直接导入日历的 ICS 文件，也可以通过命令查看协会活动、文档等信息。
-- [Prompt](https://github.com/nbtca/Prompt)后续仍会继续更新和补充功能。
+- [Prompt](https://github.com/nbtca/Prompt) 后续仍会继续更新和补充功能。
 
 ### 6. 协会日历
 
-- [Yuna-Celisse](https://github.com/Yuna-Celisse)介绍，目前 Roadmap 中的事项可以通过 Cloudflare Worker 定期生成 ICS 日历订阅源。
-- [Yuna-Celisse](https://github.com/Yuna-Celisse)介绍的更新频率约为每 15 分钟一次，可以通过日历应用直接查看协会项目与活动动态。
+- [Yuna-Celisse](https://github.com/Yuna-Celisse) 介绍，目前 Roadmap 中的事项可以通过 Cloudflare Worker 定期生成 ICS 日历订阅源。
+- [Yuna-Celisse](https://github.com/Yuna-Celisse) 介绍的更新频率约为每 15 分钟一次，可以通过日历应用直接查看协会项目与活动动态。
 - [OpenList](https://github.com/nbtca/OpenList) 和短链接等项目本次仅进行了简单介绍，后续有较大更新时再进行交流。
 
 ---
 
 ## 四、会后事项
 
-- [Egger0](https://github.com/Egger0)继续调整 [CABadge](https://github.com/nbtca/CABadge) 的硬件布局、外壳、电池适配以及固件和 UI，并逐步更新可供其他同学复刻的相关资料。
-- 后续筹备 [CABadge](https://github.com/nbtca/CABadge) 的 [CA102](/concepts/ca102.html) 公开分享，具体时间与组织方式待确定。
-- [Lan-Yur](https://github.com/Lan-Yuri)与维修队相关同学继续沟通下一次维修日的展示内容、设备需求以及人员分工。
+- [Egger0](https://github.com/Egger0) 继续调整 [CABadge](https://github.com/nbtca/CABadge) 的硬件布局、外壳、电池适配以及固件和 UI，并逐步更新可供其他同学复刻的相关资料。
+- 后续筹备 [CABadge](https://github.com/nbtca/CABadge) 的 [CA102](/concepts/ca102) 公开分享，具体时间与组织方式待确定。
+- [Lan-Yuri](https://github.com/Lan-Yuri) 与维修队相关同学继续沟通下一次维修日的展示内容、设备需求以及人员分工。
 - 维修队后续讨论拆机过程记录以及工单结单说明的具体执行方式。
 - 将本次会议录屏发送至 Active 群，会议纪要经相关同学核对后纳入协会文档归档。
 
@@ -116,7 +113,7 @@ archive:
 
 - 本次会议与会人员
   - [Egger0](https://github.com/Egger0)
-  - [Lan-Yur](https://github.com/Lan-Yuri)
+  - [Lan-Yuri](https://github.com/Lan-Yuri)
   - [m1ngsama](https://github.com/m1ngsama)
   - [sheepkinn](https://github.com/sheepkinn)
   - [Yuna-Celisse](https://github.com/Yuna-Celisse)
