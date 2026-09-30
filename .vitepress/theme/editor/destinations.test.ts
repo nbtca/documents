@@ -1,7 +1,7 @@
 import { globSync, readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { HUB_DOC_DIRS } from '../../../checks/content-contract'
-import { checklistFor, DESTINATIONS, draftSlug, frontmatterFor, pathFor, routeFor, slugProblem } from './destinations'
+import { checklistFor, DESTINATIONS, draftSlug, frontmatterFor, outlineFor, pathFor, routeFor, slugProblem } from './destinations'
 
 const AT = new Date('2026-09-07T04:00:00Z')
 const tutorial = DESTINATIONS.find(d => d.id === 'tutorial')!
@@ -78,6 +78,20 @@ describe('generated frontmatter', () => {
     expect(head).toMatch(/^ {2}source: "协会自有记录，随本仓库保存"$/m)
     expect(head).toContain('summary: "招新复盘: 两条路径"')
     expect(head).not.toContain('maintainers')
+  })
+})
+
+describe('meeting record outline', () => {
+  it('names the signed-in member as the recorder', () => {
+    expect(outlineFor(archived, 'sheepkinn')).toContain('- 记录员：[sheepkinn](https://github.com/sheepkinn)\n')
+  })
+
+  it('leaves the recorder blank without a GitHub identity', () => {
+    expect(outlineFor(archived, '本地开发')).toContain('- 记录员：\n')
+  })
+
+  it('carries no frontmatter, which is generated on submit', () => {
+    expect(outlineFor(archived, 'sheepkinn')).not.toMatch(/^---/m)
   })
 })
 

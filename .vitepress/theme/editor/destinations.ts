@@ -71,7 +71,7 @@ export const DESTINATIONS: Destination[] = [
     dated: true,
     what: '本届的会议纪要、活动记录，按年份归档',
     how: '网址以事情发生那天的日期开头；只记当时发生了什么，不补写事后的判断',
-    outline: '# \n\n:::info 会议信息\n\n- 时间：\n- 地点：\n- 记录员：\n\n:::\n',
+    outline: '# \n\n:::info 会议信息\n\n- 地点：\n- 时间：\n- 记录员：\n\n:::\n\n[[toc]]\n\n## 一、\n\n## 附录\n\n- 与会人员\n',
   },
 ]
 
@@ -105,13 +105,21 @@ export function routeFor(destination: Destination, slug: string): string {
   return `/${dirFor(destination, slug)}/${slug}`
 }
 
+const isLogin = (login: string) => /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(login)
+
+export function outlineFor(destination: Destination, login: string): string | undefined {
+  return isLogin(login)
+    ? destination.outline?.replace('- 记录员：', `- 记录员：[${login}](https://github.com/${login})`)
+    : destination.outline
+}
+
 export function frontmatterFor(
   destination: Destination,
   page: { login: string, slug: string, summary: string },
   now = new Date(),
 ): string {
   // Local development has no GitHub identity; leave something people notice.
-  const user = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(page.login) ? page.login : 'your-github-login'
+  const user = isLogin(page.login) ? page.login : 'your-github-login'
 
   if (destination.dated) {
     return `---\nsummary: ${JSON.stringify(page.summary)}\narchive:\n  date: "${page.slug.slice(0, 10)}"\n`
