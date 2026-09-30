@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useData, useRoute } from 'vitepress'
 import { computed, defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue'
+import { transcribedFrom } from './editor/archive'
 
 interface Maintainer {
   user: string
@@ -82,9 +83,10 @@ const hasContent = computed(() =>
 const hasOutboundLink = ref(false)
 
 function detectOutboundLink() {
-  if (typeof document === 'undefined' || !archive.value)
+  if (typeof document === 'undefined')
     return
-  hasOutboundLink.value = !!document.querySelector('.vp-doc a[href^="http"]:not([href*="nbtca.space"])')
+  hasOutboundLink.value = Boolean(archive.value && transcribedFrom(frontmatter.value))
+    && !!document.querySelector('.vp-doc a[href^="http"]:not([href*="nbtca.space"])')
 }
 
 onMounted(detectOutboundLink)
