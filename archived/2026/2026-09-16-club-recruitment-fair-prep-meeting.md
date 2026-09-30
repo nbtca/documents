@@ -3,8 +3,7 @@ summary: 计算机协会与电竞社一起讨论与分享百团大战的招新�
 archive:
   date: "2026-09-16"
   source: "协会自有记录，随本仓库保存"
-  transcriber: "sheepkinn"
-  transcribed: "2026.09"
+  author: "sheepkinn"
 ---
 
 # 2026.09.16 百团招新安排会议
