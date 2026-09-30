@@ -30,6 +30,7 @@ import {
   DESTINATIONS,
   draftSlug,
   frontmatterFor,
+  outlineFor,
   pathFor,
   placeholderFor,
   routeFor,
@@ -127,6 +128,8 @@ const slugIssue = computed(() => {
 const contentBlocker = computed(() => {
   if (!changed.value)
     return '还没有改动'
+  if (splitFrontmatter(draft.value.trimStart()).head)
+    return '开头的 --- 信息块会在提交时自动生成，请从正文里删掉'
   if (destination.value && !titled.value)
     return '正文第一行写 # 标题，它同时是页面标题和边栏上的名字'
   return ''
@@ -547,7 +550,7 @@ const TOOLS: { kind: Format, icon: Component, name: string, key?: string }[] = [
 ]
 
 function insertOutline() {
-  const outline = destination.value?.outline
+  const outline = destination.value && outlineFor(destination.value, member.value?.name ?? '')
   if (!outline)
     return
   // Land on the empty heading, which is the first thing to fill in.
@@ -733,6 +736,9 @@ function insertOutline() {
 
             <p v-if="problem" class="nb-edit-why is-bad">
               {{ problem }}
+            </p>
+            <p v-else-if="changed && contentBlocker" class="nb-edit-why">
+              {{ contentBlocker }}
             </p>
             <div ref="host" class="nb-edit-area" :class="{ 'is-busy': stage === 'submitting' }" />
             <input ref="picker" type="file" :accept="accepts" hidden @change="onPicked">
