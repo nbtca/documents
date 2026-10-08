@@ -144,7 +144,7 @@ Ventoy 的优势在于你可以在同一个 U 盘中同时放入 Windows 10、Wi
 4. 如果是 Ventoy，会先进入 Ventoy 菜单，选择对应的 Windows ISO 文件即可。
 
 :::tip 各品牌启动快捷键
-各厂商的 BIOS / Boot Manager 进入方式请参考 [维修操作指南 - 各厂商笔记本 BIOS/Boot Manager 入口](/repair/guide#各厂商笔记本-bios-boot-manager-一键恢复入口)。常见的如：联想 `F12`、华硕 `Esc`、惠普 `F9`、戴尔 `F12`。
+各厂商的 BIOS / Boot Manager 进入方式见[各厂商笔记本 BIOS、Boot Manager 与一键恢复入口](/repair/bios-keys)。常见的如：联想 `F12`、华硕 `Esc`、惠普 `F9`、戴尔 `F12`。
 :::
 
 :::info 无法识别 U 盘？

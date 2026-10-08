@@ -50,7 +50,7 @@ maintainers:
 
 ## 我的电脑有问题 / 想折腾电脑
 
-- C 盘满了 → [C 盘清理](/repair/guide#c盘清理)（在维修操作指南里）
+- C 盘满了 → [C 盘清理](/repair/c-drive-cleanup)
 - 要装机 → 先读[选配并组装一台电脑](/tutorial/manual/hardware-establish)选配组装，再[从零开始安装 Windows](/tutorial/manual/windows-from-scratch)
 - 想把系统用明白 → [维修常用的 Windows 操作](/tutorial/manual/os-skills)；上网与网络排障 → [上网、搜索与网络排障](/tutorial/manual/net-usage)
 - 自己搞不定 → 找[维修部](/repair/)
