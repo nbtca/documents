@@ -44,6 +44,10 @@
   background: var(--vp-c-text-3);
 }
 
+.vp-doc li.nb-task {
+  list-style: none;
+}
+
 .vp-doc table:has(input[type='checkbox']) th,
 .vp-doc table:has(input[type='checkbox']) td {
   white-space: nowrap;
