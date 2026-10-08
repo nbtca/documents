@@ -68,7 +68,7 @@ maintainers:
 
 ### 蓝屏等故障的排查
 
-根据报错故障代码以及机主蓝屏前的操作（包括但不限于 Windows 更新，硬件驱动更新）来确定问题。造成蓝屏的问题有很多种，具体故障代码可参考 [微软官方文档](https://learn.microsoft.com/)来大致确定问题。
+根据报错故障代码以及机主蓝屏前的操作（包括但不限于 Windows 更新，硬件驱动更新）来确定问题。造成蓝屏的问题有很多种，具体故障代码可参考 [微软的错误检查代码参考](https://learn.microsoft.com/zh-cn/windows-hardware/drivers/debugger/bug-check-code-reference2)来大致确定问题。
 
 #### 系统文件损坏导致的蓝屏
 
