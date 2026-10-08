@@ -9,7 +9,7 @@ maintainers:
 
 本文面向维修队成员，聚焦维修与排障中最常用的 Windows 系统操作：文件管理、任务管理器、系统设置、命令行与故障排查。
 
-操作系统的选择因人而异（Windows 偏游戏、Linux 偏服务器、macOS 多随苹果设备）；Windows 的安装另见[从零开始安装 Windows](./windows-from-scratch)。
+操作系统的选择因人而异（Windows 偏游戏、Linux 偏服务器、macOS 多随苹果设备）；Windows 的安装另见[从零开始安装 Windows](/tutorial/manual/windows-from-scratch)。
 
 ## Windows 文件管理基础
 
@@ -68,7 +68,7 @@ maintainers:
 
 ## 系统设置与控制面板
 
-Windows 同时存在"设置"应用和传统"控制面板"，两者功能有交叉但各有侧重。
+Windows 同时存在“设置”应用和传统“控制面板”，两者功能有交叉但各有侧重。
 
 ### 设置（Settings）
 
@@ -82,7 +82,7 @@ Windows 同时存在"设置"应用和传统"控制面板"，两者功能有交�
 
 ### 控制面板（Control Panel）
 
-通过搜索"控制面板"打开，包含一些设置应用中尚未迁移的功能：
+通过搜索“控制面板”打开，包含一些设置应用中尚未迁移的功能：
 
 - **程序和功能**：卸载程序（比设置中的应用列表更详细）；
 - **网络和共享中心**：详细的网络适配器设置和诊断；
@@ -91,7 +91,7 @@ Windows 同时存在"设置"应用和传统"控制面板"，两者功能有交�
 
 ### 设备管理器
 
-设备管理器是维修人员使用频率极高的工具：
+维修时经常要用设备管理器：
 
 - 打开方式：右键开始菜单 → 设备管理器，或 `Win + X` → 设备管理器；
 - 设备名称前出现黄色感叹号表示驱动异常；
@@ -104,8 +104,8 @@ Windows 同时存在"设置"应用和传统"控制面板"，两者功能有交�
 
 ### CMD（命令提示符）
 
-- 打开方式：搜索"cmd"或 `Win + R` 输入 `cmd`；
-- 以管理员身份运行：搜索"cmd"后右键选择“以管理员身份运行”；
+- 打开方式：搜索“cmd”或 `Win + R` 输入 `cmd`；
+- 以管理员身份运行：搜索“cmd”后右键选择“以管理员身份运行”；
 
 常用命令：
 
@@ -132,9 +132,9 @@ shutdown /r /t 0
 
 ### PowerShell
 
-PowerShell 是 Windows 更强大的命令行工具，兼容大部分 CMD 命令并提供更丰富的功能：
+PowerShell 是 Windows 的另一个命令行工具，兼容大部分 CMD 命令：
 
-- 打开方式：搜索"PowerShell"或 `Win + X` → Windows 终端；
+- 打开方式：搜索“PowerShell”或 `Win + X` → Windows 终端；
 - PowerShell 使用 cmdlet（如 `Get-Process`、`Get-Service`）格式的命令；
 - 推荐使用 Windows Terminal 作为统一的终端界面，支持多标签页和自定义外观。
 
