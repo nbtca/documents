@@ -177,14 +177,14 @@ Remove-Item "C:\Source\Folder_backup" -Recurse -Force
 
 系统自带的“磁盘管理”通常做不到这件事：给 C 盘扩容要求未分配空间**紧邻 C 盘右侧**，而压缩 D 盘腾出的空间夹在 D 盘内部、与 C 盘不相邻。DiskGenius 这类分区工具能无损移动分区，把空间挪到 C 盘旁边再合并。
 
+> ⚠ 操作前务必提前备份重要数据！建议在 [PE 环境](/concepts/winpe) 下操作。
+
 将 D 盘多余空间分配给 C 盘：
 
 1. 运行 DiskGenius
 2. 选择 D 盘 → 调整分区大小
 3. 将多余空间分配给 C 盘
 4. 应用更改并重启
-
-> ⚠ 操作前务必提前备份重要数据！建议在 [PE 环境](/concepts/winpe) 下操作。
 
 ## 重新安装 Windows
 
