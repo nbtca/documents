@@ -53,4 +53,4 @@ maintainers:
 
 ## 更深的老手册
 
-维修常用的深入手册——[计算机硬件系统的搭建与维护](/tutorial/manual/hardware-establish)、[从零开始安装 Windows](/tutorial/manual/windows-from-scratch)、[操作系统技能](/tutorial/manual/os-skills)——已整理进教程栏，仍在逐步重写完善，欢迎来补。
+维修常用的深入手册——[选配并组装一台电脑](/tutorial/manual/hardware-establish)、[从零开始安装 Windows](/tutorial/manual/windows-from-scratch)、[操作系统技能](/tutorial/manual/os-skills)——已整理进教程栏，仍在逐步重写完善，欢迎来补。

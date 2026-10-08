@@ -183,6 +183,6 @@ git push origin add-my-first-blog
 - Markdown 预览插件：[Markdown Preview Enhanced](https://github.com/shd101wyy/markdown-preview-enhanced)
 - Git 图形界面工具：[GitHub Desktop](https://desktop.github.com/)、[Sourcetree](https://www.sourcetreeapp.com/)
 
-## 结语
+## 等待合并
 
 当仓库管理员完成 [Review](https://github.com/features/code-review) 后，你的提交就可以 [Merge](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/merging-a-pull-request) 进主仓库了。

@@ -271,7 +271,7 @@ oobe\bypassnro
 
 ## 台式电脑的组装和维修
 
-台式机的选件、组装顺序与安装后测试，另见[计算机硬件系统的搭建与维护](/tutorial/manual/hardware-establish)。
+台式机的选件、组装顺序与安装后测试，另见[选配并组装一台电脑](/tutorial/manual/hardware-establish)。
 
 [装机教程（bilibili：硬件茶谈）](https://www.bilibili.com/video/BV1Vv411n7x8)
 
