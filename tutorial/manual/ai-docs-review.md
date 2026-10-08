@@ -37,7 +37,7 @@ Copy-Item -Recurse skills\skills\nbtca-docs-review "$HOME\.claude\skills\"
 
 :::
 
-Windows 的写法未经实测。用别的 agent 时，把目的地换成它自己的 skills 目录，位置查它的文档。`git clone` 连不上 GitHub 的话，见[国际互联网的使用](/tutorial/manual/net-usage)。
+Windows 的写法未经实测。用别的 agent 时，把目的地换成它自己的 skills 目录，位置查它的文档。`git clone` 连不上 GitHub 的话，见[上网、搜索与网络排障](/tutorial/manual/net-usage)。
 
 **看到什么算成功**：`~/.claude/skills/nbtca-docs-review/` 下有一个 `SKILL.md` 和一个 `references` 文件夹。
 
