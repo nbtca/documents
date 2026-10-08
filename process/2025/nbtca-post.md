@@ -186,3 +186,7 @@ git push origin add-my-first-blog
 ## 等待合并
 
 当仓库管理员完成 [Review](https://github.com/features/code-review) 后，你的提交就可以 [Merge](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/merging-a-pull-request) 进主仓库了。
+
+当你第一次成功合并 PR 时：
+
+> 恭喜你，🎉 你正式成为了开源协作的一员！
