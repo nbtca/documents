@@ -94,5 +94,6 @@ https://docs.nbtca.space/tutorial/manual/writing-documents
 ## 也读一读
 
 - [写一页文档](/tutorial/manual/writing-documents)，提交流程
+- [让 AI 审一页文档](/tutorial/manual/ai-docs-review)，写完之后让 agent 按本站的写法审一遍
 - [Markdown](/tutorial/markdown)，语法与本站的检查
 - [VitePress](/tutorial/vitepress)，本站的扩展写法与验证方式
