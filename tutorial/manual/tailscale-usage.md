@@ -240,7 +240,7 @@ services:
 
 ```bash
 # 创建状态目录
-mkdir -p tailscale-state
+mkdir -p tailscale-data
 
 # 启动容器
 docker-compose up -d
