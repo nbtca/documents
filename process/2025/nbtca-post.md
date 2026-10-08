@@ -7,11 +7,7 @@ maintainers:
 
 # 撰写并发布你的第一篇 NBTCA 博客
 
-本指南带你用最主流的开源协作方式——**Git + Markdown + Pull Request**——撰写并发布你的第一篇 [NBTCA](/about/what-is-nbtca) 博客。若只想了解通用的 Git 协作流程，见[快速上手 GitHub 工作流](/tutorial/manual/github-workflow)；本文在其基础上，讲博客投稿特有的部分。
-
-目标是：
-
-> 让每位新社员都能独立完成一篇博客投稿流程。
+本指南带你用 Git、Markdown 和 Pull Request 撰写并发布你的第一篇 [NBTCA](/about/what-is-nbtca) 博客。若只想了解通用的 Git 协作流程，见[快速上手 GitHub 工作流](/tutorial/manual/github-workflow)；本文在其基础上，讲博客投稿特有的部分。
 
 ## 流程
 
@@ -190,7 +186,3 @@ git push origin add-my-first-blog
 ## 结语
 
 当仓库管理员完成 [Review](https://github.com/features/code-review) 后，你的提交就可以 [Merge](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/merging-a-pull-request) 进主仓库了。
-
-当你第一次成功合并 PR 时：
-
-> 恭喜你，🎉 你正式成为了开源协作的一员！
