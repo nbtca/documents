@@ -57,6 +57,22 @@ export function applyEditorialRules(md: MarkdownIt): void {
     }
   })
 
+  md.core.ruler.push('task_list', (state) => {
+    const tokens = state.tokens
+    for (let i = 2; i < tokens.length; i++) {
+      const first = tokens[i].children?.[0]
+      const mark = first?.type === 'text' ? first.content.match(/^\[([ x])\] /i) : null
+      if (!first || !mark || tokens[i - 2].type !== 'list_item_open')
+        continue
+
+      first.content = first.content.slice(mark[0].length)
+      const box = new state.Token('html_inline', '', 0)
+      box.content = `<input type="checkbox"${mark[1] === ' ' ? '' : ' checked'}> `
+      tokens[i].children!.unshift(box)
+      tokens[i - 2].attrJoin('class', 'nb-task')
+    }
+  })
+
   const renderText = md.renderer.rules.text
     ?? ((tokens, idx) => md.utils.escapeHtml(tokens[idx].content))
 
