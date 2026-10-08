@@ -142,15 +142,15 @@ Tailscale 是一个基于 [WireGuard](https://www.wireguard.com/) 的零配置�
 
 1. **安装应用**
 
-   在 Google Play 商店搜索 "Tailscale" 并安装，或从 [F-Droid](https://f-droid.org/) 下载开源版本。
+   在 Google Play 商店搜索 “Tailscale” 并安装，或从 [F-Droid](https://f-droid.org/) 下载开源版本。
 
 2. **配置自定义服务器**
    - 打开 Tailscale 应用
    - 点击右上角的设置图标
    - 选择Accounts，点右上方三个点
-   - 选择 "Use an alternate server"
+   - 选择 “Use an alternate server”
    - 输入社团提供的 Headscale 服务器地址
-   - 点击 "Sign in"
+   - 点击 “Sign in”
 
 3. **完成认证**
 
@@ -160,15 +160,15 @@ Tailscale 是一个基于 [WireGuard](https://www.wireguard.com/) 的零配置�
 
 1. **安装应用**
 
-   在 App Store 搜索 "Tailscale" 并安装。
+   在 App Store 搜索 “Tailscale” 并安装。
 
 2. **配置自定义服务器**
    - 打开 Tailscale 应用
    - 点击右上角的设置图标（齿轮）
    - 点击账户 `Accounts`
-   - 选择 "Use custom coordination server"
+   - 选择 “Use custom coordination server”
    - 输入社团提供的 Headscale 服务器地址 `https://headscale.app.nbtca.space`
-   - 点击 "Sign in"
+   - 点击 “Sign in”
 
 ## 使用 Docker Compose 部署
 
