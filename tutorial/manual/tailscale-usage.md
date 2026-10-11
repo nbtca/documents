@@ -7,7 +7,7 @@ maintainers:
 
 # 社团自建 Tailscale 使用指南
 
-社团自建了一套 Tailscale（基于开源的 Headscale），成员用它从任何网络安全地访问计协内部服务。这份指南讲它怎么工作、各平台客户端怎么接入，以及连不上时怎么排查。
+社团自建了一套 Tailscale（基于开源的 Headscale），成员用它从任何网络安全地访问计协内部服务。这份指南讲它怎么工作、各平台客户端怎么接入，以及代理软件冲突等常见问题怎么处理。
 
 ## 什么是 Tailscale
 
@@ -142,15 +142,15 @@ Tailscale 是一个基于 [WireGuard](https://www.wireguard.com/) 的零配置�
 
 1. **安装应用**
 
-   在 Google Play 商店搜索 "Tailscale" 并安装，或从 [F-Droid](https://f-droid.org/) 下载开源版本。
+   在 Google Play 商店搜索 “Tailscale” 并安装，或从 [F-Droid](https://f-droid.org/) 下载开源版本。
 
 2. **配置自定义服务器**
    - 打开 Tailscale 应用
    - 点击右上角的设置图标
    - 选择Accounts，点右上方三个点
-   - 选择 "Use an alternate server"
+   - 选择 “Use an alternate server”
    - 输入社团提供的 Headscale 服务器地址
-   - 点击 "Sign in"
+   - 点击 “Sign in”
 
 3. **完成认证**
 
@@ -160,15 +160,15 @@ Tailscale 是一个基于 [WireGuard](https://www.wireguard.com/) 的零配置�
 
 1. **安装应用**
 
-   在 App Store 搜索 "Tailscale" 并安装。
+   在 App Store 搜索 “Tailscale” 并安装。
 
 2. **配置自定义服务器**
    - 打开 Tailscale 应用
    - 点击右上角的设置图标（齿轮）
    - 点击账户 `Accounts`
-   - 选择 "Use custom coordination server"
+   - 选择 “Use custom coordination server”
    - 输入社团提供的 Headscale 服务器地址 `https://headscale.app.nbtca.space`
-   - 点击 "Sign in"
+   - 点击 “Sign in”
 
 ## 使用 Docker Compose 部署
 
@@ -240,7 +240,7 @@ services:
 
 ```bash
 # 创建状态目录
-mkdir -p tailscale-state
+mkdir -p tailscale-data
 
 # 启动容器
 docker-compose up -d
@@ -287,6 +287,8 @@ dns:
 ```
 
 对于获取的订阅不同，DIRECT的写法可能不同，例如SkyLinkX提供的服务其direct写法为🎯Direct。
+
+还是连不上，就在群里问，或者联系社团管理员。
 
 ## 进阶使用
 
