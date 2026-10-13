@@ -50,7 +50,7 @@ maintainers:
 - 👩‍🔧 技术文档（Technical documentation）
   - [蓝屏错误码速查表](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/%E8%93%9D%E5%B1%8F%E9%80%9F%E6%9F%A5%E8%A1%A8.xlsx) 适用于 Windows 系统报错需要重启，显示蓝屏时的问题诊断
 
-- 📑 教程、书籍 (Tutorials): 各类书籍、技术教程，帮助您快速掌握新技术、学习新思想。
+- 📑 教程、书籍 (Tutorials): 各类书籍、技术教程。
   - [Win11 快捷键](https://i.nbtca.space/files/维修队工具包/Repair/Win11使用快捷键.pdf) Windows 11 系统使用快捷键，帮助用户快速进行操作。
   - [Go 程序设计语言](https://i.nbtca.space/files/Resources/Documentation/Tutorials/Go%20程序设计语言.pdf) GO 程序设计教程
   - [编码：隐匿在计算机软硬件背后的语言](https://i.nbtca.space/files/Resources/Documentation/Tutorials/编码：隐匿在计算机软硬件背后的语言（美）佩措尔德.pdf) （美）佩措尔德
@@ -110,9 +110,9 @@ maintainers:
 - [全局搜索](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/%E5%85%A8%E5%B1%80%E6%90%9C%E7%B4%A2___Everything-1.4.1.1024.x86-Setup.exe) 更好用的搜索 比在文件资源管理器内搜索更方便
 - [vWizTree](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/%E6%96%87%E4%BB%B6%E5%8D%A0%E7%94%A8%E6%9F%A5%E7%9C%8B____WizTree.rar) 文件占用可视化软件，可用图形表示文件所占据的硬盘空间。
 - [windirstat](https://i.nbtca.space/files/%E7%BB%B4%E4%BF%AE%E9%98%9F%E5%B7%A5%E5%85%B7%E5%8C%85/Repair/%E6%96%87%E4%BB%B6%E5%8D%A0%E7%94%A8%E6%9F%A5%E7%9C%8B___windirstat.exe) 文件占用查看。
-- [FolderMove](https://i.nbtca.space/files/维修队工具包/Repair/FolderMove.exe) 文件搬运工具，可以非常方便的把一个文件传输到其他位置，支持批量操作和快速搜索，比系统自带的搜索要快上非常多。
+- [FolderMove](https://i.nbtca.space/files/维修队工具包/Repair/FolderMove.exe) 文件搬运工具，把文件转移到其他位置，支持批量操作和快速搜索。
 - [FreeMove](https://i.nbtca.space/files/维修队工具包/Repair/FreeMove.exe) 简单易用的文件转移工具，软件占用内存极少，解压既可使用，高效便捷且界面简洁在C盘空间不足、安装软件过多时候就能使用，可以让用户们自行选择是否对硬盘进行清理临时文件夹、历史记录、回收站等操作。
-- [Everything](https://i.nbtca.space/files/维修队工具包/Repair/全局搜索___Everything-1.4.1.1024.x86-Setup.exe) 强大的文件搜索工具，帮助您快速定位计算机上的文件和文件夹。凭借其小的安装文件、干净而简单的用户界面、快速的文件索引和快速搜索能力，Everything 使得找到您要寻找的内容变得轻松。
+- [Everything](https://i.nbtca.space/files/维修队工具包/Repair/全局搜索___Everything-1.4.1.1024.x86-Setup.exe) 搜索电脑上的文件和文件夹。
 - [DiskGenius Pro](https://i.nbtca.space/files/维修队工具包/Repair/磁盘分区修改___DiskGenius-Pro-5.6.1.1580-x64-Chs.exe) 数据恢复、磁盘分区管理、备份和还原以及其他磁盘功能的全面解决方案。
 - [Geek Uninstaller](https://i.nbtca.space/files/维修队工具包/Repair/软件删除____geek.exe) —— [官网链接](https://geekuninstaller.com) 一款体积小、功能强大的电脑软件卸载工具，可以有效保证卸载时无残留，提高电脑运行速度。Geek Uninstaller还支持多语言、强制卸载、注册表清理、搜索功能等。
 - [CrystalDiskMark](https://i.nbtca.space/files/维修队工具包/Repair/磁盘检测跑分______CrystalDiskMark8_0_6--CrystalDiskInfo9_5_0.rar) 磁盘检测跑分软件。
@@ -141,10 +141,8 @@ maintainers:
 
 ## ☎️ 联系我们 (Contact Us)
 
-如果您有任何问题或建议，欢迎通过邮箱或其他方式联系我们。
+有问题或建议，可以通过下面的方式联系我们。
 
 - 📧 邮箱：<contact@nbtca.com>
 - 🌐 GitHub：github.com/nbtca
 - 🐧 QQ群：906370401
-
-感谢您的访问，祝您使用愉快！😊
