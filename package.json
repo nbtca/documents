@@ -26,7 +26,7 @@
   "dependencies": {
     "@jsquash/webp": "1.5.0",
     "@lucide/vue": "^1.48.0",
-    "vue": "^3.5.17"
+    "vue": "^3.5.42"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^6.2.0",
@@ -63,12 +63,13 @@
     "overrides": {
       "@humanfs/node": "^0.16.8",
       "ajv": "^6.14.0",
-      "brace-expansion@1": "^1.1.16",
-      "brace-expansion@2": "^2.1.2",
+      "brace-expansion@1": "^1.1.21",
+      "brace-expansion@2": "^2.1.7",
       "browserslist": "^4.28.8",
-      "dompurify": "^3.4.13",
+      "dompurify": "^3.4.16",
       "flatted": "^3.4.2",
       "js-yaml": "^4.3.2",
+      "katex": "^0.18.2",
       "linkify-it": "^5.0.2",
       "lodash": "^4.18.1",
       "markdown-it": "^14.3.1",
@@ -78,7 +79,8 @@
       "nanoid": "^3.3.18",
       "picomatch": "^4.0.4",
       "postcss": "^8.5.23",
-      "postcss-selector-parser@6": "^6.1.4",
+      "postcss-selector-parser": "^7.1.6",
+      "source-map-js": "^1.2.2",
       "vitepress-plugin-mermaid>mermaid": "^11.16.1",
       "yaml": "^2.8.3"
     }
