@@ -2,12 +2,19 @@
 
 ## Local setup
 
-Node.js 22, pnpm 9.
+You need Node.js 22 and pnpm 9.
 
-```bash
-pnpm install
-pnpm docs:dev
-```
+1. Install the dependencies:
+
+   ```bash
+   pnpm install
+   ```
+
+2. Start the development server:
+
+   ```bash
+   pnpm docs:dev
+   ```
 
 ## Layout
 
@@ -23,32 +30,40 @@ checks/                 contracts, asset manifest, dist verifier
 functions/              Pages Functions
 ```
 
-`pnpm docs:dev` gives a working in-page editor that reads and writes local
-files, including images. Deployed, it signs in through a GitHub OAuth App and
-opens a pull request from the member's own fork. Images inserted there are
-uploaded when the edit is submitted, and the page keeps a `/media/…` reference
-instead of a file in the repository. An abandoned draft never uploads.
+`pnpm docs:dev` gives an in-page editor. It reads and writes local files, including images.
 
-Deployment settings on the Pages project:
+The deployed editor works differently:
 
-- `GITHUB_CLIENT_SECRET` — GitHub OAuth App secret. The client id is public and lives in the source. An upload is accepted only when that secret can vouch for the editor's token.
-- R2 binding `MEDIA` — bucket for those uploads. `GET /media/…` reads the object back. The name is not `ASSETS`: Pages already uses that for the site files, and a second binding with the same name fails the deploy. Without `MEDIA`, uploads answer 503 and the rest of the site keeps working. Existing pictures stay in the repository.
+- It signs in through a GitHub OAuth App.
+- It opens a pull request from the member's own fork.
+- It uploads inserted images when the member submits the edit. The page keeps a `/media/…` reference, not a file in the repository.
+- It does not upload images from a draft that the member does not submit.
 
-The build also publishes every page's markdown source under `/docs-api/raw/<path>`, listed with its git blob sha in `/docs-api/index.json`. The [Prompt](https://github.com/nbtca/Prompt) terminal client reads them there because GitHub is unreachable from much of mainland China. The index has the shape of GitHub's recursive tree response, so keep both URLs and that shape stable.
+The Pages project needs these deployment settings:
+
+- `GITHUB_CLIENT_SECRET`: the secret of the GitHub OAuth App. The client ID is public and is in the source. The server accepts an upload only when this secret can verify the editor's token.
+- R2 binding `MEDIA`: the bucket for the uploads. `GET /media/…` reads the object. Do not name the binding `ASSETS`. Pages uses `ASSETS` for the site files, and a second binding with the same name makes the deploy fail. If `MEDIA` is missing, uploads return 503 and the rest of the site continues to work. Existing images stay in the repository.
+
+The build also publishes the markdown source of each page at `/docs-api/raw/<path>`. `/docs-api/index.json` lists each source with its git blob SHA. The [Prompt](https://github.com/nbtca/Prompt) terminal client reads the sources there, because much of mainland China cannot reach GitHub. The index has the same shape as GitHub's recursive tree response.
+
+> [!CAUTION]
+> Do not change these two URLs or the shape of the index. Prompt reads them, and a change breaks Prompt.
 
 ## Where content goes
 
-- `about/`, `tutorial/`, `process/` and `archived/` build their sidebars by scanning the directory. Add a markdown file and it appears; nothing else to edit.
-- `repair/` and `concepts/` carry no sidebar. Link a new page from its section index; search covers the rest.
-- `archived/` holds two kinds of page, told apart by `archive.source`. A page transcribed from an original follows that original word for word, typos included — correct the transcription, never the source. A page whose source is `协会自有记录` is this association's own record, filed by year, and reads like any other page.
+- `about/`, `tutorial/`, `process/` and `archived/` build their sidebars from the files in the directory. When you add a markdown file, it appears in the sidebar. You do not edit anything else.
+- `repair/` and `concepts/` have no sidebar. Link each new page from its section index. Search finds the other pages.
+- `archived/` has two types of page. The `archive.source` field shows the type:
+  - A page transcribed from an original document follows that original word for word, including its typos. Correct errors in the transcription. Do not correct the original.
+  - A page with the source `协会自有记录` is the association's own record. It is filed by year and is written like any other page.
 
-Scanned entries take their label from the page's H1 and sort by `order` in frontmatter, then by title. A page without `order` sorts to the end of its group.
+Each sidebar entry gets its label from the H1 of the page. Entries sort by `order` in the frontmatter, then by title. A page without `order` goes to the end of its group.
 
-Internal links start with `/`. Renaming a page means updating every reference to it, and published URLs stay put.
+Internal links start with `/`. When you rename a page, update every link to it. Do not change published URLs.
 
 ## Maintainers
 
-Every page outside `archived/` names one in frontmatter. The tests reject a page that omits it or dates it wrong.
+Each page outside `archived/` names a maintainer in its frontmatter. The tests reject a page that has no maintainer or has an incorrect date.
 
 ```yaml
 ---
@@ -58,9 +73,11 @@ maintainers:
 ---
 ```
 
-Archived pages carry `archive:` instead, where `transcriber` names who typed the original up.
+Archived pages use `archive:` instead. Its `transcriber` field names the person who typed the original.
 
-## Before pushing
+## Before you push
+
+Run these four checks. All four must pass:
 
 ```bash
 pnpm run ci:lint
@@ -69,8 +86,16 @@ pnpm docs:build
 pnpm run ci:verify
 ```
 
-Commits follow Conventional Commits. Code, comments and repository files are in English; Chinese is for the documents themselves.
+Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/). Write code, comments and repository files in English. Write the documents in Chinese.
+
+The pages follow the writing rules of [ASD-STE100](https://www.asd-ste100.org/). Use only three admonition types:
+
+| Syntax             | Use                                                  |
+| ------------------ | ---------------------------------------------------- |
+| `::: danger 警告`  | The procedure can cause injury.                      |
+| `::: warning 注意` | The procedure can cause damage to equipment or data. |
+| `::: info 注`      | Information only. No commands.                       |
 
 ## Pull requests
 
-One concern per PR — content, navigation, CI and assets apart. The template asks what changed and what you ran.
+Each pull request has one subject. Keep content, navigation, CI and assets in separate pull requests. The template asks what you changed and which checks you ran.
