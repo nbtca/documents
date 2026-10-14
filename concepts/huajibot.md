@@ -6,7 +6,7 @@ maintainers:
 
 # HuaJiBot.NET
 
-HuaJiBot.NET 是 NBTCA 的群机器人，群里显示为“NBTCA Bot”，用 C# 在 .NET 10 上编写。它采用插件式架构：适配器负责连接 QQ、Telegram 等聊天平台，插件负责把维修工单、GitHub 动态、活动提醒推送进群，也能在群里查询日程、和 Minecraft 服务器互通消息。前身是已归档的 Go 版 [huaji-bot](https://github.com/nbtca/huaji-bot)。
+HuaJiBot.NET 是 NBTCA 的群机器人，群里显示为“NBTCA Bot”，用 C# 在 .NET 10 上编写。它使用插件式架构。适配器连接 QQ、Telegram 等聊天平台。插件把维修工单、GitHub 动态和活动提醒推送到群里，也可以在群里查询日程，或与 Minecraft 服务器互通消息。前身是已归档的 Go 版 [huaji-bot](https://github.com/nbtca/huaji-bot)。
 
 <FactStrip :facts="[
   { label: '技术', value: 'C# · .NET 10' },

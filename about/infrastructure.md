@@ -7,7 +7,7 @@ maintainers:
 
 # 基础设施与项目
 
-NBTCA 的线上那一面，是一个持续运转的开源社区：几台自建服务器、一批跑在 Cloudflare 上的无服务函数，和几十个公开在 [github.com/nbtca](https://github.com/nbtca) 上的项目，共同支撑着维修、活动、宣传和日常协作。仍在活跃开发的项目各有一篇词条，写明它做什么、怎么在本地跑起来、有哪些适合上手的任务。
+NBTCA 的线上部分是一个持续运行的开源社区。几台自建服务器、一批运行在 Cloudflare 上的无服务器函数，以及 [github.com/nbtca](https://github.com/nbtca) 上的几十个公开项目，共同支持维修、活动、宣传和日常协作。每个仍在开发的项目都有一篇词条，说明它的用途、在本地运行的方法，以及适合新人的任务。
 
 〔仓库会新增、合并或停更，这页只是某一刻的快照。**最后核对：2026-09**；以 [github.com/nbtca](https://github.com/nbtca) 上的实际情况为准。标注“私有”的仓库只对组织成员开放，非成员点进去会看到 404，不是链接失效。〕
 
@@ -69,4 +69,4 @@ NBTCA 的线上那一面，是一个持续运转的开源社区：几台自建�
 
 每篇项目词条的“参与开发”一节都列了本地运行步骤和适合上手的任务，挑一个感兴趣的开始即可。提交代码的流程见 [GitHub 工作流](/tutorial/manual/github-workflow)，跨项目的事务在 [Roadmap](/concepts/roadmap) 上跟踪。
 
-以上之外，组织里还有一批已经停更的实验项目，比如 2023 年的聊天室 pit 系列、内网主页 Welcome 与 win-panel，以及照片整理、DNS 同步等小工具；完整清单见 [github.com/nbtca](https://github.com/nbtca)。
+此外，组织中还有一批已经停止更新的实验项目，例如 2023 年的聊天室 pit 系列、内网主页 Welcome 和 win-panel，以及照片整理、DNS 同步等小工具。完整清单见 [github.com/nbtca](https://github.com/nbtca)。

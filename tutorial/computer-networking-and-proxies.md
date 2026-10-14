@@ -151,7 +151,7 @@ Remove-Item Env:http_proxy, Env:https_proxy -ErrorAction SilentlyContinue
 
 把 `PORT` 换成你本机代理实际监听的端口。这样设只对当前窗口有效，关掉窗口就没了。
 
-想让每个新窗口都带上，你可以写进 shell 的启动文件，代价是代理没运行时所有联网命令都会指向一个无人监听的端口而失败。更稳妥的做法是定义两个开关函数，需要时才打开，写法见[终端、shell 与 PATH](/tutorial/terminal-shell-and-path#按需开关代理)。PowerShell 里对应的位置是 `$PROFILE`，见 [about_profiles](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles)。
+要让每个新窗口都使用代理，可以把设置写进 shell 的启动文件。但代理没有运行时，所有联网命令都会连接一个没有程序监听的端口，因此全部失败。更稳妥的方法是定义两个开关函数，需要时才打开代理，写法见[终端、shell 与 PATH](/tutorial/terminal-shell-and-path#按需开关代理)。PowerShell 里对应的位置是 `$PROFILE`，见 [about_profiles](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles)。
 
 在 Windows 上永久写进你的用户账户：
 

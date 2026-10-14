@@ -59,7 +59,7 @@ endDateExclusive: 2026-09-15
 
 ## nbtcal 库
 
-[@nbtca/nbtcal](https://www.npmjs.com/package/@nbtca/nbtcal) 是读取上述订阅源的 TypeScript 库，唯一的运行时依赖是 [ical.js](https://github.com/kewisch/ical.js)，负责解析 ICS、展开重复事件、按日期查询、生成热力图数据和输出 ICS：
+[@nbtca/nbtcal](https://www.npmjs.com/package/@nbtca/nbtcal) 是读取上述订阅源的 TypeScript 库。它唯一的运行时依赖是 [ical.js](https://github.com/kewisch/ical.js)。它负责解析 ICS、展开重复事件、按日期查询、生成热力图数据和输出 ICS：
 
 ```ts
 import { loadCalendar } from '@nbtca/nbtcal'
@@ -74,7 +74,7 @@ const upcoming = calendar.upcoming({ days: 30 })
 npm install @nbtca/nbtcal
 ```
 
-需要先讨论的：nbtcal 靠带 `[NBT]` 前缀的“秋季学期开始上课”等标题推断开学第一周，但校历拆出去之后，两个订阅源里都已经没有这类标题，推断会落空，Prompt 课表页因此需要手动填开学日期。修复要同时改库和数据约定。
+需要先讨论的：nbtcal 用带 `[NBT]` 前缀的“秋季学期开始上课”等标题推断开学的第一周。校历拆分出去之后，两个订阅源中都没有这类标题了，推断因此失败。所以 Prompt 的课表页需要手动填写开学日期。修复要同时改库和数据约定。
 
 维护者是 [m1ngsama](https://github.com/m1ngsama)。仓库地址：[github.com/nbtca/nbtcal](https://github.com/nbtca/nbtcal)。
 

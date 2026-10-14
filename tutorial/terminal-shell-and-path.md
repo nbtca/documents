@@ -47,7 +47,7 @@ Windows 上还要分清两代。系统自带的是 **Windows PowerShell 5.1**，
 
 > Alias → Function → Cmdlet → External executable files
 
-别名排在最前面。这解释了为什么在 Windows PowerShell 5.1 里敲 `curl` 跑的不是 curl，而是 `Invoke-WebRequest`——[该版本的文档](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/invoke-webrequest?view=powershell-5.1)明确列出它接受 `iwr`、`curl`、`wget` 三个别名，参数与真正的 curl 完全对不上。相关细节见[计算机网络与代理](/tutorial/computer-networking-and-proxies#powershell-用户要多注意两点)。
+别名排在最前面。所以在 Windows PowerShell 5.1 中输入 `curl`，运行的不是 curl，而是 `Invoke-WebRequest`。[该版本的文档](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/invoke-webrequest?view=powershell-5.1)列出它有 `iwr`、`curl`、`wget` 三个别名。它的参数与真正的 curl 完全不同。相关细节见[计算机网络与代理](/tutorial/computer-networking-and-proxies#powershell-用户要多注意两点)。
 
 查一个名字实际会跑什么：
 
@@ -194,7 +194,7 @@ Get-ChildItem Env:FOO
 
 假设 `file` 的值是 `my notes.md`，那么 `rm $file` 会被拆成两个参数，删掉 `my` 和 `notes.md` 两样东西。`rm "$file"` 才是你想要的。**给变量加双引号，当成默认习惯。**
 
-PowerShell 的规则不同，见 [about_quoting_rules](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_quoting_rules)：双引号内变量会展开，单引号内不会，但 PowerShell **不做按空格拆词**，所以上面那个删错文件的问题在 PowerShell 里不会发生。
+PowerShell 的规则不同，见 [about_quoting_rules](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_quoting_rules)。双引号中的变量会展开，单引号中的不会。PowerShell **不按空格拆分单词**，所以上面删错文件的问题不会在 PowerShell 中发生。
 
 ## Windows 上脚本跑不起来
 
