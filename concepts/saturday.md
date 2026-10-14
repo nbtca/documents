@@ -40,7 +40,7 @@ Saturday 是 NBTCA 维修服务的后端 API，用 Go 编写，部署在 [api.nb
 
 ## 架构
 
-分层清楚，新人建议按这个顺序读：`main.go` 读配置、启动服务 → `router/main.go` 路由表 → `util/event-action.go` 状态机 → `service/event.go` 里的 `Act`，一个动作的校验、落库、通知都在这里 → `repo/event.go` 数据库访问 → `middleware/huma_helpers.go` 登录与角色。
+代码分层清楚。新人按这个顺序阅读：`main.go` 读配置、启动服务 → `router/main.go` 路由表 → `util/event-action.go` 状态机 → `service/event.go` 里的 `Act`，一个动作的校验、落库、通知都在这里 → `repo/event.go` 数据库访问 → `middleware/huma_helpers.go` 登录与角色。
 
 - **HTTP 层**：[Huma v2](https://huma.rocks/) 搭在 [chi](https://go-chi.io/) 路由上，接口定义即文档，`/docs` 与 `/openapi.json` 自动生成；
 - **数据库**：PostgreSQL，经 [sqlx](https://jmoiron.github.io/sqlx/) 访问，`migrations/` 里的迁移脚本在启动时自动执行；
@@ -83,7 +83,7 @@ curl localhost:4000/ping
 - **2025 年**：2 月起尝试把工单同步到 GitHub Issue，4 月加入邮件通知，5 月加入工作量分档和 Excel 导出，7 月 HTTP 层从 Gin 迁到 Huma；
 - **2026 年 9 月**：修复全新数据库迁移失败、Logto webhook 验签等问题。
 
-存档里也有它的身影。2023 年 10 月的[开发组新人学习路线](/archived/2023/developer/2023-10-newcomer-training)把“接手学长的 weekend 项目后端”列为新人入口之一，同期的[开发组规划](/archived/2023/developer/2023-10-dev-roadmap)把迁移维修报修后端的服务器和数据列为待办。[2025 年 1 月的部长会议](/archived/2025/2025-01-25-officers-meeting)总结维修日时，提议给维修事件加上工单号作唯一标识，并在报修单上增加问题类型勾选，方便做简单的数据聚类。
+存档里也有它的身影。2023 年 10 月的[开发组新人学习路线](/archived/2023/developer/2023-10-newcomer-training)把“接手学长的 weekend 项目后端”列为新人的入门任务之一。同期的[开发组规划](/archived/2023/developer/2023-10-dev-roadmap)把迁移维修报修后端的服务器和数据列为待办事项。[2025 年 1 月的部长会议](/archived/2025/2025-01-25-officers-meeting)总结维修日时，提议给维修事件加上工单号作唯一标识，并在报修单上增加问题类型勾选，方便做简单的数据聚类。
 
 ## 相关
 

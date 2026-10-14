@@ -6,7 +6,7 @@ maintainers:
 
 # nbtverify
 
-nbtverify 是 NBTCA 开发的[校园网认证](./campus-network-auth)命令行工具，用 Go 编写，替代在浏览器认证页上手动登录：路由器、服务器、树莓派这类没有浏览器或需要常年在线的设备，可以用它自动完成认证、掉线自动重连。配套的 [luci-app-nbtverify](https://github.com/nbtca/luci-app-nbtverify) 把它打包成 OpenWrt 插件，在路由器的网页后台里就能配置。
+nbtverify 是 NBTCA 开发的[校园网认证](./campus-network-auth)命令行工具，用 Go 编写，用来代替在浏览器认证页上手动登录。路由器、服务器、树莓派等没有浏览器或需要长期在线的设备，可以用它自动认证，并在掉线后自动重连。配套的 [luci-app-nbtverify](https://github.com/nbtca/luci-app-nbtverify) 把它打包成 OpenWrt 插件，在路由器的网页后台里就能配置。
 
 <FactStrip :facts="[
   { label: '技术', value: 'Go · OpenWrt LuCI' },

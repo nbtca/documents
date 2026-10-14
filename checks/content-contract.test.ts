@@ -6,6 +6,7 @@ import {
   collectNavigationLinks,
   extractMarkdownLinks,
   findDuplicateRoutePaths,
+  findUnleveledAdmonitions,
   listDocs,
   listRoutedDocs,
   resolveInternalLink,
@@ -45,6 +46,26 @@ describe('content contract', () => {
     expect(listRoutedDocs(tempDir).map(doc => doc.relativePath)).not.toContain(
       'archived/2025/meeting.md',
     )
+  })
+
+  it('accepts only the three admonition levels outside code fences', () => {
+    const content = [
+      '::: danger 警告',
+      ':::',
+      '::: warning 注意',
+      '::: info 注',
+      '::: code-group',
+      '::: details 展开',
+      '::: tip 提示',
+      ':::warning 重要',
+      '````md',
+      '```md',
+      '::: tip 示例',
+      '```',
+      '````',
+    ].join('\n')
+
+    expect(findUnleveledAdmonitions(content)).toEqual(['7: ::: tip 提示', '8: :::warning 重要'])
   })
 
   it('generates stable VitePress route paths from markdown files', () => {

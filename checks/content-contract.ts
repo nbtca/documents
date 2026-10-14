@@ -141,6 +141,36 @@ export function extractMarkdownLinks(content: string, sourceRelativePath: string
   return links
 }
 
+const ADMONITION_LEVELS = new Set(['danger 警告', 'warning 注意', 'info 注'])
+const LAYOUT_CONTAINERS = new Set(['code-group', 'details'])
+
+export function findUnleveledAdmonitions(content: string): string[] {
+  const offenders: string[] = []
+  let fence: string | undefined
+
+  for (const [index, line] of content.split(/\r?\n/).entries()) {
+    const marker = /^\s*(`{3,}|~{3,})/.exec(line)?.[1]
+    if (marker) {
+      if (!fence)
+        fence = marker
+      else if (marker[0] === fence[0] && marker.length >= fence.length)
+        fence = undefined
+      continue
+    }
+    if (fence)
+      continue
+
+    const open = /^\s*:{3,}\s*([^\s:].*)$/.exec(line)?.[1].trim()
+    if (!open)
+      continue
+    const [type] = open.split(/\s+/)
+    if (!LAYOUT_CONTAINERS.has(type) && !ADMONITION_LEVELS.has(open))
+      offenders.push(`${index + 1}: ${line.trim()}`)
+  }
+
+  return offenders
+}
+
 export function resolveInternalLink(link: MarkdownLink, root = DEFAULT_ROOT): LinkResolution {
   if (!link.target || isExternalLink(link.target) || link.target.startsWith('#'))
     return { link, reason: 'external or same-page anchor', status: 'skipped' }

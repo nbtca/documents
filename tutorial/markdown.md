@@ -64,8 +64,8 @@ pnpm install --frozen-lockfile
 
 结尾的 `**` 前面是标点时，它后面就必须是空白或标点，否则不构成结束标记。开头的 `**` 有一条[对称的规则](https://spec.commonmark.org/0.31.2/#left-flanking-delimiter-run)。
 
-::: tip 下面这张表怎么来的
-逐条输入本仓库使用的 markdown-it 渲染后比对结果，不是照抄规范推演的。换一个 Markdown 实现，边界行为可能不同。
+::: info 注
+下表的结果来自本仓库使用的 markdown-it：每一条都实际渲染并比对过，不是从规范推导的。其他 Markdown 实现的边界行为可能不同。
 :::
 
 用本仓库的 markdown-it 逐个试过，规律很清楚：

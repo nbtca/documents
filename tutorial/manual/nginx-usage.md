@@ -7,141 +7,176 @@ maintainers:
 
 # 快速上手 nginx
 
-nginx 是一个高性能的 Web 服务器与反向代理。本文用最短路径带你跑起第一个静态页面，讲清每一步在做什么，最后给出反向代理的最小示例。
+nginx 是一个 Web 服务器和反向代理。本文用最少的步骤在 Debian 或 Ubuntu 上发布一个静态页面，说明每一步的作用，最后给出反向代理的最小配置。
 
-## nginx 做什么
+## nginx 的用途
 
-- http web server（托管静态网页，本文主线）
-- reverse proxy（反向代理，见文末）
-- load balance（负载均衡）
+- **Web 服务器**：发布静态网页。本文的主要内容。
+- **反向代理**：把请求转发给后端程序。见文末。
+- **负载均衡**：把请求分配给多个后端。
 
-## index.html
+## 安装 nginx
 
-随手写点什么，比如
+1. 更新软件包列表：
 
-```bash
-vim index.html
-```
+   ```bash
+   sudo apt update
+   ```
 
-```html
-hello XD
-```
+2. 安装 nginx：
 
-> 什么？不会vim？快学🤓👉[vim doc](https://www.vim.org/docs.php)
-> 不过作为速通，我会告诉你这次怎么办😇
+   ```bash
+   sudo apt install nginx
+   ```
 
-```text
-vim index.html
+3. 确认 nginx 正在运行。输出中应有 `active (running)`：
 
-输入 i, 进入insert (输入模式)
+   ```bash
+   systemctl status nginx
+   ```
 
-键入: hello XD
+## 写一个页面
 
-按下esc键, 退回normal (通常模式)
+1. 用 vim 创建 `index.html`：
 
-依次按下':''w','q', 然后回车, 很神奇吧😆
+   ```bash
+   vim index.html
+   ```
 
-':'进入command(命令模式)
+2. 按 `i`，进入输入模式。
+3. 输入 `hello XD`。
+4. 按 `Esc`，回到普通模式。
+5. 输入 `:wq`，按 Enter。`:` 进入命令模式，`w` 表示写入（write），`q` 表示退出（quit）。
 
-'w'即为write(写入)
+vim 的完整用法见 [vim 文档](https://www.vim.org/docs.php)。
 
-'q'即为quit(退出)
+## 把页面放到网站目录
 
-```
+1. 创建网站目录：
 
-## /var/www
+   ```bash
+   sudo mkdir -p /var/www/myWebsite
+   ```
 
-把这个`index.html`放到一个固定位置
+2. 把 `index.html` 移到网站目录。这个目录属于 root，所以要用 `sudo`：
 
-```bash
-sudo mkdir /var/www/myWebsite
+   ```bash
+   sudo mv index.html /var/www/myWebsite/
+   ```
 
-mv index.html /var/www/myWebsite/
-```
+## 配置文件的位置
 
-> 目前还不需要搞明白这三兄弟
+nginx 的主配置文件是 `/etc/nginx/nginx.conf`。它控制 nginx 的全局行为：
 
-- `/etc/nginx/conf.d/` (通常用于放置单独的配置文件（以 .conf 结尾），Nginx 会自动加载 conf.d/\*.conf 文件。)
-- `/etc/nginx/sites-available/` (用于存放可用站点配置，但不会自动启用。)
-- `/etc/nginx/sites-enabled/` (用于启用的站点配置，通常通过软链接指向 sites-available 中的配置文件。)
+- 全局设置，例如用户、进程数和日志；
+- HTTP 模块的设置，例如 gzip、缓存和连接超时；
+- 用 `include` 指令加载的子配置文件；
+- 服务器块（`server {}`）和位置块（`location {}`）。
 
-你只需要将你写的每个配置丢到 conf.d 就好了
+nginx 启动时先读取这个文件，再按其中的 `include` 指令加载其他配置文件。Debian 和 Ubuntu 用下面三个目录存放子配置：
 
-## nginx.conf
+- `/etc/nginx/conf.d/`：放以 `.conf` 结尾的配置文件。nginx 自动加载 `conf.d/*.conf`。
+- `/etc/nginx/sites-available/`：放可用的站点配置。这里的配置不会自动启用。
+- `/etc/nginx/sites-enabled/`：放已启用的站点配置，通常是指向 `sites-available` 中文件的软链接。
 
-nginx的主配置文件，它控制 Nginx 的整体行为，比如：
+本文只使用 `conf.d`。
 
-- 全局设置（用户、进程数、日志等）
-- HTTP 模块的设置（gzip、缓存、连接超时等）
-- 包含子配置文件（include 指令）
-- 服务器块（server {}）和位置块（location {}）
+1. 打开 `/etc/nginx/nginx.conf`，确认 `http` 块中有下面三行：
 
-Nginx 启动时会先读取这个文件，然后按它的指令加载其它配置文件。
+   ```nginx
+   include       /etc/nginx/mime.types;
+   include       /etc/nginx/conf.d/*.conf;
+   include       /etc/nginx/sites-enabled/*;
+   ```
 
-目前你只需要关注，确保有下面这几行在http块里
+## 写站点配置
 
-```nginx
-    include       /etc/nginx/mime.types;
-    include       /etc/nginx/conf.d/*.conf;
-    include       /etc/nginx/sites-enabled/*;
-```
+::: info 注
+Debian 和 Ubuntu 安装 nginx 时，会在 `sites-enabled` 中启用一个默认站点。用 IP 地址访问时，这个默认站点先响应请求，你只能看到 nginx 的欢迎页。下面的第 1 步停用这个默认站点。
+:::
 
-## hello.conf
+1. 删除默认站点的软链接。这一步只删除链接，`sites-available/default` 仍然保留：
 
-写网页的nginx配置
+   ```bash
+   sudo rm /etc/nginx/sites-enabled/default
+   ```
 
-```bash
-sudo vim /etc/nginx/conf.d/hello.conf
-```
+2. 创建站点配置文件：
 
-```nginx
-server {
-    listen 80;
-    server_name localhost;
+   ```bash
+   sudo vim /etc/nginx/conf.d/hello.conf
+   ```
 
-    root /var/www/myWebsite;
-    index index.html;
+3. 写入下面的内容，保存并退出：
 
-    location / {
-        try_files $uri $uri/ =404;
-    }
-}
-```
+   ```nginx
+   server {
+       listen 80;
+       server_name localhost;
 
-解释：
+       root /var/www/myWebsite;
+       index index.html;
 
-- `listen 80;`→ 监听 HTTP 80 端口
-- `server_name localhost;` → 测试用，可以改成域名
-- `root /var/www/myWebsite;` → 网站根目录
-- `index index.html;` → 我们写的页面
-- `location / { try_files ... }` → 请求文件不存在返回 404
+       location / {
+           try_files $uri $uri/ =404;
+       }
+   }
+   ```
+
+每一行的作用：
+
+- `listen 80;`：监听 HTTP 的 80 端口。
+- `server_name localhost;`：站点的名字。测试时用 `localhost`，正式使用时改成域名。
+- `root /var/www/myWebsite;`：网站根目录。
+- `index index.html;`：访问目录时返回的文件。
+- `location / { try_files ... }`：请求的文件不存在时，返回 404。
 
 ## 测试配置并重载
 
-```bash
-sudo nginx -t
-sudo systemctl reload nginx
-```
+1. 检查配置的语法：
 
-如果输出
+   ```bash
+   sudo nginx -t
+   ```
 
-```bash
-nginx: configuration file /etc/nginx/nginx.conf test is successful
-```
+2. 确认输出中有下面这一行。如果没有，按输出中的错误信息修改配置：
 
-说明配置正确，浏览器访问 ip 即可成功见到`hello XD`
+   ```text
+   nginx: configuration file /etc/nginx/nginx.conf test is successful
+   ```
 
-> `nginx -t` 只检查配置语法，`reload` 才让它生效——reload 是平滑重载、不断线。改了配置没生效，十有八九是忘了 reload。
+3. 重载 nginx，使配置生效：
 
-## 一次请求发生了什么
+   ```bash
+   sudo systemctl reload nginx
+   ```
 
-浏览器访问 `http://ip/` 时：请求到达 80 端口 → nginx 用 `listen` + `server_name` 挑出匹配的 server 块 → `location` 匹配路径 → 以 `root` + 路径拼出文件位置，`try_files` 依次尝试。排错就沿这条链查：`nginx -t` 报错是配置写错了；404 是拼出的文件路径不存在；403 多半是 nginx 对文件没有读权限。
+4. 在浏览器中访问服务器的 IP 地址。页面应显示 `hello XD`。
 
-另外，conf.d 里每个 `server {}` 就是一个“虚拟主机”：同一个 80 端口可以挂多个站点，nginx 靠请求头里的域名（对上哪个 `server_name`）区分它们——这就是“每个配置丢进 conf.d”背后发生的事。
+::: info 注
+`nginx -t` 只检查语法，不使配置生效。只有 `reload` 才使配置生效。`reload` 不会断开现有连接。如果修改配置后没有效果，检查是否忘记了 `reload`。
+:::
+
+## 一次请求的过程
+
+浏览器访问 `http://ip/` 时，请求按下面的顺序处理：
+
+1. 请求到达 80 端口。
+2. nginx 根据 `listen` 和 `server_name` 选择一个 server 块。
+3. nginx 用 `location` 匹配请求路径。
+4. nginx 把 `root` 和请求路径拼成文件路径，用 `try_files` 依次查找文件。
+
+出错时，按这个顺序检查：
+
+- `nginx -t` 报错：配置文件有语法错误。
+- 返回 404：拼出的文件路径不存在。
+- 返回 403：nginx 没有读取文件的权限。
+
+`conf.d` 中的每个 `server {}` 是一个虚拟主机。同一个 80 端口可以有多个站点。nginx 用请求头中的域名匹配 `server_name`，从而区分这些站点。
 
 ## 下一步：反向代理
 
-nginx 的另一大用途是反向代理：你的程序（比如跑在 3000 端口的 Node 服务）躲在后面，nginx 在前面统一收请求再转发——对外只暴露 80/443，还能顺手做 HTTPS、缓存与负载均衡。最小配置：
+反向代理把请求转发给后端程序，例如运行在 3000 端口的 Node 服务。nginx 接收所有请求，再转发给后端。对外只开放 80 和 443 端口。nginx 还可以处理 HTTPS、缓存和负载均衡。最小配置如下：
 
 ```nginx
 server {
@@ -156,14 +191,14 @@ server {
 }
 ```
 
-两行 `proxy_set_header` 是把访客真实的域名与 IP 传给后端——否则后端看到的请求全部来自 nginx 自己。
+两行 `proxy_set_header` 把访客的域名和 IP 地址传给后端。没有这两行，后端看到的所有请求都来自 nginx。
 
-本文初版专为小朋友所写，见文记得去[他的仓库](https://github.com/sheepkinn/sheepkinn.github.io)踢他一下XD
+## 使用 sites-available
 
----
-
-> ps，如果非要写软连接的话
+如果要使用 `sites-available` 和 `sites-enabled`，把配置文件放在 `sites-available` 中，再创建软链接：
 
 ```bash
 sudo ln -s /etc/nginx/sites-available/hello.conf /etc/nginx/sites-enabled/hello.conf
 ```
+
+本文的初版由 sheepkinn 编写，见[他的仓库](https://github.com/sheepkinn/sheepkinn.github.io)。

@@ -6,7 +6,7 @@ maintainers:
 
 # ServerlessMQ
 
-ServerlessMQ 是 NBTCA 自建的消息中转服务，跑在 Cloudflare Workers 上，部署在 mq.nbtca.space 和 webhook.nbtca.space 两个地址。它把发往某个主题的 webhook 请求，实时转发给所有通过 WebSocket 订阅了这个主题的客户端，让没有公网地址的程序也能收到 GitHub 等外部服务的推送。
+ServerlessMQ 是 NBTCA 自建的消息中转服务，跑在 Cloudflare Workers 上，部署在 mq.nbtca.space 和 webhook.nbtca.space 两个地址。它把发往某个主题的 webhook 请求，实时转发给所有通过 WebSocket 订阅这个主题的客户端。这样，没有公网地址的程序也能收到 GitHub 等外部服务的推送。
 
 <FactStrip :facts="[
   { label: '技术', value: 'TypeScript · Durable Objects' },
