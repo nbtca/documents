@@ -7,27 +7,24 @@ maintainers:
 
 # 快速上手 NBTCA 的 GitHub 工作流
 
-NBTCA 的事务与代码都在 GitHub 上管理：一件事开一个 Issue 跟踪，改动在自己的分支上做，通过 Pull Request 请求合并、由他人评审。本文带你把这套流程完整跑一遍。
+NBTCA 在 GitHub 上管理事务和代码。每件事用一个 Issue 跟踪。修改在自己的分支上完成，再通过 Pull Request 请求合并，由其他人评审。本文带你完整地走一遍这个流程。
 
-## 目前 NBTCA 社内的常见工作场景
+## 为什么使用 GitHub 工作流
 
-- 多个社员参与同一件事务
-- 多个事务在同一个时间段
-- 多个时间段事务并行执行
+NBTCA 的工作常有下面几种情况：
 
-## 那为什么是 GitHub 工作流
+- 多个成员参与同一件事；
+- 同一时间有多件事在进行；
+- 不同时间段的事情并行推进。
 
-- 主要还是为了用上 [Git](https://git-scm.com)
-- 刚好相关事务也关联我们的代码库
+GitHub 工作流用 [Git](https://git-scm.com) 管理这些工作。很多事务也与协会的代码库直接相关。
 
-## 基本原理
+## 基本概念
 
-先对齐四个概念，后面的图和操作就都好懂了：
-
-- **Issue**：一件事务的跟踪单——谁在做、聊到哪、做没做完，都沉淀在这里；
-- **分支（branch）**：你的平行工作区，随便改，改坏了也不影响主分支；
-- **Pull Request（PR）**：“请把我的改动合进来”的请求，同时是评审与讨论的入口；
-- **合并（merge）**：评审通过、改动进入主分支，事务闭环。
+- **Issue**：一件事的跟踪单。谁在做、讨论的内容和完成状态都记录在 Issue 中。
+- **分支（branch）**：你自己的工作区。分支上的修改不影响主分支。
+- **Pull Request（PR）**：请求把你的修改合并到主分支。PR 也是评审和讨论的地方。
+- **合并（merge）**：评审通过后，修改进入主分支，这件事完成。
 
 ```mermaid
 flowchart TD
@@ -42,7 +39,7 @@ flowchart TD
     T2 -->|时间段: 2025.11.28 10:00-13:00| TS2[时间段 2]
     T3 -->|时间段: 2025.11.28 14:00-17:00| TS3[时间段 3]
 
-    %% Github 工作流
+    %% GitHub 工作流
     subgraph GitHub工作流
         G1[Fork 仓库] --> G2[Clone 本地]
         G2 --> G3[创建分支]
@@ -58,107 +55,96 @@ flowchart TD
     T3 --> G3
 ```
 
-## 一些示范
+## 查看和参与事务
 
-> 代码库的github流程我就按下不表了，我想感兴趣自己了解会很快
+1. 打开 [Roadmap](/concepts/roadmap)。
 
-### 检查目前我们正在关注的事务
+   ![Roadmap 主界面](../assets/Roadmap.webp)
 
-**_访问 [Roadmap](/concepts/roadmap)_**
+2. 打开一个你感兴趣的 Issue。
 
-![Roadmap主界面](../assets/Roadmap.webp)
+   ![MC 服务器管理对接 #63](../assets/Minecraft-Server-Management.webp)
 
-**_找个感兴趣的Issue看看_**
+3. 在 Assignees 中查看或添加负责人。
 
-![MC服务器管理对接#63](../assets/Minecraft-Server-Management.webp)
+   ![Assignees](../assets/Assignees.webp)
 
-**_群贤毕至嗷_**
+4. 在 Labels 中设置标签，用于分类。
 
-![Assignees](../assets/Assignees.webp)
+   ![Label-Setup](../assets/Label-Setup.webp)
 
-**_设置个标签方便分类_**
+5. 单击 Subscribe，订阅通知。通知发送到你的邮箱。
 
-![Label-Setup](../assets/Label-Setup.webp)
+   ![Subscribe](../assets/Subs.webp)
 
-**_订阅通知，会发到邮箱去_**
+Issue 的内容支持 Markdown 语法。
 
-![Subscribe](../assets/Subs.webp)
-
-**_编辑内容支持markdown语法，所以几乎都能写_**
-
-> 什么？不想在浏览器看？
-
-**_那当然也是有的看滴😋_**
+你也可以在终端中用 GitHub CLI 查看 Issue：
 
 ![gh-issue-list](../assets/gh-issue-list.webp)
 
 ![gh-issue-view](../assets/gh-issue-view.webp)
 
-**_这个[wiki](https://github.com/nbtca/Minecraft/wiki)好像有点说法，看看怎么个事儿_**
+## 修改仓库中的文件
 
-![Minecraft-Wiki](../assets/Minecraft-Wiki.webp)
+下面以修改 [Minecraft 仓库的 wiki](https://github.com/nbtca/Minecraft/wiki) 为例。
 
-**_看看源码😋_**
+1. 打开 wiki 页面。
 
-![Minecraft-Wiki-gh](../assets/Minecraft-Wiki-gh.webp)
-**_当然git命令同理_**
+   ![Minecraft-Wiki](../assets/Minecraft-Wiki.webp)
 
-![Minecraft-Wiki-git](../assets/Minecraft-Wiki-git.webp)
+2. 在 GitHub 上查看 wiki 的源文件。
 
-**_一派胡言！我来写点😋_**
+   ![Minecraft-Wiki-gh](../assets/Minecraft-Wiki-gh.webp)
 
-![Edit](../assets/Edit.webp)
+   你也可以用 git 命令克隆 wiki：
 
-**_经典丝滑连招_**
+   ![Minecraft-Wiki-git](../assets/Minecraft-Wiki-git.webp)
 
-![Commit](../assets/Commit.webp)
+3. 编辑文件。
 
-**_经验+3，告辞😋_**
+   ![Edit](../assets/Edit.webp)
 
-![Success](../assets/Success.webp)
+4. 提交修改。
 
----
+   ![Commit](../assets/Commit.webp)
 
-🎉这样就完成了基本的常见NBTCA事务的Github工作流了
+5. 确认页面显示提交成功。
 
-ps:你想更进一步？跟我一起来写手册吧😇
+   ![Success](../assets/Success.webp)
 
-## 附加内容：用 Pull Request 提交改动
+## 用 Pull Request 提交修改
 
-> 恭喜你发现了附加内容XD
+大多数多人协作的仓库都保护主分支。主分支必须随时可用，所以不能直接向主分支提交。所有修改先提交到自己的分支，评审通过后再合并。
 
-**_绝大多数多人协作的代码库都是有分支保护的_**
+1. 在你自己的分支上编辑和提交。
 
-> 主分支被约定为“随时可用”，所以禁止直接向它提交——一切改动先进自己的分支，经评审后合入。
+   ![Branch](../assets/Branch.webp)
 
-**_那么在真正的正常提交流程中你一般是在你自己的分支编辑的_**
+2. 向主分支创建一个 Pull Request。下图以提交本文为例。
 
-![Branch](../assets/Branch.webp)
+   ![Create-PR](../assets/Create-PR.webp)
 
-**_所以你在自己的分支提交到Github后还需要向主分支发起合并请求（Pull Request）_**
+3. 填写 PR 的内容。在右上角的 Reviewers 中选择评审人。
 
-**_本次以这个教程文档的提交为例_**
+   ![Reviewer-PR](../assets/Reviewer-PR.webp)
 
-![Create-PR](../assets/Create-PR.webp)
+4. 如果要在评审通过后自动合并，启用 Auto-Merge。
 
-**_编辑此次PR的内容，并选择你希望审查你本次提交的人员（右上角Reviewers）_**
+   ![Auto-Merge](../assets/Auto-Merge.webp)
 
-![Reviewer-PR](../assets/Reviewer-PR.webp)
-
-**_你还可以启用Auto-Merge，即在审查通过后自动合并本次源代码提交_**
-
-![Auto-Merge](../assets/Auto-Merge.webp)
-
-**_Reviewer看到的大概是这样：_**
+评审人看到的页面如下：
 
 ![PR-Reviewer](../assets/PR-Reviewer.webp)
 
-**_批准_**
+评审人的操作：
 
-![Approve](../assets/Approve.webp)
+1. 单击 Approve，批准修改。
 
-**_合并_**
+   ![Approve](../assets/Approve.webp)
 
-![Merge](../assets/Merge.webp)
+2. 单击 Merge，合并修改。
 
-🤓完成！
+   ![Merge](../assets/Merge.webp)
+
+合并后，这件事完成。如果你想参与编写手册，见[写一页文档](/tutorial/manual/writing-documents)。
