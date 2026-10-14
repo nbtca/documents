@@ -5,6 +5,7 @@ import {
   collectNavigationLinks,
   extractMarkdownLinks,
   findDuplicateRoutePaths,
+  findUnleveledAdmonitions,
   listDocs,
   listRoutedDocs,
   resolveInternalLink,
@@ -31,6 +32,15 @@ describe('site content contract', () => {
 
     expect(invalidRoutes).toEqual([])
     expect(findDuplicateRoutePaths(routedDocs)).toEqual([])
+  })
+
+  // Only these pages have been rewritten to ASD-STE100 so far; widen the filter as others convert.
+  it('uses only the three ASD-STE100 admonition levels', () => {
+    const offenders = routedDocs
+      .filter(doc => doc.domain === 'repair' || /^\s+- user: m1ngsama\b/m.test(doc.content))
+      .flatMap(doc => findUnleveledAdmonitions(doc.content).map(hit => `${doc.relativePath}:${hit}`))
+
+    expect(offenders).toEqual([])
   })
 
   // Hub sections are reached by inline links and search, not a sidebar.
