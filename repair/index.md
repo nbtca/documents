@@ -16,25 +16,26 @@ maintainers:
   scrim="strong"
 />
 
-这一栏把“怎么修、怎么办维修日、报修怎么走、用什么工具”收在一处——顺着读，需要深入的地方点进去就好。
+本栏包括四部分：怎样修电脑，怎样办维修日，怎样报修，以及维修用什么工具。
 
-## 维修日：我们的招牌
+## 维修日
 
-维修日是维修队定期面向全校的现场免费维修，一年约十次，前身是早年的[理工服务日](/concepts/service-day)。参与现场服务的同学按工作量获得[志愿者时长](/concepts/volunteer-hours)。想了解它怎么筹备、当天怎么跑，见 [维修日](./repair-day)。
+维修日是维修队定期面向全校举办的现场免费维修，一年约十次。它的前身是早年的[理工服务日](/concepts/service-day)。参与现场服务的同学按工作量获得[志愿者时长](/concepts/volunteer-hours)。筹备方法和当天的流程见[维修日](./repair-day)。
 
 ## 动手修一台机器
 
-不管是软件蓝屏还是拆机换硅脂，第一原则永远是人身、财产和数据安全。做法分成几页：[故障诊断](./diagnosis)、[C 盘清理](./c-drive-cleanup)、[重新安装 Windows](./reinstall-windows)、[拆机与物理维护](./physical-maintenance)，以及[各厂商 BIOS 与一键恢复入口](./bios-keys)。总入口是[维修操作指南](./guide)。
+无论是处理蓝屏还是拆机换硅脂，都要先保证人身、财产和数据安全。操作方法分成下面几页：[故障诊断](./diagnosis)、[C 盘清理](./c-drive-cleanup)、[重新安装 Windows](./reinstall-windows)、[拆机与物理维护](./physical-maintenance)，以及[各厂商 BIOS 与一键恢复入口](./bios-keys)。总入口是[维修操作指南](./guide)。
 
 ## 报修与工单
 
-电脑坏了，去协会主页的[预约维修](https://nbtca.space/repair/create-ticket)建单，之后在[维修记录](https://nbtca.space/repair/history)里看进度。队员那一侧是[维修管理](https://nbtca.space/repair/admin)，需要登录。
+要报修，在协会主页的[预约维修](https://nbtca.space/repair/create-ticket)建单，然后在[维修记录](https://nbtca.space/repair/history)中查看进度。队员使用[维修管理](https://nbtca.space/repair/admin)处理工单，需要登录。
 
-第一次报修要先登录 [NBTCA 账号](/concepts/nbtca-account)，没有账号的在登录页注册即可：
+第一次报修前，先登录 [NBTCA 账号](/concepts/nbtca-account)。如果没有账号，在登录页注册。
 
-1. 打开 [nbtca.space/repair](https://nbtca.space/repair)，点“预约维修”；
-2. 没登录时会先看到登录提示，点“登入”；
-3. 在账号登录页用邮箱注册或登录，也可以直接用 GitHub 或 Passkey 登录；登录后自动回到报修表单。
+1. 打开 [nbtca.space/repair](https://nbtca.space/repair)，点“预约维修”。
+2. 如果没有登录，页面显示登录提示。点“登入”。
+3. 在账号登录页登录。你可以用邮箱、GitHub 或 Passkey 登录。没有账号时，点“注册”，用邮箱注册。
+4. 登录后，页面自动回到报修表单。填写并提交表单。
 
 <FigureGrid>
   <Figure src="../concepts/assets/project-home-repair.webp" alt="协会主页维修板块的入口页，一幅蓝色线描插画下写着“我们提供免费的电脑维修服务”，下方是“预约维修”按钮" caption="第 1 步：维修板块入口，点“预约维修”。" date="2026-09" />
@@ -43,14 +44,14 @@ maintainers:
 
 <Figure src="../concepts/assets/project-account-sign-in.webp" alt="NBTCA 账号的登录页，有用户名或邮箱输入框、登录按钮、注册链接，以及“通过 GitHub 继续”和“通过 通行证 继续”两个按钮" caption="第 3 步：NBTCA 账号登录页。没有账号的点“注册”，用邮箱收验证码即可。" date="2026-09" wide />
 
-队员在面板上接单、提交维修描述、由管理员审核结单，工作量按 `size` 分档折算[志愿者时长](/concepts/volunteer-hours)。系统怎么运转，见 [工单系统](./weekend)。
+队员在面板上接单并提交维修描述，管理员审核后结单。工作量按 `size` 分档，折算成[志愿者时长](/concepts/volunteer-hours)。系统的工作方式见[工单系统](./weekend)。
 
-早年还有[微信小程序“NBT电脑维修”](/concepts/repair-miniprogram)和 repair.nbtca.space 两个入口，都已不再维护、计划下线，报修请走上面那条。
+早年的两个报修入口，[微信小程序“NBT电脑维修”](/concepts/repair-miniprogram)和 repair.nbtca.space，都已停止维护并计划下线。请用上面的方法报修。
 
 ## 工具、镜像与软件
 
-维修常用的系统镜像、驱动、硬件检测和系统清理工具，集中在 [软件仓库索引](./tools)（仅校园网内网可用，访问前需完成[校园网认证](/concepts/campus-network-auth)）。
+维修常用的系统镜像、驱动、硬件检测工具和系统清理工具，都在[软件仓库索引](./tools)中。软件仓库只能在校园网内网访问，访问前要完成[校园网认证](/concepts/campus-network-auth)。
 
-## 更深的老手册
+## 详细手册
 
-维修常用的深入手册——[选配并组装一台电脑](/tutorial/manual/hardware-establish)、[从零开始安装 Windows](/tutorial/manual/windows-from-scratch)、[操作系统技能](/tutorial/manual/os-skills)——已整理进教程栏，仍在逐步重写完善，欢迎来补。
+下面三本详细手册在教程栏中：[选配并组装一台电脑](/tutorial/manual/hardware-establish)、[从零开始安装 Windows](/tutorial/manual/windows-from-scratch)、[操作系统技能](/tutorial/manual/os-skills)。它们还在改写中，欢迎补充。

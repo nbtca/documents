@@ -6,15 +6,15 @@ maintainers:
 
 # 维修工单系统 (weekend)
 
-维修工单系统（内部代号 weekend）是 NBTCA 自建的报修与维修协作系统：校内任何人可以通过报修入口发起报修，维修事件在后端与 GitHub 之间同步，队员用机器人命令接单、提交、审核，并据此统计[志愿者时长](/concepts/volunteer-hours)。
+维修工单系统（内部代号 weekend）是 NBTCA 自建的报修和维修协作系统。校内任何人都可以通过报修入口报修。维修事件在后端和 GitHub 之间同步。队员用机器人命令接单、提交和审核，系统据此统计[志愿者时长](/concepts/volunteer-hours)。
 
-::: warning 两处已与现状不符
-本文记录的是这套系统设计成型时的样子。有两件事后来变了：
+::: info 注
+本文记录这套系统设计完成时的状态。后来有两处改变：
 
-- **报修与工单管理都收敛到了协会主页的 [/repair](https://nbtca.space/repair)**。本文写作时的入口——[微信小程序](/concepts/repair-miniprogram)与 repair.nbtca.space——都已不再维护（[Roadmap#64](https://github.com/nbtca/Roadmap/issues/64)）。
-- **工单不再走 GitHub Issue**。下文“在 Github 上处理维修”整节所描述的做法（`@nbtca-bot` 命令、用标签记工作量）目前没有在跑，队员改在主页的维修面板上接单与结单。
+- **报修和工单管理都已移到协会主页的 [/repair](https://nbtca.space/repair)**。本文写作时的两个入口，[微信小程序](/concepts/repair-miniprogram)和 repair.nbtca.space，都已停止维护（[Roadmap#64](https://github.com/nbtca/Roadmap/issues/64)）。
+- **工单不再使用 GitHub Issue**。下文“在 GitHub 上处理维修”一节的做法（`@nbtca-bot` 命令、用标签记录工作量）已经停用。队员现在在主页的维修面板上接单和结单。
 
-其余部分——事件状态机、角色权限——仍是这套系统的骨架。工作量分档与时长规则也照旧：队员在维修面板上提交维修记录时选择 `xs` 到 `xl` 的工作量，导出时按下文的基础时长和上限计算，实现见 [Saturday](/concepts/saturday)。**最后核对：2026-09**。
+事件状态机和角色权限没有改变。工作量分档和时长规则也没有改变：队员在维修面板上提交维修记录时，选择 `xs` 到 `xl` 的工作量；导出时，按下文的基础时长和上限计算。实现见 [Saturday](/concepts/saturday)。最后核对：2026-09。
 :::
 
 ## 总览
@@ -28,7 +28,7 @@ flowchart LR
     Sa --> L
     L --> |webhook| Sa
     Sa --> D[(Database)]
-    Sa --> G[Github]
+    Sa --> G[GitHub]
     G --> |webhook| Sa
     Sa --> N[nsq]
 
@@ -98,48 +98,48 @@ flowchart LR
 | 关闭     | close       | admin          | committed => closed    | 管理员通过提交                               |
 | 修改     | update      | current client | open => open           | 用户修改自己尚未被受理的维修事件             |
 
-## 在Github上处理维修
+## 在 GitHub 上处理维修
 
 ```mermaid
 sequenceDiagram
     participant Saturday
-    participant Github
-    Saturday->>+Github: Create Issue
-    Note right of Github: On Event Create
-    Github->>-Saturday: Issue Id
-    Github->>+Saturday: Comment Event (webhook)
-    Note right of Github: On Issue Update, Find event by issue id
-    Saturday->>-Github: Create Comment
+    participant GitHub
+    Saturday->>+GitHub: Create Issue
+    Note right of GitHub: On Event Create
+    GitHub->>-Saturday: Issue Id
+    GitHub->>+Saturday: Comment Event (webhook)
+    Note right of GitHub: On Issue Update, Find event by issue id
+    Saturday->>-GitHub: Create Comment
 
 ```
 
-::: info 这一节的做法已经停用
-自动建单的量被 GitHub 判定为滥用，[repair-tickets](https://github.com/nbtca/repair-tickets) 的 issue 随之受限，邮件申诉未能恢复，工单管理因此迁回协会主页的[维修面板](https://nbtca.space/repair/admin)。同步逻辑仍留在 [Saturday](https://github.com/nbtca/Saturday) 的代码里（`util/github.go`），每个动作都还会尝试同步，但 2025 年 5 月之后创建的工单已经关联不上 issue。
+::: info 注
+这一节的做法已经停用。自动建单的量被 GitHub 判定为滥用，[repair-tickets](https://github.com/nbtca/repair-tickets) 的 issue 随之受限，邮件申诉未能恢复，工单管理因此迁回协会主页的[维修面板](https://nbtca.space/repair/admin)。同步逻辑仍留在 [Saturday](https://github.com/nbtca/Saturday) 的代码里（`util/github.go`），每个动作都还会尝试同步，但 2025 年 5 月之后创建的工单已经关联不上 issue。
 
-这一节留作记录：它说明了当初为什么选 GitHub Issue，也留下了把工单托管在外部平台会遇到什么。**最后核对：2026-08**。
+这一节作为记录保留。它说明了当初选择 GitHub Issue 的原因，也记录了把工单放在外部平台上遇到的问题。最后核对：2026-08。
 :::
 
-这套做法运行时，新的维修事件会同步到 [Github Issue](https://github.com/nbtca/repair-tickets/issues) 中。成员可以在Github Issue中处理维修事件。
+这套做法运行时，新的维修事件同步到 [GitHub Issue](https://github.com/nbtca/repair-tickets/issues)。成员在 GitHub Issue 中处理维修事件。
 
-### 为什么要使用Github Issue来管理维修？
+### 为什么用 GitHub Issue 管理维修
 
-- **成熟的工单系统**：Github Issue是一个成熟的工单系统，功能强大，易于使用。
-- **可追溯性**：所有的维修事件都可以在Github上查看，方便后续的查询和统计。
-- **协作**：Github Issue提供了良好的协作工具，成员可以在上面讨论和交流。
-- **自动化**：通过Github的Webhook，可以自动化处理一些事件，比如创建事件、更新事件等。
-- **社区参与**：Github是一个开放的平台，任何人都可以参与到维修事件中来，增加了社区的参与度。
+- **成熟的工单系统**：GitHub Issue 是成熟的工单系统，功能完整，容易使用。
+- **可追溯性**：所有维修事件都可以在 GitHub 上查看，方便后续的查询和统计。
+- **协作**：GitHub Issue 提供协作工具，成员可以在上面讨论。
+- **自动化**：通过 GitHub 的 Webhook，可以自动化处理一些事件，比如创建事件、更新事件等。
+- **社区参与**：GitHub 是开放的平台，任何人都可以参与到维修事件中来，增加了社区的参与度。
 - **版本控制**：所有的事件都有版本记录，可以随时查看历史记录，方便追踪和审计。
 - **标签管理**：可以通过标签来管理事件的状态和类型，方便后续的查询和统计。
 
 ### 前提条件
 
-在开始之前，你需要先关联你的Github账户。你可以前往 [MyId](https://myid.app.nbtca.space/account/connections) 关联你的Github账户。
+开始前，在 [MyId](https://myid.app.nbtca.space/account/connections) 关联你的 GitHub 账户。
 
 ![link-github](./assets/link-github.webp)
 
 ### 处理事件
 
-在Github Issue中，可以通过在回复中包含以下命令来处理事件：
+在 GitHub Issue 的回复中写下面的命令，处理事件：
 
 - `@nbtca-bot accept` will accept this ticket
 - `@nbtca-bot drop` will drop your previous accept
@@ -153,7 +153,7 @@ sequenceDiagram
 
 ![issue-label](./assets/issue-label.webp)
 
-在Github Issue中，可以通过添加标签来记录工作量。标签的命名规则为 `size:xs`、`size:s`、`size:m`、`size:l`、`size:xl`，分别对应不同的工作量。工作量代表的是维修事件的复杂程度和所需时间。具体的工作量和对应的标签如下：
+在 GitHub Issue 中，用标签记录工作量。标签有 `size:xs`、`size:s`、`size:m`、`size:l`、`size:xl` 五种。工作量表示维修事件的复杂程度和所需时间。标签和工作量的对应关系如下：
 
 | 标签名    | 对应时长 | 示例维修任务（仅供参考）                        | 场景说明                                         |
 | --------- | -------- | ----------------------------------------------- | ------------------------------------------------ |
@@ -165,7 +165,7 @@ sequenceDiagram
 
 ### 志愿者时长统计
 
-我们可以通过记录的工作量来统计志愿者时长。
+志愿者时长根据记录的工作量统计。
 
 ```typescript
 const BASE_TIME = 2 // hours
@@ -213,8 +213,9 @@ console.log('Calculated time:', time) // Output: 5
 | 最高时长       | 8         | 每个志愿者的最高申报时长 |
 | 上一次统计日期 | 2025.4.21 | 上一次统计时长的日期     |
 
-统计时长时，获取自从上一次统计日期以来的维修记录，统计完成后将上一次统计日期更新为当前日期。
-时长计算参考以上代码中的 `calculateTime` 函数。Saturday 的实际实现与这段示意代码有两处不同：`xs` 计 0.5 小时；没有标工作量的工单也按 0.5 小时计，而不是 0。
+统计时长时，读取上一次统计日期之后的维修记录。统计完成后，把上一次统计日期改为当天。
+
+时长按上面代码中的 `calculateTime` 函数计算。Saturday 的实际实现与这段示例代码有两处不同：`xs` 计 0.5 小时；没有标记工作量的工单也计 0.5 小时，不是 0。
 
 #### 例子
 
@@ -225,7 +226,7 @@ console.log('Calculated time:', time) // Output: 5
 
 计算后时长为 min(8，2 + 1 + 2) = 5。
 
-#### 使用Saturday API导出时长为excel
+#### 用 Saturday API 把时长导出为 Excel
 
 | 字段名       | 描述                 |
 | ------------ | -------------------- |

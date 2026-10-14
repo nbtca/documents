@@ -6,11 +6,9 @@ maintainers:
 
 # 维修日检查单
 
-本文是筹备一场[维修日](/repair/repair-day)的检查单——从提出、准备到收尾逐项勾选，避免临场遗漏。
+本文是筹备一场[维修日](/repair/repair-day)的检查单。从提出、准备到收尾，逐项勾选，以免遗漏。
 
-:::tip 时间建议
-建议在维修日前 2 周开始准备，确保各项工作有序推进。
-:::
+在维修日前 2 周开始准备。
 
 ## 提出
 
@@ -46,7 +44,11 @@ maintainers:
 
 ## 材料模板
 
-协会存档里的空白表格（Word / Excel），照着填即可。〔这些是往届留下的副本，学院与青协的要求可能已经变了——交之前先对一次当年的版本。〕
+下面是协会存档里的空白表格（Word / Excel）。
+
+::: warning 注意
+这些表格是往届留下的副本。提交前，向学院和青协确认当年的表格版本。旧版本可能不符合当年的要求。
+:::
 
 - 当天用：<a href="/templates/repair-day/schedule.xlsx">排期表</a>、<a href="/templates/repair-day/signin-sheet.xlsx">签到表</a>
 - 志愿者时长：<a href="/templates/repair-day/volunteer-application.docx">活动申请表</a>（事前）、<a href="/templates/repair-day/volunteer-summary.docx">活动总结表</a>（事后）
