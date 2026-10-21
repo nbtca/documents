@@ -11,8 +11,8 @@ archive:
 :::info 会议信息
 
 - 地点：露天广场
-- 时间：Sep 20 8:00 - Sep 20 17:00 CST 2026
-- 记录员：[sheepkinn](https://github.com/sheepkinn),[Egger0](https://github.com/Egger0)
+- 时间：2026-09-20 08:00–17:00
+- 记录员：[sheepkinn](https://github.com/sheepkinn)、[Egger0](https://github.com/Egger0)
 
 :::
 
@@ -61,13 +61,13 @@ archive:
 
 ### 参与人员
 
-**计算机协会**
+#### 计算机协会
 
 orangedog、sheepkinn、Yuna-Celisse、66970010-boop、A1exe1A-1123、Gracecreate486、aa2l、liwen-aaa、whisper11111111111、Fin、凌波丽爱喝果粒橙、早安沐风。
 
 > 没有了解到 GitHub 名称的小伙伴们将用他们的 QQ 名称替代。
 
-**电竞社**
+#### 电竞社
 
 Egger、sakura、rincle、树脂、猫姐、刘轩成。
 
