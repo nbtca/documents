@@ -1,5 +1,5 @@
 ---
-summary: "- 新增新人大会活动执行情况与总结文档，记录现场氛围、场地使用及各模块的实际参与情况。 - 整理活动中出现的物资准备不足、摄影记录效果不佳等问题及后续处理情况。 - 总结本次活动的经验与不足，提出改进建议，为后续协会活动的组织与执行提供参考。"
+summary: "新人大会的执行记录：场地与氛围整体顺利，电脑硬件拆机最受欢迎；物资准备和摄影记录出现疏漏，文末给出改进建议。"
 archive:
   date: "2026-10-18"
   source: "协会自有记录，随本仓库保存"
@@ -11,7 +11,7 @@ archive:
 :::info 会议信息
 
 - 地点：浙理拾光
-- 时间：Oct 18 20:30 - Oct 18 23:15 CST 2026
+- 时间：2026-10-18 20:30–23:15
 - 记录员：[sheepkinn](https://github.com/sheepkinn)
 
 :::
@@ -32,9 +32,9 @@ archive:
 
 切蛋糕时发现缺少一次性盘子和勺子，给现场的蛋糕分发带来了一些不便。
 
-后续orangedog已经购买了一次性碗筷，并存放在小车内，方便后续活动使用。
+后续 [Orangedog433](https://github.com/Orangedog433) 已经购买了一次性碗筷，并存放在小车内，方便后续活动使用。
 
-### 改进建议
+#### 物资准备的改进建议
 
 今后举办活动前应提前核对物资清单，尤其是餐饮、卫生等容易遗漏的消耗品，并确认现有物资的存放位置和数量。
 
@@ -44,7 +44,7 @@ archive:
 
 此外，活动前忘记提醒负责摄影的同学携带自己熟悉的拍摄设备，也是造成这一问题的原因之一。
 
-### 改进建议
+#### 摄影记录的改进建议
 
 - 活动前提前确认摄影人员及拍摄设备，优先使用摄影同学熟悉的器材。
 - 如需使用协会现有设备，应提前进行简单的操作熟悉与试拍。
@@ -58,9 +58,9 @@ archive:
 
 希望后续能够在保持轻松、自由的活动氛围的同时，进一步完善活动筹备与记录工作，让每一次活动不仅有好的现场体验，也能留下值得回顾的成果。
 
-<Figure src="/media/2026/10/e9780a6c-cbb7-447c-80e2-5cb6926bd2bd.webp" alt="大家聚在一起听电脑主机硬件讲解和笔记本清灰" />
+<Figure src="../assets/new-member-orientation-2026-hardware.webp" alt="大家聚在一起听电脑主机硬件讲解和笔记本清灰" />
 
-<Figure src="/media/2026/10/6e6e4aa7-09a3-465f-8d9b-434c6331d32b.webp" alt="参与活动同学们的合照，有老登也有新同学" />
+<Figure src="../assets/new-member-orientation-2026-group.webp" alt="参与活动同学们的合照，有老登也有新同学" />
 
 ## 附录
 
@@ -68,9 +68,9 @@ archive:
   - [sheepkinn](https://github.com/sheepkinn)
   - [Yuna-Celisse](https://github.com/Yuna-Celisse)
   - [Orangedog433](https://github.com/Orangedog433)
-  - [ikari-rei](https://github.com/ikari-rei))
+  - [ikari-rei](https://github.com/ikari-rei)
   - [66970010-boop](https://github.com/66970010-boop)
-  - [A1exe1A](https://github.com/A1exe1A-1123)
+  - [A1exe1A-1123](https://github.com/A1exe1A-1123)
   - [Lan-Yuri](https://github.com/Lan-Yuri)
   - [Egger0](https://github.com/Egger0)
   - [liwen-aaa](https://github.com/liwen-aaa)
