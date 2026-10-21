@@ -1,3 +1,4 @@
+import type { Plugin } from 'vite'
 import { fileURLToPath, URL } from 'node:url'
 import { withMermaid } from 'vitepress-plugin-mermaid'
 import { publishSources } from '../utils/docs-api'
@@ -10,6 +11,16 @@ import { sidebar as sidebarGuide } from './sidebars/guide'
 
 const siteUrl = 'https://docs.nbtca.space'
 const siteDescription = '浙大宁波理工学院计算机协会（NBTCA）的公开文档站：认识社团、上手指南、流程手册与维修日资料。'
+
+// The deployed editor leaves `/media/…` image references. A Pages Function
+// serves them from R2, so no file exists at build time. Resolving them to a
+// module that exports the URL keeps the compiler's asset import from failing.
+const mediaUrls: Plugin = {
+  name: 'nbtca:media-urls',
+  enforce: 'pre',
+  resolveId: id => (id.startsWith('/media/') ? `\0media:${id}` : null),
+  load: id => (id.startsWith('\0media:') ? `export default ${JSON.stringify(id.slice('\0media:'.length))}` : null),
+}
 
 export default withMermaid({
   lang: 'zh-CN',
@@ -143,7 +154,7 @@ export default withMermaid({
     optimizeDeps: {
       exclude: ['@jsquash/webp'],
     },
-    plugins: [devEditor()],
+    plugins: [mediaUrls, devEditor()],
     resolve: {
       alias: [{
         find: /^.*\/VPDocFooterLastUpdated\.vue$/,
