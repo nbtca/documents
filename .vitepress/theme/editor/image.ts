@@ -40,11 +40,11 @@ function load(file: File): Promise<HTMLImageElement> {
 }
 
 // PNG, JPEG and a still GIF all become one WebP. Animation is not kept.
-// A WebP that already fits the limits goes up as it is: encoding it again
-// would lose quality for no gain.
+// A WebP that is within the upload size limit goes up as it is, whatever its
+// pixel size: encoding it again would lose quality for no gain.
 export async function toWebp(file: File): Promise<PreparedImage> {
   const image = await load(file)
-  if (Math.max(image.naturalWidth, image.naturalHeight) <= MAX_EDGE && file.size <= MAX_ASSET_BYTES) {
+  if (file.size <= MAX_ASSET_BYTES) {
     const original = new Uint8Array(await file.arrayBuffer())
     if (isWebp(original)) {
       return {
