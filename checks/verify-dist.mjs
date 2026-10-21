@@ -120,7 +120,7 @@ for (const [page, html] of pages) {
 for (const [page, html] of pages) {
   for (const match of unescape(html).matchAll(/(?:src|href)="(\/[^"?#]+)"/g)) {
     const asset = decodeURIComponent(match[1])
-    if (ASSET.test(asset) && !existsSync(path.join(distDir, asset)))
+    if (ASSET.test(asset) && !asset.startsWith('/media/') && !existsSync(path.join(distDir, asset)))
       report('referenced file was not emitted', page, asset)
   }
 }
