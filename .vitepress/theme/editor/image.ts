@@ -1,4 +1,4 @@
-import { isWebp } from '../../../utils/remote-asset'
+import { isWebp, MAX_ASSET_BYTES } from '../../../utils/remote-asset'
 
 const MAX_EDGE = 1600
 const QUALITY = 0.85
@@ -14,6 +14,13 @@ export function slugFor(filename: string): string {
   const stem = filename.replace(/\.[^.]+$/, '').toLowerCase()
   const slug = stem.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
   return `${slug || 'image'}-${Date.now().toString(36)}.webp`
+}
+
+function base64Of(bytes: Uint8Array): string {
+  let binary = ''
+  for (const byte of bytes)
+    binary += String.fromCharCode(byte)
+  return btoa(binary)
 }
 
 function load(file: File): Promise<HTMLImageElement> {
@@ -33,8 +40,21 @@ function load(file: File): Promise<HTMLImageElement> {
 }
 
 // PNG, JPEG and a still GIF all become one WebP. Animation is not kept.
+// A WebP that already fits the limits goes up as it is: encoding it again
+// would lose quality for no gain.
 export async function toWebp(file: File): Promise<PreparedImage> {
   const image = await load(file)
+  if (Math.max(image.naturalWidth, image.naturalHeight) <= MAX_EDGE && file.size <= MAX_ASSET_BYTES) {
+    const original = new Uint8Array(await file.arrayBuffer())
+    if (isWebp(original)) {
+      return {
+        name: slugFor(file.name),
+        base64: base64Of(original),
+        bytes: original.byteLength,
+        url: URL.createObjectURL(new Blob([original], { type: 'image/webp' })),
+      }
+    }
+  }
   const scale = Math.min(1, MAX_EDGE / Math.max(image.naturalWidth, image.naturalHeight))
   const canvas = document.createElement('canvas')
   canvas.width = Math.round(image.naturalWidth * scale)
@@ -42,6 +62,7 @@ export async function toWebp(file: File): Promise<PreparedImage> {
   const context = canvas.getContext('2d')
   if (!context)
     throw new Error('浏览器无法处理这张图片')
+  context.imageSmoothingQuality = 'high'
   context.drawImage(image, 0, 0, canvas.width, canvas.height)
 
   let blob = await new Promise<Blob | null>(resolve =>
@@ -61,13 +82,9 @@ export async function toWebp(file: File): Promise<PreparedImage> {
     blob = new Blob([bytes], { type: 'image/webp' })
   }
 
-  let binary = ''
-  for (const byte of bytes)
-    binary += String.fromCharCode(byte)
-
   return {
     name: slugFor(file.name),
-    base64: btoa(binary),
+    base64: base64Of(bytes),
     bytes: blob.size,
     url: URL.createObjectURL(blob),
   }
