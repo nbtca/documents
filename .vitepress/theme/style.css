@@ -1181,3 +1181,48 @@
     text-decoration: none;
   }
 }
+
+/* Mermaid is rendered in place of the editor preview's fenced source. */
+.vp-doc .nb-mermaid-source {
+  opacity: 0.55;
+}
+
+.vp-doc .nb-mermaid {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 2rem 0;
+  overflow-x: auto;
+}
+
+.vp-doc .nb-mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.vp-doc .nb-mermaid-error {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border: 1px solid color-mix(in srgb, var(--vp-c-danger-1) 35%, var(--vp-c-divider));
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--vp-c-danger-1) 6%, var(--vp-c-bg-soft));
+  font-size: 0.875rem;
+}
+
+.vp-doc .nb-mermaid-error strong {
+  color: var(--vp-c-danger-1);
+}
+
+.vp-doc .nb-mermaid-error p {
+  margin: 0.35rem 0 0.75rem;
+  color: var(--vp-c-text-2);
+}
+
+.vp-doc .nb-mermaid-error details pre {
+  margin: 0.5rem 0 0;
+}
+
+.vp-doc .nb-mermaid-error summary {
+  cursor: pointer;
+  color: var(--vp-c-text-2);
+}
