@@ -1,9 +1,10 @@
 import type { Extension, Range } from '@codemirror/state'
 import type { DecorationSet, ViewUpdate } from '@codemirror/view'
+import type { MarkdownIssue } from '../../../utils/markdown-validation'
 import { defaultKeymap, history, historyKeymap, indentLess, indentMore } from '@codemirror/commands'
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
 import { syntaxTree } from '@codemirror/language'
-import { Compartment, EditorSelection, EditorState, RangeSet } from '@codemirror/state'
+import { Compartment, EditorSelection, EditorState, RangeSet, StateEffect, StateField } from '@codemirror/state'
 import { Decoration, EditorView, keymap, placeholder, ViewPlugin } from '@codemirror/view'
 
 const HEADING = /^ATXHeading([1-6])$/
@@ -109,6 +110,50 @@ function styleDoc(state: EditorState): DecorationSet {
   return RangeSet.of(ranges, true)
 }
 
+function issueDecorations(state: EditorState, issues: MarkdownIssue[]): DecorationSet {
+  const ranges: Range<Decoration>[] = []
+  for (const problem of issues) {
+    if (!problem.line || problem.line > state.doc.lines)
+      continue
+    const line = state.doc.line(problem.line)
+    ranges.push(Decoration.line({ class: 'cm-nb-issue-line' }).range(line.from))
+    const start = Math.min(line.to, line.from + Math.max(0, problem.column - 1))
+    if (start < line.to)
+      ranges.push(Decoration.mark({ class: 'cm-nb-issue-text' }).range(start, Math.min(line.to, start + 1)))
+    else if (line.length)
+      ranges.push(Decoration.mark({ class: 'cm-nb-issue-text' }).range(line.to - 1, line.to))
+  }
+  return RangeSet.of(ranges, true)
+}
+
+const setIssues = StateEffect.define<MarkdownIssue[]>()
+
+const issueField = StateField.define<DecorationSet>({
+  create: () => Decoration.none,
+  update(decorations, transaction) {
+    for (const effect of transaction.effects) {
+      if (effect.is(setIssues))
+        return issueDecorations(transaction.state, effect.value)
+    }
+    return decorations.map(transaction.changes)
+  },
+  provide: field => EditorView.decorations.from(field),
+})
+
+export function setMarkdownIssues(view: EditorView, issues: MarkdownIssue[]): void {
+  view.dispatch({ effects: setIssues.of(issues) })
+}
+
+export function revealMarkdownIssue(view: EditorView, problem: MarkdownIssue): void {
+  const line = view.state.doc.line(Math.min(Math.max(1, problem.line), view.state.doc.lines))
+  const position = Math.min(line.to, line.from + Math.max(0, problem.column - 1))
+  view.dispatch({
+    selection: { anchor: position },
+    effects: EditorView.scrollIntoView(position, { y: 'center' }),
+  })
+  view.focus()
+}
+
 const liveStyling = ViewPlugin.fromClass(
   class {
     decorations: DecorationSet
@@ -155,6 +200,8 @@ const theme = EditorView.theme({
   '.cm-deletedChunk': { backgroundColor: 'color-mix(in srgb, var(--vp-c-danger-1) 12%, transparent)' },
   '.cm-changedLine': { backgroundColor: 'color-mix(in srgb, var(--vp-c-brand-1) 8%, transparent)' },
   '.cm-changedText': { backgroundColor: 'color-mix(in srgb, var(--vp-c-brand-1) 18%, transparent)' },
+  '.cm-nb-issue-line': { backgroundColor: 'color-mix(in srgb, var(--vp-c-danger-1) 7%, transparent)' },
+  '.cm-nb-issue-text': { textDecoration: 'underline wavy var(--vp-c-danger-1)', textUnderlineOffset: '3px' },
   '.cm-nb-code': {
     fontFamily: 'var(--nb-mono)',
     fontSize: '0.9em',
@@ -330,6 +377,7 @@ export function mountEditor(
     markdown({ base: markdownLanguage }),
     EditorView.lineWrapping,
     liveStyling,
+    issueField,
     diffing.of([]),
     theme,
     EditorView.updateListener.of((update) => {

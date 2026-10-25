@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
+import type { MarkdownIssue } from '../../utils/markdown-validation'
 import type { Me, PendingImage } from './editor/backend'
 import type { Format } from './editor/codemirror'
 import type { Destination } from './editor/destinations'
 import {
   Bold,
+  CircleAlert,
+  CircleCheck,
   Code2,
   Eye,
   FileDiff,
@@ -22,6 +25,7 @@ import {
 import { useData } from 'vitepress'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { extractH1, splitFrontmatter } from '../../utils/markdown'
+import { lintMarkdown } from '../../utils/markdown-validation'
 import { reviewNoteFor, transcribedFrom } from './editor/archive'
 import { isSignedIn, signIn, signOut } from './editor/auth'
 import { load, localMode, submit as send, startedAt, taken, me as whoami } from './editor/backend'
@@ -66,8 +70,14 @@ let insertAt: ((snippet: string, caret?: number) => void) | undefined
 let showDiff: ((original: string | undefined) => void) | undefined
 let applyFormat: ((kind: Format) => void) | undefined
 let replaceAll: ((text: string) => void) | undefined
+let showIssues: ((issues: MarkdownIssue[]) => void) | undefined
+let revealIssue: ((issue: MarkdownIssue) => void) | undefined
 
 const diffing = ref(false)
+const markdownIssues = ref<MarkdownIssue[]>([])
+const checkingMarkdown = ref(false)
+const checkedMarkdown = ref(false)
+const checkProblem = ref('')
 
 const images = ref<PendingImage[]>([])
 const pendingUrls = new Map<string, string>()
@@ -102,6 +112,9 @@ const target = computed(() => destination.value
   ? { path: pathFor(destination.value, slug.value), route: routeFor(destination.value, slug.value) }
   : { path: page.value.filePath, route: '' })
 
+const isArchived = computed(() => destination.value?.id === 'archived'
+  || (!destination.value && page.value.filePath.startsWith('archived/')))
+
 const titled = computed(() => Boolean(extractH1(draft.value)?.trim()))
 const slugBad = computed(() => destination.value ? slugProblem(destination.value, slug.value) : '')
 
@@ -135,16 +148,42 @@ const contentBlocker = computed(() => {
   return ''
 })
 
+const checkSummary = computed(() => {
+  if (!changed.value)
+    return ''
+  if (checkingMarkdown.value)
+    return '正在检查 Markdown……'
+  if (checkProblem.value)
+    return 'Markdown 检查暂时不可用'
+  if (markdownIssues.value.length)
+    return `Markdown 有 ${markdownIssues.value.length} 处需要修正`
+  if (checkedMarkdown.value)
+    return 'Markdown 检查通过'
+  return ''
+})
+
+const syntaxBlocker = computed(() => {
+  if (!changed.value || checkProblem.value)
+    return ''
+  if (checkingMarkdown.value)
+    return '正在检查 Markdown 格式'
+  if (checkedMarkdown.value && markdownIssues.value.length)
+    return `Markdown 还有 ${markdownIssues.value.length} 处需要修正`
+  return ''
+})
+
 const blocker = computed(() => {
   if (contentBlocker.value)
     return contentBlocker.value
+  if (syntaxBlocker.value)
+    return syntaxBlocker.value
   if (!summary.value.trim())
     return destination.value ? '写一句话说明这一页讲什么' : '写一句话说明这次改了什么'
   return ''
 })
 
 const canSubmit = computed(() => !blocker.value && !slugIssue.value)
-const canOpenSave = computed(() => !contentBlocker.value && !slugIssue.value)
+const canOpenSave = computed(() => !contentBlocker.value && !syntaxBlocker.value && !slugIssue.value)
 
 const armedLead = computed(() => {
   return leaving.value ? '退出登录会放弃这些修改。' : '现在退出会放弃这些修改。'
@@ -179,6 +218,80 @@ watch([draft, summary, slug, images], () => {
     })
   }, 400)
 }, { deep: true })
+
+let checkTimer: ReturnType<typeof setTimeout> | undefined
+let checkRun = 0
+
+function clearMarkdownCheck() {
+  clearTimeout(checkTimer)
+  checkTimer = undefined
+  checkRun++
+  markdownIssues.value = []
+  checkingMarkdown.value = false
+  checkedMarkdown.value = false
+  checkProblem.value = ''
+  showIssues?.([])
+}
+
+async function inspectMarkdown(): Promise<void> {
+  clearTimeout(checkTimer)
+  checkTimer = undefined
+  const source = draft.value
+  if (!changed.value || !source.trim()) {
+    clearMarkdownCheck()
+    return
+  }
+
+  const run = ++checkRun
+  checkingMarkdown.value = true
+  checkedMarkdown.value = false
+  checkProblem.value = ''
+  markdownIssues.value = []
+  showIssues?.([])
+
+  try {
+    const issues = await lintMarkdown(source, { archived: isArchived.value })
+    if (run !== checkRun)
+      return
+    markdownIssues.value = issues
+    checkedMarkdown.value = true
+    showIssues?.(issues)
+  }
+  catch (error) {
+    if (run !== checkRun)
+      return
+    checkProblem.value = error instanceof Error ? error.message : String(error)
+    checkedMarkdown.value = true
+    showIssues?.([])
+  }
+  finally {
+    if (run === checkRun)
+      checkingMarkdown.value = false
+  }
+}
+
+function scheduleMarkdownCheck() {
+  if (typeof window === 'undefined' || stage.value !== 'editing')
+    return
+  clearTimeout(checkTimer)
+  checkTimer = undefined
+  checkRun++
+  checkingMarkdown.value = false
+  checkedMarkdown.value = false
+  checkProblem.value = ''
+  markdownIssues.value = []
+  showIssues?.([])
+
+  if (!changed.value || !draft.value.trim()) {
+    checkingMarkdown.value = false
+    return
+  }
+
+  checkingMarkdown.value = true
+  checkTimer = setTimeout(() => void inspectMarkdown(), 450)
+}
+
+watch([draft, stage], scheduleMarkdownCheck, { immediate: true })
 
 function restore(key: string): boolean {
   const saved = recall(key)
@@ -217,12 +330,11 @@ watch([() => stage.value, host], async ([current, element]) => {
   if (current !== 'editing' || !element || editor)
     return
   await nextTick()
-  const { mountEditor } = await import('./editor/codemirror')
+  const { format, mountEditor, revealMarkdownIssue, setDiff, setMarkdownIssues } = await import('./editor/codemirror')
   const view = mountEditor(element, draft.value, value => (draft.value = value), () => {
     openSave()
   }, onFiles, destination.value && placeholderFor(destination.value))
   view.focus()
-  const { format, setDiff } = await import('./editor/codemirror')
   showDiff = original => setDiff(view, original)
   applyFormat = kind => format(view, kind)
   replaceAll = (text) => {
@@ -234,14 +346,27 @@ watch([() => stage.value, host], async ([current, element]) => {
     view.dispatch({ changes: { from: at, insert: snippet }, selection: { anchor: at + (caret ?? snippet.length) } })
     view.focus()
   }
+  showIssues = issues => setMarkdownIssues(view, issues)
+  revealIssue = issue => revealMarkdownIssue(view, issue)
+  showIssues(markdownIssues.value)
   editor = { destroy: () => view.destroy() }
 })
 
 function teardown() {
   editor?.destroy()
   editor = undefined
+  showIssues = undefined
+  revealIssue = undefined
+  clearMarkdownCheck()
   preview?.close()
   preview = undefined
+}
+
+async function jumpToIssue(issue: MarkdownIssue) {
+  if (stage.value === 'previewing')
+    backToEditing()
+  await nextTick()
+  revealIssue?.(issue)
 }
 
 function toggleDiff() {
@@ -326,6 +451,8 @@ async function insertImage() {
 }
 
 async function showPreview() {
+  if (stage.value === 'editing')
+    await inspectMarkdown()
   const { openPreview } = await import('./editor/preview')
   preview = await openPreview(draft.value, pendingUrls)
   if (preview)
@@ -393,6 +520,7 @@ watch(stage, async (current) => {
 onBeforeUnmount(() => document.documentElement.style.removeProperty('--vp-layout-top-height'))
 
 function reset() {
+  clearMarkdownCheck()
   restored.value = false
   images.value = []
   pendingUrls.clear()
@@ -740,6 +868,35 @@ function insertOutline() {
             <p v-else-if="changed && contentBlocker" class="nb-edit-why">
               {{ contentBlocker }}
             </p>
+            <div v-if="changed && stage !== 'submitting'" class="nb-edit-check" aria-live="polite">
+              <p v-if="checkingMarkdown" class="nb-edit-check-note">
+                正在检查 Markdown 格式……
+              </p>
+              <div v-else-if="checkProblem" class="nb-edit-check-problem">
+                <CircleAlert :size="17" :stroke-width="1.8" aria-hidden="true" />
+                <span>Markdown 检查暂时不可用，仍可预览和保存。</span>
+                <small>{{ checkProblem }}</small>
+              </div>
+              <template v-else-if="markdownIssues.length">
+                <p class="nb-edit-check-head">
+                  <CircleAlert :size="17" :stroke-width="1.8" aria-hidden="true" />
+                  修正下面 {{ markdownIssues.length }} 处问题后才能提交
+                </p>
+                <ol class="nb-edit-check-list">
+                  <li v-for="issue in markdownIssues" :key="`${issue.line}:${issue.column}:${issue.rule}`">
+                    <button type="button" :title="issue.detail || issue.message" @click="jumpToIssue(issue)">
+                      <span class="nb-edit-check-place">第 {{ issue.line }} 行</span>
+                      <span class="nb-edit-check-rule">{{ issue.rule }}</span>
+                      <span>{{ issue.message }}</span>
+                    </button>
+                  </li>
+                </ol>
+              </template>
+              <p v-else-if="checkedMarkdown" class="nb-edit-check-pass">
+                <CircleCheck :size="17" :stroke-width="1.8" aria-hidden="true" />
+                Markdown 检查通过
+              </p>
+            </div>
             <div ref="host" class="nb-edit-area" :class="{ 'is-busy': stage === 'submitting' }" />
             <input ref="picker" type="file" :accept="accepts" hidden @change="onPicked">
           </template>
@@ -851,6 +1008,13 @@ function insertOutline() {
           <span class="nb-preview-mode">
             <Eye :size="18" :stroke-width="1.8" aria-hidden="true" />
             预览模式
+          </span>
+          <span
+            v-if="checkSummary"
+            class="nb-preview-check"
+            :class="{ 'is-bad': markdownIssues.length, 'is-good': checkedMarkdown && !markdownIssues.length && !checkProblem }"
+          >
+            {{ checkSummary }}
           </span>
           <button type="button" class="nb-edit-ghost" @click="backToEditing">
             继续编辑
@@ -1251,6 +1415,24 @@ function insertOutline() {
   color: var(--vp-c-brand-1);
 }
 
+.nb-preview-check {
+  flex: none;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--vp-c-bg);
+  font-size: 12px;
+  color: var(--vp-c-text-3);
+  white-space: nowrap;
+}
+
+.nb-preview-check.is-good {
+  color: var(--vp-c-success-1);
+}
+
+.nb-preview-check.is-bad {
+  color: var(--vp-c-danger-1);
+}
+
 .nb-edit-note {
   font-size: 13px;
   color: var(--vp-c-text-3);
@@ -1476,6 +1658,83 @@ function insertOutline() {
   padding: 34px 21px 0;
 }
 
+.nb-edit-check {
+  width: 100%;
+  max-width: var(--nb-measure);
+  margin: 0 auto;
+  padding: 0 21px 4px;
+  font-size: 13px;
+}
+
+.nb-edit-check-note {
+  color: var(--vp-c-text-3);
+}
+
+.nb-edit-check-head,
+.nb-edit-check-pass,
+.nb-edit-check-problem {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  color: var(--vp-c-danger-1);
+}
+
+.nb-edit-check-pass {
+  color: var(--vp-c-success-1);
+}
+
+.nb-edit-check-problem {
+  flex-wrap: wrap;
+  color: var(--vp-c-warning-1);
+}
+
+.nb-edit-check-problem small {
+  flex: 1 0 100%;
+  padding-left: 24px;
+  font-size: 12px;
+  color: var(--vp-c-text-3);
+}
+
+.nb-edit-check-list {
+  max-height: 14rem;
+  margin: 7px 0 4px;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 4px;
+}
+
+.nb-edit-check-list li + li {
+  border-top: 1px solid var(--vp-c-divider);
+}
+
+.nb-edit-check-list button {
+  display: flex;
+  gap: 7px;
+  align-items: baseline;
+  width: 100%;
+  padding: 7px 10px;
+  text-align: left;
+  color: var(--vp-c-text-2);
+}
+
+.nb-edit-check-list button:hover {
+  background: var(--vp-c-bg-soft);
+}
+
+.nb-edit-check-place,
+.nb-edit-check-rule {
+  flex: none;
+  font-family: var(--nb-mono);
+  font-size: 11px;
+  color: var(--vp-c-text-3);
+}
+
+.nb-edit-check-rule {
+  color: var(--vp-c-danger-1);
+}
+
 .nb-edit-why {
   width: 100%;
   max-width: var(--nb-measure);
@@ -1496,6 +1755,14 @@ function insertOutline() {
 
   .nb-edit-head {
     padding: 13px 8px 0;
+  }
+
+  .nb-preview-mode {
+    font-size: 14px;
+  }
+
+  .nb-preview-check {
+    display: none;
   }
 
   .nb-edit-toolbar {

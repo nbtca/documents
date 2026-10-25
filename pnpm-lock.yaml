@@ -108,6 +108,9 @@ importers:
       markdown-it-container:
         specifier: ^4.0.0
         version: 4.0.0
+      markdownlint:
+        specifier: 0.38.0
+        version: 0.38.0
       markdownlint-cli2:
         specifier: ^0.18.1
         version: 0.18.1
