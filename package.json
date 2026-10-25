@@ -55,7 +55,7 @@
     "markdownlint-cli2": "^0.18.1",
     "mermaid": "^11.16.1",
     "postcss": "^8.5.26",
-    "vite": "^8.0.16",
+    "vite": "^8.1.6",
     "vitepress": "^1.6.4",
     "vitepress-plugin-mermaid": "^2.0.17",
     "vitest": "^4.1.11"
