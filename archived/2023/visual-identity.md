@@ -37,13 +37,16 @@ archive:
 
 这与组织结构的走向对得上：维修队在 [2017—2018 学年被独立出来、直接归会长](/archived/2018/2017-2018-work-report)，是协会对外最有辨识度的一块招牌。〕
 
-## 四枚分项徽章
+## 五枚分项徽章
 
 <FigureGrid :wide="false">
   <Figure src="../assets/ca-badge-consult.webp" alt="深蓝色圆徽：外圈环形英文，中央上方是两枚水滴状眼睛与一道弧线，下半部深蓝底上写着白色的“Consult”" caption="Consult" date="无日期" source="协会档案袋 · 资源/logo资源" />
   <Figure src="../assets/ca-badge-dev.webp" alt="同款深蓝色圆徽，下半部深蓝底上是白色的“&lt;/&gt;”符号" caption="Dev" date="无日期" source="协会档案袋 · 资源/logo资源" />
   <Figure src="../assets/ca-badge-repair.webp" alt="同款深蓝色圆徽，下半部深蓝底上写着白色的“Repair”" caption="Repair" date="无日期" source="协会档案袋 · 资源/logo资源" />
   <Figure src="../assets/ca-badge-minecraft.webp" alt="同款深蓝色圆徽，下半部深蓝底上是一个白色线框立方体" caption="Minecraft" date="无日期" source="协会档案袋 · 资源/logo资源" />
+  <Figure src="../assets/ca-badge-design.webp" alt="同款深蓝色圆徽，下半部深蓝底上是一只笔绘制黄金曲线"
+  caption="Design" date="2026.10.18" source="协会档案袋 · 资源/logo资源" />
+
 </FigureGrid>
 
 同一个外圈、同一个模板，中央换成各自的标记：
@@ -54,6 +57,7 @@ archive:
 | Dev       | `</>`          | [开发部](/concepts/departments) |
 | Repair    | `Repair` 字样  | [维修队](/repair/)              |
 | Minecraft | 线框立方体     | 协会自运营的 Minecraft 服务器   |
+| Design    | 黄金螺旋       | 设计领域的“终极美学法则”        |
 
 〔同目录下还有一个 `robot.ai`，未在此渲染。
 
