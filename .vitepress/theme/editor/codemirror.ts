@@ -5,7 +5,7 @@ import { defaultKeymap, history, historyKeymap, indentLess, indentMore } from '@
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
 import { syntaxTree } from '@codemirror/language'
 import { Compartment, EditorSelection, EditorState, RangeSet, StateEffect, StateField } from '@codemirror/state'
-import { Decoration, EditorView, keymap, placeholder, ViewPlugin } from '@codemirror/view'
+import { Decoration, EditorView, keymap, placeholder, ViewPlugin, WidgetType } from '@codemirror/view'
 
 const HEADING = /^ATXHeading([1-6])$/
 const MARK_CLASS: Record<string, string> = {
@@ -110,18 +110,59 @@ function styleDoc(state: EditorState): DecorationSet {
   return RangeSet.of(ranges, true)
 }
 
+class IssueMessage extends WidgetType {
+  constructor(readonly issues: MarkdownIssue[]) {
+    super()
+  }
+
+  eq(other: IssueMessage): boolean {
+    return JSON.stringify(this.issues) === JSON.stringify(other.issues)
+  }
+
+  toDOM(): HTMLElement {
+    const container = document.createElement('div')
+    container.className = 'cm-nb-issue-messages'
+    for (const issue of this.issues) {
+      const message = document.createElement('div')
+      message.className = 'cm-nb-issue-message'
+      const summary = document.createElement('div')
+      summary.textContent = `${issue.rule} · ${issue.message}`
+      message.append(summary)
+      if (issue.detail && issue.detail !== issue.message) {
+        const detail = document.createElement('div')
+        detail.className = 'cm-nb-issue-detail'
+        detail.textContent = issue.detail
+        message.append(detail)
+      }
+      container.append(message)
+    }
+    return container
+  }
+}
+
 function issueDecorations(state: EditorState, issues: MarkdownIssue[]): DecorationSet {
   const ranges: Range<Decoration>[] = []
+  const byLine = new Map<number, MarkdownIssue[]>()
   for (const problem of issues) {
     if (!problem.line || problem.line > state.doc.lines)
       continue
     const line = state.doc.line(problem.line)
+    const messages = byLine.get(problem.line) ?? []
+    messages.push(problem)
+    byLine.set(problem.line, messages)
     ranges.push(Decoration.line({ class: 'cm-nb-issue-line' }).range(line.from))
     const start = Math.min(line.to, line.from + Math.max(0, problem.column - 1))
     if (start < line.to)
       ranges.push(Decoration.mark({ class: 'cm-nb-issue-text' }).range(start, Math.min(line.to, start + 1)))
     else if (line.length)
       ranges.push(Decoration.mark({ class: 'cm-nb-issue-text' }).range(line.to - 1, line.to))
+  }
+  for (const [number, messages] of byLine) {
+    ranges.push(Decoration.widget({
+      widget: new IssueMessage(messages),
+      block: true,
+      side: 1,
+    }).range(state.doc.line(number).to))
   }
   return RangeSet.of(ranges, true)
 }
@@ -202,6 +243,25 @@ const theme = EditorView.theme({
   '.cm-changedText': { backgroundColor: 'color-mix(in srgb, var(--vp-c-brand-1) 18%, transparent)' },
   '.cm-nb-issue-line': { backgroundColor: 'color-mix(in srgb, var(--vp-c-danger-1) 7%, transparent)' },
   '.cm-nb-issue-text': { textDecoration: 'underline wavy var(--vp-c-danger-1)', textUnderlineOffset: '3px' },
+  '.cm-nb-issue-messages': {
+    maxWidth: 'var(--nb-measure)',
+    margin: '4px auto 10px',
+    padding: '0 21px',
+    boxSizing: 'border-box',
+    color: 'var(--vp-c-danger-1)',
+    fontFamily: 'var(--vp-font-family-base)',
+    fontSize: '13px',
+    lineHeight: '1.6',
+    whiteSpace: 'pre-wrap',
+    overflowWrap: 'anywhere',
+  },
+  '.cm-nb-issue-message': {
+    padding: '5px 10px',
+    borderLeft: '2px solid var(--vp-c-danger-1)',
+    backgroundColor: 'color-mix(in srgb, var(--vp-c-danger-1) 7%, transparent)',
+  },
+  '.cm-nb-issue-message + .cm-nb-issue-message': { marginTop: '4px' },
+  '.cm-nb-issue-detail': { color: 'var(--vp-c-text-2)', fontSize: '12px' },
   '.cm-nb-code': {
     fontFamily: 'var(--nb-mono)',
     fontSize: '0.9em',
