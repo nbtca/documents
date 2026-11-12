@@ -887,7 +887,10 @@ function insertOutline() {
                     <button type="button" :title="issue.detail || issue.message" @click="jumpToIssue(issue)">
                       <span class="nb-edit-check-place">第 {{ issue.line }} 行</span>
                       <span class="nb-edit-check-rule">{{ issue.rule }}</span>
-                      <span>{{ issue.message }}</span>
+                      <span class="nb-edit-check-message">
+                        <span>{{ issue.message }}</span>
+                        <small v-if="issue.detail && issue.detail !== issue.message">{{ issue.detail }}</small>
+                      </span>
                     </button>
                   </li>
                 </ol>
@@ -1721,6 +1724,17 @@ function insertOutline() {
 
 .nb-edit-check-list button:hover {
   background: var(--vp-c-bg-soft);
+}
+
+.nb-edit-check-message {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.nb-edit-check-message small {
+  display: block;
+  white-space: pre-wrap;
+  color: var(--vp-c-text-3);
 }
 
 .nb-edit-check-place,
