@@ -128,6 +128,12 @@ class IssueMessage extends WidgetType {
       const summary = document.createElement('div')
       summary.textContent = `${issue.rule} · ${issue.message}`
       message.append(summary)
+      if (issue.fix) {
+        const fix = document.createElement('div')
+        fix.className = 'cm-nb-issue-fix'
+        fix.textContent = issue.fix
+        message.append(fix)
+      }
       if (issue.detail && issue.detail !== issue.message) {
         const detail = document.createElement('div')
         detail.className = 'cm-nb-issue-detail'
@@ -261,6 +267,7 @@ const theme = EditorView.theme({
     backgroundColor: 'color-mix(in srgb, var(--vp-c-danger-1) 7%, transparent)',
   },
   '.cm-nb-issue-message + .cm-nb-issue-message': { marginTop: '4px' },
+  '.cm-nb-issue-fix': { color: 'var(--vp-c-text-1)' },
   '.cm-nb-issue-detail': { color: 'var(--vp-c-text-2)', fontSize: '12px' },
   '.cm-nb-code': {
     fontFamily: 'var(--nb-mono)',

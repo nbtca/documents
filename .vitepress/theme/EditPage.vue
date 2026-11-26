@@ -25,7 +25,7 @@ import {
 import { useData } from 'vitepress'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { extractH1, splitFrontmatter } from '../../utils/markdown'
-import { lintMarkdown } from '../../utils/markdown-validation'
+import { fixMarkdown, lintMarkdown } from '../../utils/markdown-validation'
 import { reviewNoteFor, transcribedFrom } from './editor/archive'
 import { isSignedIn, signIn, signOut } from './editor/auth'
 import { load, localMode, submit as send, startedAt, taken, me as whoami } from './editor/backend'
@@ -360,6 +360,15 @@ function teardown() {
   clearMarkdownCheck()
   preview?.close()
   preview = undefined
+}
+
+const fixableIssues = computed(() => markdownIssues.value.filter(issue => issue.fixInfo))
+
+async function autoFix(issues: MarkdownIssue[]) {
+  const source = draft.value
+  const fixed = await fixMarkdown(source, issues)
+  if (fixed !== source && draft.value === source)
+    replaceAll?.(fixed)
 }
 
 async function jumpToIssue(issue: MarkdownIssue) {
@@ -881,6 +890,9 @@ function insertOutline() {
                 <p class="nb-edit-check-head">
                   <CircleAlert :size="17" :stroke-width="1.8" aria-hidden="true" />
                   修正下面 {{ markdownIssues.length }} 处问题后才能提交
+                  <button v-if="fixableIssues.length" type="button" class="nb-edit-check-action" @click="autoFix(fixableIssues)">
+                    自动修复其中 {{ fixableIssues.length }} 处
+                  </button>
                 </p>
                 <ol class="nb-edit-check-list">
                   <li v-for="issue in markdownIssues" :key="`${issue.line}:${issue.column}:${issue.rule}`">
@@ -889,9 +901,16 @@ function insertOutline() {
                       <span class="nb-edit-check-rule">{{ issue.rule }}</span>
                       <span class="nb-edit-check-message">
                         <span>{{ issue.message }}</span>
+                        <span v-if="issue.fix" class="nb-edit-check-fix">{{ issue.fix }}</span>
                         <small v-if="issue.detail && issue.detail !== issue.message">{{ issue.detail }}</small>
                       </span>
                     </button>
+                    <span v-if="issue.fixInfo || issue.information" class="nb-edit-check-tools">
+                      <button v-if="issue.fixInfo" type="button" class="nb-edit-check-action" @click="autoFix([issue])">
+                        自动修复
+                      </button>
+                      <a v-if="issue.information" :href="issue.information" target="_blank" rel="noreferrer">规则说明（英文）</a>
+                    </span>
                   </li>
                 </ol>
               </template>
@@ -1712,8 +1731,10 @@ function insertOutline() {
   border-top: 1px solid var(--vp-c-divider);
 }
 
-.nb-edit-check-list button {
+.nb-edit-check-list li > button {
   display: flex;
+  flex: 1;
+  min-width: 0;
   gap: 7px;
   align-items: baseline;
   width: 100%;
@@ -1722,13 +1743,50 @@ function insertOutline() {
   color: var(--vp-c-text-2);
 }
 
-.nb-edit-check-list button:hover {
+.nb-edit-check-list li > button:hover {
   background: var(--vp-c-bg-soft);
 }
 
 .nb-edit-check-message {
   min-width: 0;
   overflow-wrap: anywhere;
+}
+
+.nb-edit-check-list li {
+  display: flex;
+  align-items: baseline;
+}
+
+.nb-edit-check-tools {
+  display: flex;
+  flex: none;
+  gap: 10px;
+  align-items: baseline;
+  padding: 7px 10px 7px 0;
+  font-size: 12px;
+}
+
+.nb-edit-check-tools a {
+  color: var(--vp-c-text-3);
+}
+
+.nb-edit-check-action {
+  font-size: 12px;
+  color: var(--vp-c-brand-1);
+}
+
+.nb-edit-check-head .nb-edit-check-action {
+  margin-left: auto;
+}
+
+.nb-edit-check-action:hover,
+.nb-edit-check-tools a:hover {
+  text-decoration: underline;
+}
+
+.nb-edit-check-fix {
+  display: block;
+  color: var(--vp-c-text-1);
 }
 
 .nb-edit-check-message small {
