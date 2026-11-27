@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { EditorView } from '@codemirror/view'
 import type { Component } from 'vue'
-import type { PullSummary } from '../../utils/github'
+import type { OpenDraft, PullSummary } from '../../utils/github'
 import type { MarkdownIssue } from '../../utils/markdown-validation'
 import type { TypographyHint } from '../../utils/typography'
 import type { Me, PendingImage } from './editor/backend'
-import type { Format } from './editor/codemirror'
+import type { Format, Heading } from './editor/codemirror'
 import type { Destination } from './editor/destinations'
 import type { Preview } from './editor/preview'
 import {
@@ -23,6 +23,7 @@ import {
   Link,
   List,
   ListOrdered,
+  ListTree,
   Quote,
   RotateCcw,
   SquareCode,
@@ -37,7 +38,7 @@ import { typographyHints } from '../../utils/typography'
 import { data as sitePages } from './concepts.data'
 import { reviewNoteFor, transcribedFrom } from './editor/archive'
 import { isSignedIn, signIn, signOut } from './editor/auth'
-import { currentSha, historyUrl, load, localMode, myPulls, submit as send, startedAt, taken, me as whoami } from './editor/backend'
+import { currentSha, historyUrl, load, localMode, myPulls, remoteDraft, submit as send, startedAt, taken, me as whoami } from './editor/backend'
 import {
   checklistFor,
   DESTINATIONS,
@@ -67,6 +68,10 @@ const original = ref('')
 const base = ref<string>()
 const sha = ref<string>()
 const moved = ref(false)
+// An open draft pull request this writer left for the page, maybe on another
+// device. Saving again adds to it instead of opening a second one.
+const onto = ref<OpenDraft>()
+const offered = ref<OpenDraft>()
 const summary = ref('')
 const head = ref('')
 const problem = ref('')
@@ -89,6 +94,11 @@ let showIssues: ((issues: MarkdownIssue[]) => void) | undefined
 let revealIssue: ((issue: MarkdownIssue) => void) | undefined
 
 const diffing = ref(false)
+const outlineOpen = ref(false)
+const headings = ref<Heading[]>([])
+const cursorLine = ref(1)
+let readHeadings: (() => Heading[]) | undefined
+let jumpToLine: ((line: number) => void) | undefined
 const markdownIssues = ref<MarkdownIssue[]>([])
 const hints = ref<TypographyHint[]>([])
 let showHints: ((hints: TypographyHint[]) => void) | undefined
@@ -104,6 +114,9 @@ const pending = ref<{ file: File, alt: string, caption: string } | undefined>()
 const busy = ref(false)
 
 const restored = ref(false)
+// Asked once per editing session; repeating it on every paste would be noise.
+const pasteAsked = ref(false)
+const pasteNotice = ref(false)
 
 // Below this width two columns leave each side narrower than a phone, so the
 // preview becomes a tab instead of a pane.
@@ -201,13 +214,21 @@ const onlyFixable = computed(() => checkedMarkdown.value && markdownIssues.value
   && markdownIssues.value.every(issue => issue.fixInfo))
 const canFixAndSave = computed(() => !contentBlocker.value && !slugIssue.value && onlyFixable.value)
 
+// A draft is unfinished by definition, so only what would break saving it
+// at all is checked; Markdown problems wait for the real submission.
+const canDraftFromToolbar = computed(() => !localMode && changed.value && !contentBlocker.value && !slugIssue.value && Boolean(syntaxBlocker.value))
+const canSaveDraft = computed(() => !localMode && changed.value && !slugIssue.value && !splitFrontmatter(draft.value.trimStart()).head && Boolean(summary.value.trim()))
+
 // A grey button with no reason is the first dead end a newcomer hits.
 const saveHint = computed(() => {
   if (canFixAndSave.value)
     return `先自动修复 ${markdownIssues.value.length} 处格式问题，再打开保存窗口`
   if (canOpenSave.value)
     return undefined
-  return contentBlocker.value || slugIssue.value || syntaxBlocker.value || undefined
+  const reason = contentBlocker.value || slugIssue.value || syntaxBlocker.value
+  return reason && !localMode && changed.value && syntaxBlocker.value === reason
+    ? `${reason}。也可以先存为草稿，下次接着写`
+    : reason || undefined
 })
 
 const armedLead = computed(() => {
@@ -362,12 +383,19 @@ watch([() => stage.value, host], async ([current, element]) => {
   if (current !== 'editing' || !element || editor)
     return
   await nextTick()
-  const { format, lineAtY, mountEditor, revealMarkdownIssue, setDiff, setMarkdownIssues, setTypographyHints, yForLine } = await import('./editor/codemirror')
+  const { format, goToLine, headingsOf, lineAtY, mountEditor, revealMarkdownIssue, setDiff, setMarkdownIssues, setTypographyHints, yForLine } = await import('./editor/codemirror')
   sourceLineAt = lineAtY
   sourceYFor = yForLine
   const view = mountEditor(element, draft.value, value => (draft.value = value), () => {
     save()
-  }, onFiles, destination.value && placeholderFor(destination.value), sitePages)
+  }, onFiles, destination.value && placeholderFor(destination.value), sitePages, line => (cursorLine.value = line), () => pick('image/*'), () => {
+    if (!pasteAsked.value)
+      pasteNotice.value = pasteAsked.value = true
+  })
+  readHeadings = () => headingsOf(view.state)
+  jumpToLine = line => goToLine(view, line)
+  if (outlineOpen.value)
+    headings.value = readHeadings()
   view.focus()
   editorView = view
   showDiff = original => setDiff(view, original)
@@ -396,6 +424,9 @@ function teardown() {
   showHints = undefined
   revealIssue = undefined
   editorView = undefined
+  pasteNotice.value = pasteAsked.value = false
+  readHeadings = undefined
+  jumpToLine = undefined
   clearMarkdownCheck()
   stopPreview()
   tab.value = 'source'
@@ -441,7 +472,7 @@ function save() {
   if (canFixAndSave.value)
     void fixAndSave()
   else
-    openSave()
+    void openSave(!canOpenSave.value)
 }
 
 async function jumpToIssue(issue: MarkdownIssue) {
@@ -456,8 +487,10 @@ function toggleDiff() {
   showDiff?.(diffing.value ? original.value : undefined)
 }
 
-async function openSave() {
-  if (!canOpenSave.value || stage.value === 'submitting')
+// Unfinished work can still be stored as a draft, so the dialog opens even
+// when Markdown problems block submitting for review.
+async function openSave(forDraft = false) {
+  if (stage.value === 'submitting' || !(canOpenSave.value || (forDraft && changed.value && !localMode)))
     return
   if (!destination.value && sha.value) {
     const now = await currentSha(page.value.filePath)
@@ -695,6 +728,26 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 
 onBeforeUnmount(teardown)
 
+// The section the cursor is in: the last heading at or above it.
+const currentHeading = computed(() => headings.value.findLast(heading => heading.line <= cursorLine.value)?.line)
+
+watch([draft, outlineOpen], () => {
+  if (outlineOpen.value)
+    headings.value = readHeadings?.() ?? []
+})
+
+function toggleOutline() {
+  outlineOpen.value = !outlineOpen.value
+}
+
+async function goToHeading(line: number) {
+  if (!showingSource.value)
+    await switchTab('source')
+  jumpToLine?.(line)
+  if (!wide.value)
+    outlineOpen.value = false
+}
+
 const pulls = ref<PullSummary[]>([])
 
 const PULL_STATE: Record<PullSummary['state'], string> = {
@@ -760,6 +813,8 @@ function reset() {
   base.value = undefined
   sha.value = undefined
   moved.value = false
+  onto.value = undefined
+  offered.value = undefined
   saveOpen.value = false
   pending.value = undefined
 }
@@ -817,6 +872,12 @@ async function open() {
     sha.value = file.sha
     restore(page.value.filePath)
     stage.value = 'editing'
+    void remoteDraft(member.value?.name ?? '', page.value.filePath).then((found) => {
+      if (found && found.content !== head.value + draft.value)
+        offered.value = found
+      else
+        onto.value = found
+    })
   }
   catch (error) {
     problem.value = (error as Error).message
@@ -824,16 +885,27 @@ async function open() {
   }
 }
 
-async function submit() {
+function continueDraft() {
+  const found = offered.value
+  if (!found)
+    return
+  const parts = splitFrontmatter(found.content)
+  head.value = parts.head
+  replaceAll?.(parts.body)
+  onto.value = found
+  offered.value = undefined
+}
+
+async function submit(draftOnly = false) {
   armed.value = false
   leaving.value = false
   stage.value = 'submitting'
   progress.value = ''
   try {
     const at = destination.value
-    if (at)
+    if (at && !onto.value)
       progress.value = '正在检查这个网址是否可用……'
-    if (at && await taken(target.value.path)) {
+    if (at && !onto.value && await taken(target.value.path)) {
       slugTaken.value = target.value.route
       stage.value = 'editing'
       return
@@ -849,6 +921,8 @@ async function submit() {
       images: images.value,
       base: base.value,
       checklist: checklist.value,
+      draft: draftOnly,
+      onto: onto.value,
     }, step => (progress.value = step))
     forget(draftKey.value)
     void loadPulls()
@@ -1077,6 +1151,17 @@ function insertOutline() {
                     </button>
                   </span>
                   <button
+                    type="button"
+                    class="nb-edit-action"
+                    :class="{ 'is-on': outlineOpen }"
+                    :aria-pressed="outlineOpen"
+                    aria-controls="nb-edit-outline"
+                    @click="toggleOutline"
+                  >
+                    <ListTree :size="17" :stroke-width="1.8" aria-hidden="true" />
+                    大纲
+                  </button>
+                  <button
                     v-if="wide"
                     type="button"
                     class="nb-edit-action"
@@ -1105,7 +1190,7 @@ function insertOutline() {
                   <button
                     type="button"
                     class="nb-edit-submit"
-                    :disabled="!(canOpenSave || canFixAndSave) || stage === 'submitting'"
+                    :disabled="!(canOpenSave || canFixAndSave || canDraftFromToolbar) || stage === 'submitting'"
                     :title="saveHint"
                     aria-describedby="nb-save-hint"
                     @click="save"
@@ -1137,13 +1222,42 @@ function insertOutline() {
               </div>
             </div>
 
+            <p v-if="offered" class="nb-edit-why is-note" role="status">
+              <span>你在 GitHub 上有这一页的草稿 <a :href="offered.url" target="_blank" rel="noreferrer">#{{ offered.number }}</a>，可能是在另一台设备上写的。</span>
+              <button type="button" class="nb-edit-check-action" @click="continueDraft">
+                接着写
+              </button>
+            </p>
+            <p v-if="pasteNotice" class="nb-edit-why is-note" role="status">
+              <span>刚粘贴了一大段文字。如果它来自通知、网页或聊天记录，请写明出处，或者用自己的话概括，见<a href="/tutorial/manual/writing-documents#引用别人的文字" target="_blank" rel="noreferrer">引用别人的文字</a>。</span>
+              <button type="button" class="nb-edit-check-action" @click="pasteNotice = false">
+                知道了
+              </button>
+            </p>
             <p v-if="problem" class="nb-edit-why is-bad">
               {{ problem }}
             </p>
             <p v-else-if="contentBlocker && (changed || destination)" id="nb-save-hint" class="nb-edit-why">
               {{ contentBlocker }}
             </p>
-            <div class="nb-edit-panes">
+            <div class="nb-edit-panes" :class="{ 'has-outline': outlineOpen, 'is-wide': wide }">
+              <nav v-if="outlineOpen" id="nb-edit-outline" class="nb-edit-outline" aria-label="页面大纲">
+                <p v-if="!headings.length" class="nb-edit-outline-empty">
+                  还没有标题。用 ## 开头的一行开始一节。
+                </p>
+                <ol v-else>
+                  <li v-for="item in headings" :key="item.line" :style="{ '--depth': item.level - 1 }">
+                    <button
+                      type="button"
+                      :class="{ 'is-current': item.line === currentHeading }"
+                      :aria-current="item.line === currentHeading ? 'location' : undefined"
+                      @click="goToHeading(item.line)"
+                    >
+                      {{ item.text || '（空标题）' }}
+                    </button>
+                  </li>
+                </ol>
+              </nav>
               <div v-show="showingSource" class="nb-edit-source">
                 <div v-if="changed && stage !== 'submitting'" class="nb-edit-check" aria-live="polite">
                   <p v-if="checkingMarkdown" class="nb-edit-check-note">
@@ -1213,7 +1327,7 @@ function insertOutline() {
               />
             </div>
             <p v-if="mod" id="nb-edit-keys" class="nb-edit-keys">
-              {{ mod }}F 查找，F8 跳到下一个问题，在 ]( 后面输入会列出站内页面。按 Esc 再按 Tab 可以离开编辑区。
+              在行首输入 / 可以插入标题、列表、代码块、表格或图片。{{ mod }}F 查找，F8 跳到下一个问题，在 ]( 后面输入会列出站内页面。按 Esc 再按 Tab 可以离开编辑区。
             </p>
             <input ref="picker" type="file" :accept="accepts" hidden @change="onPicked">
           </template>
@@ -1260,7 +1374,7 @@ function insertOutline() {
       </div>
 
       <div v-if="saveOpen" class="nb-edit-modal" role="presentation">
-        <form class="nb-edit-dialog" role="dialog" aria-modal="true" aria-labelledby="nb-save-title" @submit.prevent="canSubmit && submit()">
+        <form class="nb-edit-dialog" role="dialog" aria-modal="true" aria-labelledby="nb-save-title" @submit.prevent="canSubmit && submit(false)">
           <div>
             <h2 id="nb-save-title" class="nb-edit-dialog-title">
               {{ localMode
@@ -1269,6 +1383,9 @@ function insertOutline() {
             </h2>
             <p v-if="!localMode" class="nb-edit-dialog-note">
               维护者会先审阅；通过后才会更新线上页面。
+            </p>
+            <p v-if="onto" class="nb-edit-dialog-note">
+              这次会接着写进你的草稿 <a :href="onto.url" target="_blank" rel="noreferrer">#{{ onto.number }}</a>，不会另开一个 Pull Request。
             </p>
             <p v-if="moved" class="nb-edit-dialog-note is-warn" role="alert">
               你开始编辑之后，别人也改过这一页。提交后维护者会帮你合并两边的修改；想先看看改了什么，可以打开<a :href="historyUrl(page.filePath)" target="_blank" rel="noreferrer">这一页的修改记录</a>。
@@ -1290,6 +1407,16 @@ function insertOutline() {
           <div class="nb-edit-dialog-actions">
             <button type="button" class="nb-edit-ghost" :disabled="stage === 'submitting'" @click="saveOpen = false">
               取消
+            </button>
+            <button
+              v-if="!localMode"
+              type="button"
+              class="nb-edit-ghost"
+              :disabled="!canSaveDraft || stage === 'submitting'"
+              title="存到 GitHub，换一台电脑也能接着写；维护者暂时不会审阅"
+              @click="submit(true)"
+            >
+              存为草稿
             </button>
             <button type="submit" class="nb-edit-submit" :disabled="!canSubmit || stage === 'submitting'">
               {{ stage === 'submitting'
@@ -1512,6 +1639,24 @@ function insertOutline() {
   align-items: start;
 }
 
+/* Wide screens: a narrow column on the left, sticking below the toolbar. */
+.nb-edit-panes.is-wide.has-outline {
+  grid-template-columns: 13rem minmax(0, 1fr);
+}
+
+.nb-edit-sheet.is-split .nb-edit-panes.is-wide.has-outline {
+  grid-template-columns: 13rem minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.nb-edit-panes.is-wide .nb-edit-outline {
+  position: sticky;
+  top: var(--nb-toolbar-height, 56px);
+  max-height: calc(100vh - var(--nb-toolbar-height, 56px));
+  padding: 34px 8px 34px 0;
+  overflow-y: auto;
+  border-right: 1px solid var(--vp-c-divider);
+}
+
 .nb-edit-sheet.is-split .nb-edit-source {
   min-width: 0;
   border-right: 1px solid var(--vp-c-divider);
@@ -1524,6 +1669,62 @@ function insertOutline() {
   overflow-y: auto;
   overscroll-behavior: contain;
   padding-inline: 34px;
+}
+
+.nb-edit-outline {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.nb-edit-outline ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nb-edit-outline button {
+  display: block;
+  width: 100%;
+  padding: 4px 8px 4px calc(8px + var(--depth) * 12px);
+  border-left: 2px solid transparent;
+  text-align: left;
+  color: var(--vp-c-text-2);
+  overflow-wrap: anywhere;
+}
+
+.nb-edit-outline button:hover {
+  color: var(--vp-c-text-1);
+}
+
+.nb-edit-outline button.is-current {
+  border-left-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1);
+}
+
+.nb-edit-outline-empty {
+  margin: 0;
+  padding: 8px;
+  color: var(--vp-c-text-3);
+}
+
+/* Narrow screens: the outline drops down under the toolbar and covers the
+   text until a heading is picked, like a table-of-contents menu. */
+.nb-edit-panes.has-outline {
+  position: relative;
+}
+
+.nb-edit-panes:not(.is-wide) .nb-edit-outline {
+  position: sticky;
+  z-index: 3;
+  top: var(--nb-toolbar-height, 0px);
+  max-height: 60vh;
+  margin: 0 8px;
+  padding: 6px 0;
+  overflow-y: auto;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 6px;
+  background: var(--vp-c-bg);
+  box-shadow: var(--vp-shadow-3);
 }
 
 .nb-edit-tabs {
@@ -2204,6 +2405,27 @@ function insertOutline() {
   padding: 0 21px;
   font-size: 13px;
   color: var(--vp-c-text-3);
+}
+
+/* A note answers something just done, often far down a long page; it stays
+   under the toolbar so the writer sees it without scrolling back up. */
+.nb-edit-why.is-note {
+  position: sticky;
+  z-index: 2;
+  top: calc(var(--nb-toolbar-height, 0px) + 6px);
+  box-shadow: var(--vp-shadow-2);
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding-block: 8px;
+  border-radius: 4px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+}
+
+.nb-edit-why.is-note button {
+  flex: none;
+  margin-left: auto;
 }
 
 .nb-edit-problem {

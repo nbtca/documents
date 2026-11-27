@@ -130,7 +130,7 @@ export function frontmatterFor(
 }
 
 export function placeholderFor(destination: Destination): string {
-  return `以一行“# 标题”开头，然后写正文。${destination.how}。`
+  return `以一行“# 标题”开头，然后写正文。在行首输入 / 可以插入列表、代码块或图片。${destination.how}。`
 }
 
 export function checklistFor(destination: Destination, slug: string): string[] {

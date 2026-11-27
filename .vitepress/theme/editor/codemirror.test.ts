@@ -2,7 +2,7 @@ import { CompletionContext } from '@codemirror/autocomplete'
 import { EditorSelection, EditorState } from '@codemirror/state'
 import { describe, expect, it } from 'vitest'
 import { lintMarkdown } from '../../../utils/markdown-validation'
-import { cleanPaste, insertBlock, linkCompletion } from './codemirror'
+import { cleanPaste, headingsOf, insertBlock, linkCompletion, slashCompletion } from './codemirror'
 
 function run(doc: string, anchor: number, head = anchor, kind: 'fence' | 'tip' = 'fence') {
   const state = EditorState.create({ doc, selection: EditorSelection.single(anchor, head) })
@@ -66,5 +66,39 @@ describe('linkCompletion', () => {
   it('stays out of external links and anchors', () => {
     expect(complete('[a](https://x')).toBeNull()
     expect(complete('[a](#')).toBeNull()
+  })
+})
+
+describe('headingsOf', () => {
+  it('lists ATX headings with their lines and skips code', async () => {
+    const { markdown, markdownLanguage } = await import('@codemirror/lang-markdown')
+    const { ensureSyntaxTree } = await import('@codemirror/language')
+    const doc = '# 标题\n\n## 概览 ##\n\n```bash\n# 注释\n```\n\n### 细节\n'
+    const state = EditorState.create({ doc, extensions: [markdown({ base: markdownLanguage })] })
+    ensureSyntaxTree(state, state.doc.length, 5000)
+    expect(headingsOf(state)).toEqual([
+      { level: 1, text: '标题', line: 1 },
+      { level: 2, text: '概览', line: 3 },
+      { level: 3, text: '细节', line: 9 },
+    ])
+  })
+})
+
+describe('slashCompletion', () => {
+  const complete = (doc: string) => {
+    const state = EditorState.create({ doc })
+    return slashCompletion(() => {})(new CompletionContext(state, doc.length, false))
+  }
+
+  it('opens only for a slash that starts a line', () => {
+    expect(complete('/')!.options).toHaveLength(9)
+    expect(complete('  /')!.from).toBe(2)
+    expect(complete('见 /repair')).toBeNull()
+    expect(complete('2026/11')).toBeNull()
+  })
+
+  it('filters by Chinese label or pinyin', () => {
+    expect(complete('/代码')!.options.map(option => option.label)).toEqual(['代码块'])
+    expect(complete('/biaoge')!.options.map(option => option.label)).toEqual(['表格'])
   })
 })

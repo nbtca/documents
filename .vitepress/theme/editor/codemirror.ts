@@ -285,6 +285,34 @@ export function yForLine(view: EditorView, line: number): number {
   return view.documentTop + block.top + (line - number) * block.height
 }
 
+export interface Heading {
+  level: number
+  text: string
+  line: number
+}
+
+// Read from the syntax tree, so a `#` inside a code block is not a heading.
+export function headingsOf(state: EditorState): Heading[] {
+  const found: Heading[] = []
+  syntaxTree(state).iterate({
+    enter(node) {
+      const level = node.name.match(HEADING)?.[1]
+      if (!level)
+        return node.name === 'Document' || node.name === 'Blockquote' || node.name.startsWith('List') || node.name === 'ListItem'
+      const line = state.doc.lineAt(node.from)
+      found.push({ level: Number(level), text: line.text.replace(/^\s*#+\s*|\s*(?:#+\s*)?$/g, ''), line: line.number })
+      return false
+    },
+  })
+  return found
+}
+
+export function goToLine(view: EditorView, number: number): void {
+  const line = view.state.doc.line(Math.min(Math.max(1, number), view.state.doc.lines))
+  view.dispatch({ selection: { anchor: line.to }, effects: EditorView.scrollIntoView(line.from, { y: 'start', yMargin: 120 }) })
+  view.focus()
+}
+
 function stepIssue(view: EditorView, direction: 1 | -1): boolean {
   const { state } = view
   const stops = state.field(issueField).issues.map(problem => ({ problem, at: issuePosition(state, problem) }))
@@ -592,6 +620,67 @@ export function linkCompletion(pages: readonly SitePage[]) {
   }
 }
 
+export interface SlashItem {
+  label: string
+  keys: string
+  // A toolbar action, or `image` for the picture dialog the page owns.
+  kind: Format | 'h3' | 'table' | 'image'
+}
+
+export const SLASH_ITEMS: SlashItem[] = [
+  { label: '二级标题', keys: 'h2 heading biaoti 标题', kind: 'h2' },
+  { label: '三级标题', keys: 'h3 heading biaoti 标题', kind: 'h3' },
+  { label: '列表', keys: 'list liebiao', kind: 'list' },
+  { label: '编号列表', keys: 'ordered number bianhao', kind: 'ordered' },
+  { label: '引用', keys: 'quote yinyong', kind: 'quote' },
+  { label: '代码块', keys: 'code fence daima', kind: 'fence' },
+  { label: '提示框', keys: 'tip tishi callout', kind: 'tip' },
+  { label: '表格', keys: 'table biaoge', kind: 'table' },
+  { label: '图片', keys: 'image picture tupian', kind: 'image' },
+]
+
+const TABLE = '| 列 1 | 列 2 |\n| --- | --- |\n|  |  |'
+
+// A `/` that opens a line starts a block, as in Notion. Elsewhere it is just a
+// slash, so paths and dates keep typing normally.
+export function slashCompletion(onImage: () => void) {
+  return (context: CompletionContext): CompletionResult | null => {
+    const typed = context.matchBefore(/^\s*\/[^\s/]*$/)
+    if (!typed)
+      return null
+    const slash = typed.from + typed.text.indexOf('/')
+    const query = typed.text.slice(typed.text.indexOf('/') + 1).toLowerCase()
+    return {
+      from: slash,
+      filter: false,
+      options: SLASH_ITEMS
+        .filter(item => !query || item.label.includes(query) || item.keys.includes(query))
+        .map(item => ({
+          label: item.label,
+          type: 'keyword',
+          apply: (view: EditorView, _completion: unknown, from: number, to: number) => {
+            view.dispatch({ changes: { from, to } })
+            if (item.kind === 'image')
+              return onImage()
+            if (item.kind === 'h3')
+              return void prefix(view, '### ')
+            if (item.kind === 'table') {
+              const at = view.state.selection.main.head
+              const first = TABLE.indexOf('列 1')
+              view.dispatch({ changes: { from: at, insert: TABLE }, selection: EditorSelection.range(at + first, at + first + 3) })
+              return
+            }
+            format(view, item.kind)
+          },
+        })),
+    }
+  }
+}
+
+// Long enough to be a passage from a notice or a web page rather than a
+// sentence the writer moved around; Wikipedia's Paste Check works the same way.
+const LONG_PASTE = 300
+
 const URL_ONLY = /^https?:\/\/\S+$/
 
 // Text copied from chat apps and word processors carries characters that
@@ -684,17 +773,27 @@ export function mountEditor(
   onFiles: (files: File[]) => void,
   hint?: string,
   pages: readonly SitePage[] = [],
+  onCursorLine: (line: number) => void = () => {},
+  onImage: () => void = () => {},
+  onLongPaste: () => void = () => {},
 ): EditorView {
   const extensions: Extension[] = [
     history(),
     PHRASES,
     search({ top: true }),
     highlightSelectionMatches(),
-    autocompletion({ override: [linkCompletion(pages)], icons: false }),
+    autocompletion({ override: [linkCompletion(pages), slashCompletion(onImage)], icons: false }),
     placeholder(hint ?? ''),
     formatKeymap,
     files(onFiles),
     EditorView.clipboardInputFilter.of(cleanPaste),
+    EditorView.domEventHandlers({
+      paste(event) {
+        if ((event.clipboardData?.getData('text/plain').trim().length ?? 0) >= LONG_PASTE)
+          onLongPaste()
+        return false
+      },
+    }),
     keymap.of([
       ...['Mod-s', 'Mod-Enter'].map(key => ({
         key,
@@ -720,6 +819,8 @@ export function mountEditor(
     EditorView.updateListener.of((update) => {
       if (update.docChanged)
         onChange(update.state.doc.toString())
+      if (update.docChanged || update.selectionSet)
+        onCursorLine(update.state.doc.lineAt(update.state.selection.main.head).number)
     }),
   ]
 
