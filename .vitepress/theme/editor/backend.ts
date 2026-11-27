@@ -1,12 +1,14 @@
 import type { Manifest } from '../../../utils/asset-manifest'
-import type { FileChange } from '../../../utils/github'
+import type { FileChange, OpenDraft, PullSummary } from '../../../utils/github'
 import { addAsset } from '../../../utils/asset-manifest'
-import { branchNameFor, ensureFork, getFile, GitHubError, headSha, openPullRequest } from '../../../utils/github'
+import { branchNameFor, draftFor, ensureFork, getFile, GitHubError, headSha, markReady, openPullRequest, pullsBy, updateBranch } from '../../../utils/github'
 import { tidyBody } from '../../../utils/markdown'
 import { isRemoteAsset, placeRemoteImages, referencedImages } from '../../../utils/remote-asset'
 import { currentMember, forgetToken, githubToken } from './auth'
 
 const REPO = { owner: 'nbtca', name: 'documents' }
+
+export const historyUrl = (path: string) => `https://github.com/${REPO.owner}/${REPO.name}/commits/main/${path}`
 const REGISTRY = 'checks/asset-registry.json'
 
 export const localMode = import.meta.env.DEV
@@ -73,6 +75,26 @@ export async function startedAt(): Promise<string | undefined> {
   if (localMode)
     return undefined
   return withToken(token => headSha(token, REPO))
+}
+
+// Cheap enough to ask again right before submitting: one contents call.
+export async function currentSha(path: string): Promise<string | undefined> {
+  if (localMode)
+    return undefined
+  return withToken(token => getFile(token, REPO, path)).then(file => file.sha).catch(() => undefined)
+}
+
+// A draft left on GitHub from another device, if this writer has one for path.
+export async function remoteDraft(login: string, path: string): Promise<OpenDraft | undefined> {
+  if (localMode || !login)
+    return undefined
+  return withToken(token => draftFor(token, REPO, login, path)).catch(() => undefined)
+}
+
+export async function myPulls(login: string): Promise<PullSummary[]> {
+  if (localMode || !login)
+    return []
+  return withToken(token => pullsBy(token, REPO, login))
 }
 
 // A new page is written blind; an occupied path must be refused, not taken.
@@ -163,6 +185,10 @@ export async function submit(
     images: PendingImage[]
     checklist?: string[]
     base?: string
+    // Save as a draft pull request instead of asking for review.
+    draft?: boolean
+    // Keep writing on this existing draft instead of opening a new one.
+    onto?: OpenDraft
   },
   onStep: (step: string) => void = () => {},
 ): Promise<Submitted> {
@@ -188,19 +214,31 @@ export async function submit(
       uploaded = placed.urls
     }
 
+    if (edit.onto) {
+      onStep(edit.draft ? '正在更新草稿……' : '正在更新并提交审阅……')
+      await updateBranch(token, edit.onto.fork, edit.onto.branch, {
+        files: changesFor(path, content, [], undefined),
+        message: `docs: ${edit.summary}`,
+      })
+      if (!edit.draft)
+        await markReady(token, REPO, edit.onto.number)
+      return { label: edit.draft ? `草稿已更新 #${edit.onto.number}` : `已提交审阅 #${edit.onto.number}`, url: edit.onto.url }
+    }
+
     // A first-time fork is queued and can take half a minute; say so.
     onStep('正在准备你名下的仓库副本……')
     const fork = await ensureFork(token, REPO)
 
-    onStep('正在开 Pull Request……')
+    onStep(edit.draft ? '正在保存草稿……' : '正在开 Pull Request……')
     const pull = await openPullRequest(token, REPO, fork, {
       files: changesFor(path, content, [], undefined),
       title: `docs: ${edit.summary}`,
       body: bodyFor({ ...edit, uploaded }),
       branch: branchNameFor(path),
       base: edit.base,
+      draft: edit.draft,
     })
 
-    return { label: `已提交 #${pull.number}`, url: pull.url }
+    return { label: edit.draft ? `草稿已保存 #${pull.number}` : `已提交 #${pull.number}`, url: pull.url }
   })
 }

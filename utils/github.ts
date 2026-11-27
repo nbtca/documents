@@ -110,6 +110,94 @@ export async function currentUser(token: string): Promise<User> {
   return { login: user.login, avatarUrl: user.avatar_url }
 }
 
+export interface PullSummary {
+  number: number
+  title: string
+  url: string
+  state: 'open' | 'merged' | 'closed'
+  draft: boolean
+  comments: number
+  updated: string
+}
+
+// One search call covers open, merged, and closed pulls by this writer.
+export async function pullsBy(token: string, repo: Repo, login: string, limit = 10): Promise<PullSummary[]> {
+  const query = encodeURIComponent(`repo:${repo.owner}/${repo.name} is:pr author:${login}`)
+  const found = await call<{ items: Array<{
+    number: number
+    title: string
+    html_url: string
+    state: 'open' | 'closed'
+    draft?: boolean
+    comments: number
+    updated_at: string
+    pull_request?: { merged_at: string | null }
+  }> }>(token, `/search/issues?q=${query}&sort=updated&order=desc&per_page=${limit}`)
+  return found.items.map(item => ({
+    number: item.number,
+    title: item.title,
+    url: item.html_url,
+    state: item.pull_request?.merged_at ? 'merged' : item.state,
+    draft: Boolean(item.draft),
+    comments: item.comments,
+    updated: item.updated_at,
+  }))
+}
+
+export interface OpenDraft {
+  number: number
+  url: string
+  fork: Repo
+  branch: string
+  content: string
+  sha: string
+}
+
+// A draft pull request opened by the editor for this page, with the page as it
+// stands on the draft's branch, so writing can resume on another device.
+export async function draftFor(token: string, repo: Repo, login: string, path: string): Promise<OpenDraft | undefined> {
+  const pulls = await call<Array<{
+    number: number
+    html_url: string
+    draft: boolean
+    head: { ref: string, repo: { name: string, owner: { login: string } } | null }
+  }>>(token, `/repos/${repo.owner}/${repo.name}/pulls?state=open&head=${encodeURIComponent(`${login}:`)}&per_page=100`)
+  const mine = pulls.filter(pull => pull.draft && pull.head.repo?.owner.login === login)
+  for (const pull of mine) {
+    const files = await call<Array<{ filename: string, status: string }>>(token, `/repos/${repo.owner}/${repo.name}/pulls/${pull.number}/files`)
+    if (!files.some(file => file.filename === path && file.status !== 'removed'))
+      continue
+    const fork = { owner: pull.head.repo!.owner.login, name: pull.head.repo!.name }
+    const file = await getFile(token, fork, path, pull.head.ref)
+    return { number: pull.number, url: pull.html_url, fork, branch: pull.head.ref, ...file }
+  }
+  return undefined
+}
+
+// Writes the page onto an existing branch as one more commit, which updates
+// the pull request that branch belongs to.
+export async function updateBranch(
+  token: string,
+  fork: Repo,
+  branch: string,
+  edit: { files: FileChange[], message: string },
+): Promise<void> {
+  const mine = `/repos/${fork.owner}/${fork.name}`
+  const ref = `heads/${encodeURIComponent(branch).replace(/%2F/g, '/')}`
+  const head = (await call<{ object: { sha: string } }>(token, `${mine}/git/ref/${ref}`)).object.sha
+  const made = await commitFiles(token, mine, mine, head, edit.files, edit.message)
+  await call(token, `${mine}/git/refs/${ref}`, { method: 'PATCH', body: JSON.stringify({ sha: made.sha }) })
+}
+
+// Draft state only changes through GraphQL; REST has no field for it.
+export async function markReady(token: string, repo: Repo, number: number): Promise<void> {
+  const { node_id: id } = await call<{ node_id: string }>(token, `/repos/${repo.owner}/${repo.name}/pulls/${number}`)
+  await call(token, '/graphql', {
+    method: 'POST',
+    body: JSON.stringify({ query: 'mutation($id: ID!) { markPullRequestReadyForReview(input: { pullRequestId: $id }) { clientMutationId } }', variables: { id } }),
+  })
+}
+
 export async function headSha(token: string, repo: Repo, branch = 'main'): Promise<string> {
   const ref = await call<{ object: { sha: string } }>(
     token,
@@ -215,11 +303,32 @@ async function createRef(
   }
 }
 
+// Blobs and the commit go to the fork; the parent is read from `from`, which
+// may be upstream when the fork has not caught up to that commit yet.
+async function commitFiles(token: string, from: string, mine: string, parent: string, files: FileChange[], message: string): Promise<{ sha: string }> {
+  const commit = await call<{ tree: { sha: string } }>(token, `${from}/git/commits/${parent}`)
+  const tree = await Promise.all(files.map(async (file) => {
+    const blob = await call<{ sha: string }>(token, `${mine}/git/blobs`, {
+      method: 'POST',
+      body: JSON.stringify({ content: file.content, encoding: file.base64 ? 'base64' : 'utf-8' }),
+    })
+    return { path: file.path, mode: '100644', type: 'blob', sha: blob.sha }
+  }))
+  const written = await call<{ sha: string }>(token, `${mine}/git/trees`, {
+    method: 'POST',
+    body: JSON.stringify({ base_tree: commit.tree.sha, tree }),
+  })
+  return call<{ sha: string }>(token, `${mine}/git/commits`, {
+    method: 'POST',
+    body: JSON.stringify({ message, tree: written.sha, parents: [parent] }),
+  })
+}
+
 export async function openPullRequest(
   token: string,
   repo: Repo,
   fork: Repo,
-  edit: { files: FileChange[], title: string, body: string, branch: string, base?: string },
+  edit: { files: FileChange[], title: string, body: string, branch: string, base?: string, draft?: boolean },
   wait: (ms: number) => Promise<unknown> = sleep,
 ): Promise<OpenedPull> {
   const upstream = `/repos/${repo.owner}/${repo.name}`
@@ -230,25 +339,7 @@ export async function openPullRequest(
   // as a clean single-file diff, and nothing would report a conflict.
   const base = edit.base
     ?? (await call<{ object: { sha: string } }>(token, `${upstream}/git/ref/heads/main`)).object.sha
-  const commit = await call<{ tree: { sha: string } }>(token, `${upstream}/git/commits/${base}`)
-
-  const tree = await Promise.all(edit.files.map(async (file) => {
-    const blob = await call<{ sha: string }>(token, `${mine}/git/blobs`, {
-      method: 'POST',
-      body: JSON.stringify({ content: file.content, encoding: file.base64 ? 'base64' : 'utf-8' }),
-    })
-    return { path: file.path, mode: '100644', type: 'blob', sha: blob.sha }
-  }))
-
-  const written = await call<{ sha: string }>(token, `${mine}/git/trees`, {
-    method: 'POST',
-    body: JSON.stringify({ base_tree: commit.tree.sha, tree }),
-  })
-
-  const made = await call<{ sha: string }>(token, `${mine}/git/commits`, {
-    method: 'POST',
-    body: JSON.stringify({ message: edit.title, tree: written.sha, parents: [base] }),
-  })
+  const made = await commitFiles(token, upstream, mine, base, edit.files, edit.title)
 
   await createRef(token, mine, `refs/heads/${edit.branch}`, made.sha, wait)
 
@@ -260,6 +351,7 @@ export async function openPullRequest(
       base: 'main',
       body: edit.body,
       maintainer_can_modify: true,
+      draft: Boolean(edit.draft),
     }),
   })
 

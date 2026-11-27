@@ -120,4 +120,19 @@ describe('markdown validation', () => {
 
     expect(problem.detail).toBe('在 [ 附近出错')
   })
+
+  it('flags site links to pages that do not exist', async () => {
+    const pages = ['/', '/repair/', '/repair/repair-day', '/about/join']
+    const source = '# T\n\n见 [维修日](/repair/repair-day)、[加入](/about/join.html)、[维修](/repair/)、[图](/repair/a.webp)。\n\n[错](/repair/repair-days)\n\n`[代码](/nope)`\n'
+    const issues = await lintMarkdown(source, { mermaid: false, pages })
+
+    expect(issues.map(problem => [problem.rule, problem.line, problem.detail])).toEqual([['LINK', 5, '/repair/repair-days']])
+  })
+
+  it('flags image descriptions that are only a filename', async () => {
+    const source = '# T\n\n![IMG_2034.jpg](./a.webp)\n\n![维修日现场](./b.webp)\n\n<Figure src="./c.webp" alt="Screenshot 2026-11-27" />\n'
+    const issues = await lintMarkdown(source, { mermaid: false })
+
+    expect(issues.map(problem => [problem.rule, problem.line])).toEqual([['ALT', 3], ['ALT', 7]])
+  })
 })

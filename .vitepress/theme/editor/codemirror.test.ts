@@ -1,7 +1,9 @@
+import type { TransactionSpec } from '@codemirror/state'
+import { CompletionContext } from '@codemirror/autocomplete'
 import { EditorSelection, EditorState } from '@codemirror/state'
 import { describe, expect, it } from 'vitest'
 import { lintMarkdown } from '../../../utils/markdown-validation'
-import { cleanPaste, insertBlock } from './codemirror'
+import { cleanPaste, headingsOf, insertBlock, linkCompletion, editorKeymap as mountedKeymap, shiftHeading, slashCompletion, toggleTask } from './codemirror'
 
 function run(doc: string, anchor: number, head = anchor, kind: 'fence' | 'tip' = 'fence') {
   const state = EditorState.create({ doc, selection: EditorSelection.single(anchor, head) })
@@ -42,5 +44,142 @@ describe('cleanPaste', () => {
 
   it('leaves code-like text alone', () => {
     expect(cleanPaste('#   comment\necho  hi')).toBe('#   comment\necho  hi')
+  })
+})
+
+describe('linkCompletion', () => {
+  const pages = [
+    { path: '/archived/2024/2024-11-30-repair-day-plan', title: '2024.11.30 理工维修日策划案' },
+    { path: '/repair/checklist', title: '维修日检查单' },
+    { path: '/repair/repair-day', title: '维修日' },
+    { path: '/about/join', title: '加入协会' },
+  ]
+  const complete = (doc: string) => {
+    const state = EditorState.create({ doc })
+    return linkCompletion(pages)(new CompletionContext(state, doc.length, false))
+  }
+
+  it('ranks the exact title first and archive records last', () => {
+    expect(complete('见[维修日](维修日')!.options.map(option => option.label))
+      .toEqual(['/repair/repair-day', '/repair/checklist', '/archived/2024/2024-11-30-repair-day-plan'])
+  })
+
+  it('stays out of external links and anchors', () => {
+    expect(complete('[a](https://x')).toBeNull()
+    expect(complete('[a](#')).toBeNull()
+  })
+})
+
+describe('headingsOf', () => {
+  it('lists ATX headings with their lines and skips code', async () => {
+    const { markdown, markdownLanguage } = await import('@codemirror/lang-markdown')
+    const { ensureSyntaxTree } = await import('@codemirror/language')
+    const doc = '# 标题\n\n## 概览 ##\n\n```bash\n# 注释\n```\n\n### 细节\n'
+    const state = EditorState.create({ doc, extensions: [markdown({ base: markdownLanguage })] })
+    ensureSyntaxTree(state, state.doc.length, 5000)
+    expect(headingsOf(state)).toEqual([
+      { level: 1, text: '标题', line: 1 },
+      { level: 2, text: '概览', line: 3 },
+      { level: 3, text: '细节', line: 9 },
+    ])
+  })
+})
+
+describe('slashCompletion', () => {
+  const complete = (doc: string) => {
+    const state = EditorState.create({ doc })
+    return slashCompletion(() => {})(new CompletionContext(state, doc.length, false))
+  }
+
+  it('opens only for a slash that starts a line', () => {
+    expect(complete('/')!.options).toHaveLength(10)
+    expect(complete('  /')!.from).toBe(2)
+    expect(complete('见 /repair')).toBeNull()
+    expect(complete('2026/11')).toBeNull()
+  })
+
+  it('filters by Chinese label or pinyin', () => {
+    expect(complete('/代码')!.options.map(option => option.label)).toEqual(['代码块'])
+    expect(complete('/biaoge')!.options.map(option => option.label)).toEqual(['表格'])
+  })
+})
+
+// Runs the editor's own keymap for one key, as a keypress would.
+function runKey(view: import('@codemirror/view').EditorView, key: string): boolean {
+  return mountedKeymap.some(binding => binding.key === key && binding.run?.(view))
+}
+
+describe('table editing', () => {
+  // The table commands read state and dispatch; no DOM is needed for that.
+  async function editor(doc: string, at: number) {
+    const { markdown, markdownLanguage } = await import('@codemirror/lang-markdown')
+    const { ensureSyntaxTree } = await import('@codemirror/language')
+    const view = {
+      state: EditorState.create({ doc, selection: EditorSelection.cursor(at), extensions: [markdown({ base: markdownLanguage })] }),
+      dispatch(spec: TransactionSpec) {
+        view.state = view.state.update(spec).state
+        ensureSyntaxTree(view.state, view.state.doc.length, 5000)
+      },
+    }
+    ensureSyntaxTree(view.state, doc.length, 5000)
+    return view as unknown as import('@codemirror/view').EditorView
+  }
+  const cellText = (view: { state: EditorState }) => {
+    const { from, to } = view.state.selection.main
+    return view.state.sliceDoc(from, to)
+  }
+  const doc = '| 名称 | 数量 |\n|---|---|\n| 螺丝刀 | 2 |\n'
+
+  it('moves to the next cell and aligns the table', async () => {
+    const view = await editor(doc, 3)
+    expect(runKey(view, 'Tab')).toBe(true)
+    expect(view.state.doc.toString()).toBe('| 名称   | 数量 |\n| ------ | ---- |\n| 螺丝刀 | 2    |\n')
+    expect(cellText(view)).toBe('数量')
+    runKey(view, 'Tab')
+    expect(cellText(view)).toBe('螺丝刀')
+    runKey(view, 'Shift-Tab')
+    expect(cellText(view)).toBe('数量')
+  })
+
+  it('adds a row after the last cell and on Enter', async () => {
+    const view = await editor(doc, doc.indexOf('2'))
+    runKey(view, 'Tab')
+    expect(view.state.doc.lines).toBe(5)
+    view.dispatch({ changes: { from: view.state.selection.main.from, insert: '硅脂' } })
+    runKey(view, 'Enter')
+    expect(view.state.doc.toString().split('\n').filter(line => line.startsWith('|'))).toHaveLength(5)
+  })
+
+  it('leaves the table on Enter in an empty last row', async () => {
+    const view = await editor(doc, doc.indexOf('2'))
+    runKey(view, 'Enter')
+    runKey(view, 'Enter')
+    const lines = view.state.doc.toString().split('\n')
+    expect(lines.filter(line => line.startsWith('|'))).toHaveLength(3)
+    expect(view.state.doc.lineAt(view.state.selection.main.head).text).toBe('')
+  })
+
+  it('leaves Tab alone outside a table', async () => {
+    const view = await editor('正文\n', 1)
+    expect(runKey(view, 'Tab')).toBe(false)
+  })
+})
+
+describe('toggleTask and shiftHeading', () => {
+  const apply = (doc: string, spec: TransactionSpec | null) => spec ? EditorState.create({ doc }).update(spec).state.doc.toString() : doc
+
+  it('turns list items into tasks and flips their boxes', () => {
+    const state = EditorState.create({ doc: '- a\n- [ ] b\n- [x] c\n正文', selection: EditorSelection.range(0, 20) })
+    expect(apply(state.doc.toString(), toggleTask(state))).toBe('- [ ] a\n- [x] b\n- [ ] c\n正文')
+  })
+
+  it('steps heading levels and drops out past either end', () => {
+    const at = (doc: string, by: 1 | -1) => apply(doc, shiftHeading(EditorState.create({ doc }), by))
+    expect(at('## 小节', 1)).toBe('### 小节')
+    expect(at('## 小节', -1)).toBe('# 小节')
+    expect(at('# 标题', -1)).toBe('标题')
+    expect(at('###### 深', 1)).toBe('深')
+    expect(at('正文', -1)).toBe('## 正文')
+    expect(at('正文', 1)).toBe('## 正文')
   })
 })

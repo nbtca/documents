@@ -15,5 +15,5 @@ export function transcribedFrom(frontmatter: unknown): string | undefined {
 }
 
 export function reviewNoteFor(source: string): string {
-  return `这一页照录自「${source}」，请确认改动只修正了转写错误，没有改动原件内容`
+  return `这一页照录自“${source}”，请确认改动只修正了转写错误，没有改动原件内容`
 }

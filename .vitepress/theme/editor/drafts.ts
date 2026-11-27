@@ -4,12 +4,23 @@ export interface Draft {
   draft: string
   summary: string
   base?: string
+  // The page's blob when the draft started, to tell whether it moved since.
+  sha?: string
   destination?: string
   slug?: string
   images: PendingImage[]
 }
 
 const PREFIX = 'nb-draft:'
+
+export function drafts(): string[] {
+  try {
+    return Object.keys(localStorage).filter(key => key.startsWith(PREFIX)).map(key => key.slice(PREFIX.length))
+  }
+  catch {
+    return []
+  }
+}
 
 export function keep(key: string, draft: Draft): void {
   try {
