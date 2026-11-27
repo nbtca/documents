@@ -1,6 +1,8 @@
 import type { Configuration, FixInfo, LintError } from 'markdownlint'
 import { AUTO_FIXED, MARKDOWNLINT_CONFIG, RULE_FIXES, RULE_MESSAGES, ruleGuide } from './markdown-rules'
 
+export { MARKDOWNLINT_CONFIG }
+
 // The nearest config above a page wins. archived/.markdownlint.jsonc adds
 // these overrides because scanned records keep their original structure.
 const ARCHIVED_CONFIG = {
