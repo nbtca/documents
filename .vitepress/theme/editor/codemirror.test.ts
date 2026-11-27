@@ -1,7 +1,8 @@
+import { CompletionContext } from '@codemirror/autocomplete'
 import { EditorSelection, EditorState } from '@codemirror/state'
 import { describe, expect, it } from 'vitest'
 import { lintMarkdown } from '../../../utils/markdown-validation'
-import { cleanPaste, insertBlock } from './codemirror'
+import { cleanPaste, insertBlock, linkCompletion } from './codemirror'
 
 function run(doc: string, anchor: number, head = anchor, kind: 'fence' | 'tip' = 'fence') {
   const state = EditorState.create({ doc, selection: EditorSelection.single(anchor, head) })
@@ -42,5 +43,28 @@ describe('cleanPaste', () => {
 
   it('leaves code-like text alone', () => {
     expect(cleanPaste('#   comment\necho  hi')).toBe('#   comment\necho  hi')
+  })
+})
+
+describe('linkCompletion', () => {
+  const pages = [
+    { path: '/archived/2024/2024-11-30-repair-day-plan', title: '2024.11.30 理工维修日策划案' },
+    { path: '/repair/checklist', title: '维修日检查单' },
+    { path: '/repair/repair-day', title: '维修日' },
+    { path: '/about/join', title: '加入协会' },
+  ]
+  const complete = (doc: string) => {
+    const state = EditorState.create({ doc })
+    return linkCompletion(pages)(new CompletionContext(state, doc.length, false))
+  }
+
+  it('ranks the exact title first and archive records last', () => {
+    expect(complete('见[维修日](维修日')!.options.map(option => option.label))
+      .toEqual(['/repair/repair-day', '/repair/checklist', '/archived/2024/2024-11-30-repair-day-plan'])
+  })
+
+  it('stays out of external links and anchors', () => {
+    expect(complete('[a](https://x')).toBeNull()
+    expect(complete('[a](#')).toBeNull()
   })
 })

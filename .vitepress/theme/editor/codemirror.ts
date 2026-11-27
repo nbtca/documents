@@ -1,12 +1,16 @@
+import type { CompletionContext, CompletionResult } from '@codemirror/autocomplete'
 import type { Extension, Range, TransactionSpec } from '@codemirror/state'
 import type { DecorationSet, ViewUpdate } from '@codemirror/view'
 import type { MarkdownIssue } from '../../../utils/markdown-validation'
+import type { TypographyHint } from '../../../utils/typography'
+import { autocompletion, completionKeymap } from '@codemirror/autocomplete'
 import { defaultKeymap, history, historyKeymap, indentLess, indentMore } from '@codemirror/commands'
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
 import { syntaxTree } from '@codemirror/language'
+import { highlightSelectionMatches, search, searchKeymap } from '@codemirror/search'
 import { Compartment, EditorSelection, EditorState, RangeSet, StateEffect, StateField } from '@codemirror/state'
 import { Decoration, EditorView, keymap, placeholder, ViewPlugin, WidgetType } from '@codemirror/view'
-import { codeParts } from '../../../utils/markdown-rules'
+import { codeParts, plainText } from '../../../utils/markdown-rules'
 
 const HEADING = /^ATXHeading([1-6])$/
 const MARK_CLASS: Record<string, string> = {
@@ -180,6 +184,37 @@ function issueDecorations(state: EditorState, issues: MarkdownIssue[], quiet?: n
   return RangeSet.of(ranges, true)
 }
 
+const setHints = StateEffect.define<TypographyHint[]>()
+
+// Typography is advice, not a gate: a faint dotted underline with the reason
+// on hover, and nothing that pushes the text around.
+const hintField = StateField.define<DecorationSet>({
+  create: () => Decoration.none,
+  update(decorations, transaction) {
+    for (const effect of transaction.effects) {
+      if (!effect.is(setHints))
+        continue
+      const { doc } = transaction.state
+      const ranges = effect.value.flatMap((hint) => {
+        if (hint.line > doc.lines)
+          return []
+        const line = doc.line(hint.line)
+        const from = Math.min(line.to, line.from + hint.column - 1)
+        const to = Math.min(line.to, from + Math.max(1, hint.length))
+        const start = hint.length ? from : Math.max(line.from, from - 1)
+        return start < to ? [Decoration.mark({ class: 'cm-nb-hint', attributes: { title: hint.message } }).range(start, to)] : []
+      })
+      return Decoration.set(ranges, true)
+    }
+    return decorations.map(transaction.changes)
+  },
+  provide: field => EditorView.decorations.from(field),
+})
+
+export function setTypographyHints(view: EditorView, hints: TypographyHint[]): void {
+  view.dispatch({ effects: setHints.of(hints) })
+}
+
 const setIssues = StateEffect.define<MarkdownIssue[]>()
 const showLine = StateEffect.define<null>()
 
@@ -225,9 +260,12 @@ function issuePosition(state: EditorState, problem: MarkdownIssue): number {
 
 export function revealMarkdownIssue(view: EditorView, problem: MarkdownIssue): void {
   const position = issuePosition(view.state, problem)
+  // The wavy underline is all a sighted writer needs; a screen reader user
+  // landing here hears only the line's text without this.
+  const said = `第 ${problem.line} 行：${problem.message}。${problem.fix ? plainText(problem.fix) : ''}`
   view.dispatch({
     selection: { anchor: position },
-    effects: [showLine.of(null), EditorView.scrollIntoView(position, { y: 'center' })],
+    effects: [showLine.of(null), EditorView.scrollIntoView(position, { y: 'center' }), EditorView.announce.of(said)],
   })
   view.focus()
 }
@@ -307,6 +345,65 @@ const theme = EditorView.theme({
   '.cm-changedLine': { backgroundColor: 'color-mix(in srgb, var(--vp-c-brand-1) 8%, transparent)' },
   '.cm-changedText': { backgroundColor: 'color-mix(in srgb, var(--vp-c-brand-1) 18%, transparent)' },
   '.cm-nb-issue-line': { backgroundColor: 'color-mix(in srgb, var(--vp-c-danger-1) 7%, transparent)' },
+  '.cm-panels': { backgroundColor: 'var(--vp-c-bg)', color: 'var(--vp-c-text-1)' },
+  // The sheet scrolls, not the editor, so the panel sticks to the sheet; keep
+  // it under the sticky toolbar rather than over it.
+  '.cm-panels-top': { top: 'var(--nb-toolbar-height, 0px) !important', zIndex: '1', borderBottom: '1px solid var(--vp-c-divider)' },
+  '.cm-panel.cm-search': {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '6px 8px',
+    alignItems: 'center',
+    maxWidth: 'var(--nb-measure)',
+    margin: '0 auto',
+    padding: '8px 40px 8px 21px',
+    fontFamily: 'var(--vp-font-family-base)',
+    fontSize: '13px',
+  },
+  '.cm-panel.cm-search br': { flexBasis: '100%', height: 0 },
+  '.cm-panel.cm-search label': { display: 'inline-flex', gap: '4px', alignItems: 'center', color: 'var(--vp-c-text-2)' },
+  '.cm-textfield': {
+    minWidth: '10rem',
+    padding: '4px 8px',
+    border: '1px solid var(--vp-c-divider)',
+    borderRadius: '4px',
+    background: 'var(--vp-c-bg)',
+    color: 'var(--vp-c-text-1)',
+    font: 'inherit',
+  },
+  '.cm-textfield:focus': { outline: 'none', borderColor: 'var(--vp-c-brand-1)' },
+  '.cm-button': {
+    padding: '4px 10px',
+    border: '1px solid var(--vp-c-divider)',
+    borderRadius: '4px',
+    backgroundImage: 'none',
+    backgroundColor: 'var(--vp-c-bg-soft)',
+    color: 'var(--vp-c-text-1)',
+    font: 'inherit',
+  },
+  '.cm-button:active': { backgroundImage: 'none', backgroundColor: 'var(--vp-c-default-soft)' },
+  '.cm-panel.cm-search [name=close]': { top: '8px', right: '12px', fontSize: '18px', color: 'var(--vp-c-text-3)' },
+  '.cm-searchMatch': { backgroundColor: 'color-mix(in srgb, var(--vp-c-warning-1) 22%, transparent)' },
+  '.cm-searchMatch-selected': { backgroundColor: 'color-mix(in srgb, var(--vp-c-warning-1) 45%, transparent)' },
+  '.cm-selectionMatch': { backgroundColor: 'color-mix(in srgb, var(--vp-c-brand-1) 12%, transparent)' },
+  '.cm-tooltip': {
+    border: '1px solid var(--vp-c-divider)',
+    borderRadius: '6px',
+    backgroundColor: 'var(--vp-c-bg)',
+    boxShadow: 'var(--vp-shadow-3)',
+    overflow: 'hidden',
+  },
+  '.cm-tooltip.cm-tooltip-autocomplete > ul': {
+    maxWidth: 'min(36rem, calc(100vw - 24px))',
+    maxHeight: '15rem',
+    fontFamily: 'var(--vp-font-family-base)',
+  },
+  '.cm-tooltip.cm-tooltip-autocomplete > ul > li': { display: 'flex', gap: '10px', padding: '5px 10px', lineHeight: '1.5' },
+  '.cm-tooltip-autocomplete .cm-completionLabel': { order: 2, fontFamily: 'var(--nb-mono)', fontSize: '12px', color: 'var(--vp-c-text-3)', overflow: 'hidden', textOverflow: 'ellipsis' },
+  '.cm-tooltip-autocomplete .cm-completionDetail': { order: 1, flex: 'none', marginLeft: 0, fontStyle: 'normal', color: 'var(--vp-c-text-1)' },
+  '.cm-tooltip.cm-tooltip-autocomplete > ul > li[aria-selected]': { backgroundColor: 'var(--vp-c-brand-soft)', color: 'var(--vp-c-text-1)' },
+  '.cm-tooltip-autocomplete li[aria-selected] .cm-completionLabel': { color: 'var(--vp-c-text-2)' },
+  '.cm-nb-hint': { textDecoration: 'underline dotted color-mix(in srgb, var(--vp-c-warning-1) 70%, transparent)', textUnderlineOffset: '4px' },
   '.cm-nb-issue-text': { textDecoration: 'underline wavy var(--vp-c-danger-1)', textUnderlineOffset: '3px' },
   '.cm-nb-issue-messages': {
     maxWidth: 'var(--nb-measure)',
@@ -461,6 +558,40 @@ const formatKeymap = keymap.of([
   { key: 'Shift-Tab', run: view => onListLine(view) && indentLess(view) },
 ])
 
+export interface SitePage {
+  path: string
+  title: string
+}
+
+// Writers cannot guess a page's address, and a mistyped one only surfaces as
+// a broken link after review. After `](` the list filters on both the path
+// and the Chinese title, since the title is what a writer remembers.
+export function linkCompletion(pages: readonly SitePage[]) {
+  return (context: CompletionContext): CompletionResult | null => {
+    const typed = context.matchBefore(/\]\([^\s)]*$/)
+    if (!typed || /^\]\((?:https?:|#|\.)/.test(typed.text))
+      return null
+    const query = typed.text.slice(2).toLowerCase()
+    return {
+      from: typed.from + 2,
+      options: pages
+        .flatMap((page) => {
+          const title = page.title.toLowerCase()
+          const path = page.path.toLowerCase()
+          if (!title.includes(query) && !path.includes(query))
+            return []
+          // An exact title first, archive records last: a writer linking
+          // “维修日” means the guide, not one year's plan for it.
+          const rank = (title === query ? 0 : title.startsWith(query) ? 1 : 2) + (path.startsWith('/archived/') ? 3 : 0)
+          return [{ label: page.path, detail: page.title, type: 'text', boost: -rank }]
+        })
+        .sort((left, right) => right.boost - left.boost)
+        .slice(0, 50),
+      filter: false,
+    }
+  }
+}
+
 const URL_ONLY = /^https?:\/\/\S+$/
 
 // Text copied from chat apps and word processors carries characters that
@@ -521,6 +652,30 @@ export async function setDiff(view: EditorView, original: string | undefined): P
   view.dispatch({ effects: diffing.reconfigure(extension) })
 }
 
+// CodeMirror's own panels speak English unless their phrases are supplied.
+const PHRASES = EditorState.phrases.of({
+  'Find': '查找',
+  'Replace': '替换为',
+  'next': '下一个',
+  'previous': '上一个',
+  'all': '全部',
+  'match case': '区分大小写',
+  'regexp': '正则',
+  'by word': '整词',
+  'replace': '替换',
+  'replace all': '全部替换',
+  'close': '关闭',
+  'current match': '当前匹配',
+  'on line': '位于行',
+  'replaced $ matches': '已替换 $ 处',
+  'replaced match on line $': '已替换第 $ 行的匹配',
+  'Go to line': '跳到行',
+  'go': '跳转',
+  'Completions': '补全建议',
+  'Control character': '控制字符',
+  'Selection deleted': '已删除选中内容',
+})
+
 export function mountEditor(
   parent: HTMLElement,
   doc: string,
@@ -528,9 +683,14 @@ export function mountEditor(
   onSave: () => void,
   onFiles: (files: File[]) => void,
   hint?: string,
+  pages: readonly SitePage[] = [],
 ): EditorView {
   const extensions: Extension[] = [
     history(),
+    PHRASES,
+    search({ top: true }),
+    highlightSelectionMatches(),
+    autocompletion({ override: [linkCompletion(pages)], icons: false }),
     placeholder(hint ?? ''),
     formatKeymap,
     files(onFiles),
@@ -544,13 +704,17 @@ export function mountEditor(
           return true
         },
       })),
+      ...completionKeymap,
+      ...searchKeymap,
       ...defaultKeymap,
       ...historyKeymap,
     ]),
     markdown({ base: markdownLanguage }),
+    EditorView.contentAttributes.of({ 'aria-label': 'Markdown 源码', 'aria-describedby': 'nb-edit-keys' }),
     EditorView.lineWrapping,
     liveStyling,
     issueField,
+    hintField,
     diffing.of([]),
     theme,
     EditorView.updateListener.of((update) => {
