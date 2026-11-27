@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { branchNameFor, decodeContent, encodeContent, ensureFork, openPullRequest } from './github'
+import { branchNameFor, decodeContent, encodeContent, ensureFork, openPullRequest, pullsBy } from './github'
 
 interface Reply { status?: number, body?: unknown }
 interface Seen { route: string, body?: any }
@@ -282,5 +282,29 @@ describe('pull request from a fork', () => {
     }, NOW).then(() => undefined, (reason: Error) => reason)
 
     expect(error?.message).toBe('找不到这个位置，可能刚被人改动过。刷新页面重新打开，再提交一次。')
+  })
+})
+
+describe('pulls by a writer', () => {
+  afterEach(() => vi.unstubAllGlobals())
+
+  it('tells merged pulls from ones closed without merging', async () => {
+    const item = (number: number, state: string, merged: string | null) => ({
+      number,
+      title: `docs: ${number}`,
+      html_url: `https://github.com/nbtca/documents/pull/${number}`,
+      state,
+      comments: 1,
+      updated_at: '2026-11-27T00:00:00Z',
+      pull_request: { merged_at: merged },
+    })
+    const seen = stubGitHub([
+      ['GET /search/issues*', { body: { items: [item(3, 'open', null), item(2, 'closed', '2026-11-26T00:00:00Z'), item(1, 'closed', null)] } }],
+    ])
+
+    const pulls = await pullsBy('t', UPSTREAM, 'mia')
+
+    expect(pulls.map(pull => [pull.number, pull.state])).toEqual([[3, 'open'], [2, 'merged'], [1, 'closed']])
+    expect(decodeURIComponent(seen[0].route)).toContain('repo:nbtca/documents is:pr author:mia')
   })
 })

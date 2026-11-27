@@ -110,6 +110,40 @@ export async function currentUser(token: string): Promise<User> {
   return { login: user.login, avatarUrl: user.avatar_url }
 }
 
+export interface PullSummary {
+  number: number
+  title: string
+  url: string
+  state: 'open' | 'merged' | 'closed'
+  draft: boolean
+  comments: number
+  updated: string
+}
+
+// One search call covers open, merged, and closed pulls by this writer.
+export async function pullsBy(token: string, repo: Repo, login: string, limit = 10): Promise<PullSummary[]> {
+  const query = encodeURIComponent(`repo:${repo.owner}/${repo.name} is:pr author:${login}`)
+  const found = await call<{ items: Array<{
+    number: number
+    title: string
+    html_url: string
+    state: 'open' | 'closed'
+    draft?: boolean
+    comments: number
+    updated_at: string
+    pull_request?: { merged_at: string | null }
+  }> }>(token, `/search/issues?q=${query}&sort=updated&order=desc&per_page=${limit}`)
+  return found.items.map(item => ({
+    number: item.number,
+    title: item.title,
+    url: item.html_url,
+    state: item.pull_request?.merged_at ? 'merged' : item.state,
+    draft: Boolean(item.draft),
+    comments: item.comments,
+    updated: item.updated_at,
+  }))
+}
+
 export async function headSha(token: string, repo: Repo, branch = 'main'): Promise<string> {
   const ref = await call<{ object: { sha: string } }>(
     token,

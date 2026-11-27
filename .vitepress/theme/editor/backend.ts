@@ -1,12 +1,14 @@
 import type { Manifest } from '../../../utils/asset-manifest'
-import type { FileChange } from '../../../utils/github'
+import type { FileChange, PullSummary } from '../../../utils/github'
 import { addAsset } from '../../../utils/asset-manifest'
-import { branchNameFor, ensureFork, getFile, GitHubError, headSha, openPullRequest } from '../../../utils/github'
+import { branchNameFor, ensureFork, getFile, GitHubError, headSha, openPullRequest, pullsBy } from '../../../utils/github'
 import { tidyBody } from '../../../utils/markdown'
 import { isRemoteAsset, placeRemoteImages, referencedImages } from '../../../utils/remote-asset'
 import { currentMember, forgetToken, githubToken } from './auth'
 
 const REPO = { owner: 'nbtca', name: 'documents' }
+
+export const historyUrl = (path: string) => `https://github.com/${REPO.owner}/${REPO.name}/commits/main/${path}`
 const REGISTRY = 'checks/asset-registry.json'
 
 export const localMode = import.meta.env.DEV
@@ -73,6 +75,19 @@ export async function startedAt(): Promise<string | undefined> {
   if (localMode)
     return undefined
   return withToken(token => headSha(token, REPO))
+}
+
+// Cheap enough to ask again right before submitting: one contents call.
+export async function currentSha(path: string): Promise<string | undefined> {
+  if (localMode)
+    return undefined
+  return withToken(token => getFile(token, REPO, path)).then(file => file.sha).catch(() => undefined)
+}
+
+export async function myPulls(login: string): Promise<PullSummary[]> {
+  if (localMode || !login)
+    return []
+  return withToken(token => pullsBy(token, REPO, login))
 }
 
 // A new page is written blind; an occupied path must be refused, not taken.
