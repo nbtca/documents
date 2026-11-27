@@ -48,17 +48,17 @@ interface MermaidBlock {
   content: string
 }
 
-interface Marker {
-  char: '`' | '~' | ':'
+interface Marker<Char extends string> {
+  char: Char
   length: number
   info: string
 }
 
-function marker(text: string, chars: ReadonlyArray<Marker['char']>): Marker | undefined {
+function marker<Char extends '`' | '~' | ':'>(text: string, chars: readonly Char[]): Marker<Char> | undefined {
   const indent = text.match(/^ {0,3}/)?.[0].length ?? 0
   const body = text.slice(indent)
-  const char = body[0]
-  if (!char || !chars.includes(char as Marker['char']))
+  const char = body[0] as Char
+  if (!char || !chars.includes(char))
     return undefined
 
   let length = 0
@@ -66,7 +66,7 @@ function marker(text: string, chars: ReadonlyArray<Marker['char']>): Marker | un
     length++
   if (length < 3)
     return undefined
-  return { char: char as Marker['char'], length, info: body.slice(length).trim() }
+  return { char, length, info: body.slice(length).trim() }
 }
 
 const RULE_MESSAGES: Record<string, string> = {
