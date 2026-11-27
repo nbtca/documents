@@ -1327,7 +1327,7 @@ function insertOutline() {
               />
             </div>
             <p v-if="mod" id="nb-edit-keys" class="nb-edit-keys">
-              在行首输入 / 可以插入标题、列表、代码块、表格或图片。{{ mod }}F 查找，F8 跳到下一个问题，在 ]( 后面输入会列出站内页面。按 Esc 再按 Tab 可以离开编辑区。
+              在行首输入 / 可以插入标题、列表、代码块、表格或图片。在表格里按 Tab 换到下一格，按 Enter 加一行。{{ mod }}F 查找，F8 跳到下一个问题，在 ]( 后面输入会列出站内页面，按住 {{ mod.replace('+', '') }} 单击链接可以打开它。按 Esc 再按 Tab 可以离开编辑区。
             </p>
             <input ref="picker" type="file" :accept="accepts" hidden @change="onPicked">
           </template>

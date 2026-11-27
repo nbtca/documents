@@ -1,6 +1,6 @@
 import type { CompletionContext, CompletionResult } from '@codemirror/autocomplete'
 import type { Extension, Range, TransactionSpec } from '@codemirror/state'
-import type { DecorationSet, ViewUpdate } from '@codemirror/view'
+import type { DecorationSet, KeyBinding, ViewUpdate } from '@codemirror/view'
 import type { MarkdownIssue } from '../../../utils/markdown-validation'
 import type { TypographyHint } from '../../../utils/typography'
 import { autocompletion, completionKeymap } from '@codemirror/autocomplete'
@@ -9,8 +9,9 @@ import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
 import { syntaxTree } from '@codemirror/language'
 import { highlightSelectionMatches, search, searchKeymap } from '@codemirror/search'
 import { Compartment, EditorSelection, EditorState, RangeSet, StateEffect, StateField } from '@codemirror/state'
-import { Decoration, EditorView, keymap, placeholder, ViewPlugin, WidgetType } from '@codemirror/view'
+import { Decoration, EditorView, highlightTrailingWhitespace, keymap, placeholder, ViewPlugin, WidgetType } from '@codemirror/view'
 import { codeParts, plainText } from '../../../utils/markdown-rules'
+import { cellStarts, formatTable } from './table'
 
 const HEADING = /^ATXHeading([1-6])$/
 const MARK_CLASS: Record<string, string> = {
@@ -77,6 +78,15 @@ function styleDoc(state: EditorState): DecorationSet {
           if (node.to - node.from > marker)
             ranges.push(hide.range(node.from, node.from + marker))
         }
+        return
+      }
+
+      // Pipes line up in the source by character width. On screen that only
+      // holds in a monospace font, and even there a Han character is rarely
+      // exactly two Latin ones wide, so this is close rather than exact.
+      if (node.name === 'Table') {
+        for (let n = state.doc.lineAt(node.from).number; n <= state.doc.lineAt(node.to).number; n++)
+          ranges.push(Decoration.line({ class: 'cm-nb-table' }).range(state.doc.line(n).from))
         return
       }
 
@@ -431,6 +441,7 @@ const theme = EditorView.theme({
   '.cm-tooltip-autocomplete .cm-completionDetail': { order: 1, flex: 'none', marginLeft: 0, fontStyle: 'normal', color: 'var(--vp-c-text-1)' },
   '.cm-tooltip.cm-tooltip-autocomplete > ul > li[aria-selected]': { backgroundColor: 'var(--vp-c-brand-soft)', color: 'var(--vp-c-text-1)' },
   '.cm-tooltip-autocomplete li[aria-selected] .cm-completionLabel': { color: 'var(--vp-c-text-2)' },
+  '.cm-trailingSpace': { backgroundColor: 'color-mix(in srgb, var(--vp-c-warning-1) 18%, transparent)' },
   '.cm-nb-hint': { textDecoration: 'underline dotted color-mix(in srgb, var(--vp-c-warning-1) 70%, transparent)', textUnderlineOffset: '4px' },
   '.cm-nb-issue-text': { textDecoration: 'underline wavy var(--vp-c-danger-1)', textUnderlineOffset: '3px' },
   '.cm-nb-issue-messages': {
@@ -454,6 +465,7 @@ const theme = EditorView.theme({
   '.cm-nb-issue-fix': { color: 'var(--vp-c-text-1)' },
   '.cm-nb-issue-fix code': { fontFamily: 'var(--nb-mono)', fontSize: '0.92em' },
   '.cm-nb-issue-detail': { color: 'var(--vp-c-text-2)', fontSize: '12px' },
+  '.cm-nb-table': { fontFamily: 'var(--nb-mono)', fontSize: '0.88em', whiteSpace: 'pre', overflowWrap: 'normal' },
   '.cm-nb-code': {
     fontFamily: 'var(--nb-mono)',
     fontSize: '0.9em',
@@ -484,7 +496,7 @@ const BLOCK: Record<'fence' | 'tip', [string, string, string]> = {
   tip: ['::: tip', '提示内容', ':::'],
 }
 
-const LINE_MARK = /^(\s*)(#{1,6} |[-*+] |\d+\. |> )?/
+const LINE_MARK = /^(\s*)(#{1,6} |[-*+] \[[ x]\] |[-*+] |\d+\. |> )?/i
 const LIST_LINE = /^\s*(?:[-*+]|\d+\.) /
 
 function wrap(view: EditorView, mark: string, filler: string): boolean {
@@ -548,13 +560,14 @@ function prefix(view: EditorView, mark: string): boolean {
   }
   const all = [...lines].map(n => state.doc.line(n))
   const off = all.every(line => line.text.trimStart().startsWith(mark))
-  view.dispatch({
-    changes: all.map((line) => {
-      const [, indent, existing = ''] = line.text.match(LINE_MARK)!
-      const from = line.from + indent.length
-      return { from, to: from + existing.length, insert: off ? '' : mark }
-    }),
-  })
+  const changes = state.changes(all.map((line) => {
+    const [, indent, existing = ''] = line.text.match(LINE_MARK)!
+    const from = line.from + indent.length
+    return { from, to: from + existing.length, insert: off ? '' : mark }
+  }))
+  // Mapping forward keeps a cursor that sat where the mark went after it, so
+  // typing lands in the item rather than in front of its marker.
+  view.dispatch({ changes, selection: state.selection.map(changes, 1) })
   return true
 }
 
@@ -571,7 +584,143 @@ export function format(view: EditorView, kind: Format): boolean {
 
 const onListLine = (view: EditorView) => LIST_LINE.test(view.state.doc.lineAt(view.state.selection.main.head).text)
 
-const formatKeymap = keymap.of([
+function tableAt(state: EditorState, pos: number) {
+  let node = syntaxTree(state).resolveInner(pos, -1)
+  while (node.parent && node.name !== 'Table')
+    node = node.parent
+  if (node.name !== 'Table')
+    return undefined
+  const first = state.doc.lineAt(node.from)
+  const last = state.doc.lineAt(node.to)
+  return { from: first.from, to: last.to, firstLine: first.number }
+}
+
+// Tab and Shift-Tab step through cells, Enter adds a row below. Every step
+// rewrites the table aligned, so the pipes never drift while typing.
+function tableStep(view: EditorView, step: 'next' | 'previous' | 'row'): boolean {
+  const { state } = view
+  const head = state.selection.main.head
+  const table = tableAt(state, head)
+  // A selected cell is how Tab leaves it, so only a multi-cell selection is
+  // left to the default keys.
+  if (!table || state.doc.lineAt(state.selection.main.from).number !== state.doc.lineAt(state.selection.main.to).number)
+    return false
+
+  const before = state.sliceDoc(table.from, table.to).split('\n')
+  const row = state.doc.lineAt(head).number - table.firstLine
+  // Enter on an empty last row leaves the table, like Enter on an empty list
+  // item ends the list; otherwise there is no way to write below it.
+  if (step === 'row' && row === before.length - 1 && row > 1 && !before[row].replace(/[|\s]/g, '')) {
+    const line = state.doc.lineAt(head)
+    view.dispatch({
+      changes: { from: line.from - 1, to: line.to, insert: '\n\n' },
+      selection: { anchor: line.from + 1 },
+      userEvent: 'input.table',
+    })
+    return true
+  }
+  const column = Math.max(0, cellStarts(before[row]).filter(start => start <= head - state.doc.lineAt(head).from).length - 1)
+  const lastRow = row === before.length - 1
+  const lines = formatTable(before.join('\n'), step === 'row' && lastRow).split('\n')
+  if (step === 'row' && !lastRow)
+    lines.splice(row + 1, 0, formatTable(`${lines[0]}\n${lines[1]}\n|`).split('\n')[2])
+
+  // Every editable cell in reading order; the delimiter row has none.
+  const stops = lines.flatMap((line, index) => index === 1 ? [] : cellStarts(line).map((_, cell) => ({ index, cell })))
+  const here = stops.findIndex(stop => stop.index === row && stop.cell === column)
+  let target = step === 'row'
+    ? { index: row + 1, cell: 0 }
+    : stops[here + (step === 'next' ? 1 : -1)]
+  if (!target && step === 'next') {
+    lines.push(formatTable(`${lines[0]}\n${lines[1]}\n|`).split('\n')[2])
+    target = { index: lines.length - 1, cell: 0 }
+  }
+  target ??= stops[0]
+
+  const offset = lines.slice(0, target.index).reduce((sum, line) => sum + line.length + 1, 0)
+  // Select the cell's text, as spreadsheets do, so typing replaces a
+  // placeholder such as “列 2” instead of appending to it.
+  const start = cellStarts(lines[target.index])[target.cell]
+  const text = lines[target.index].slice(start).split(/(?<!\\)\|/)[0].trimEnd()
+  const anchor = table.from + offset + start
+  view.dispatch({
+    changes: { from: table.from, to: table.to, insert: lines.join('\n') },
+    selection: EditorSelection.range(anchor, anchor + text.length),
+    scrollIntoView: true,
+    userEvent: 'input.table',
+  })
+  return true
+}
+
+// Writing a link is easier when it can be checked in place: Mod-click (or
+// Ctrl-click) opens it, like a code editor's go-to-definition. Plain clicks
+// keep placing the cursor.
+function openLinkOnModClick() {
+  return EditorView.domEventHandlers({
+    mousedown(event, view) {
+      if (!(event.metaKey || event.ctrlKey) || event.button !== 0)
+        return false
+      const pos = view.posAtCoords({ x: event.clientX, y: event.clientY })
+      if (pos === null)
+        return false
+      let node = syntaxTree(view.state).resolveInner(pos, 1)
+      while (node.parent && !['Link', 'Image', 'URL', 'Autolink'].includes(node.name))
+        node = node.parent
+      const url = node.name === 'URL' ? node : node.getChild('URL')
+      if (!url)
+        return false
+      const href = view.state.sliceDoc(url.from, url.to)
+      if (!/^(?:https?:\/\/|\/)/.test(href))
+        return false
+      event.preventDefault()
+      window.open(href, '_blank', 'noreferrer')
+      return true
+    },
+  })
+}
+
+// Task items flip between [ ] and [x]; a plain list item becomes a task.
+export function toggleTask(state: EditorState): TransactionSpec | null {
+  const changes: { from: number, to: number, insert: string }[] = []
+  for (const range of state.selection.ranges) {
+    for (let n = state.doc.lineAt(range.from).number; n <= state.doc.lineAt(range.to).number; n++) {
+      const line = state.doc.line(n)
+      const match = line.text.match(/^(\s*(?:[-*+]|\d+[.)])\s+)(\[[ x]\]\s)?/i)
+      if (!match)
+        continue
+      const from = line.from + match[1].length
+      const box = match[2]
+      changes.push(box
+        ? { from: from + 1, to: from + 2, insert: box[1] === ' ' ? 'x' : ' ' }
+        : { from, to: from, insert: '[ ] ' })
+    }
+  }
+  return changes.length ? { changes } : null
+}
+
+// One `#` more or less; past level 6 or above level 1 the line stops being a
+// heading, the way Inkdrop's bigger/smaller heading commands work.
+export function shiftHeading(state: EditorState, by: 1 | -1): TransactionSpec {
+  const seen = new Set<number>()
+  const changes: { from: number, to: number, insert: string }[] = []
+  for (const range of state.selection.ranges) {
+    for (let n = state.doc.lineAt(range.from).number; n <= state.doc.lineAt(range.to).number; n++) {
+      if (seen.has(n))
+        continue
+      seen.add(n)
+      const line = state.doc.line(n)
+      const marks = line.text.match(/^(#{1,6}) /)?.[1].length ?? 0
+      // A plain line becomes a section heading either way; ## is what most
+      // pages use under their single # title.
+      const level = marks ? marks + by : 2
+      const insert = level < 1 || level > 6 ? '' : `${'#'.repeat(level)} `
+      changes.push({ from: line.from, to: line.from + (marks ? marks + 1 : 0), insert })
+    }
+  }
+  return { changes }
+}
+
+export const editorKeymap: KeyBinding[] = [
   { key: 'Mod-b', run: view => format(view, 'bold') },
   { key: 'Mod-i', run: view => format(view, 'italic') },
   { key: 'Mod-e', run: view => format(view, 'code') },
@@ -581,10 +730,27 @@ const formatKeymap = keymap.of([
   { key: 'Mod-Shift-.', run: view => format(view, 'quote') },
   { key: 'F8', run: view => stepIssue(view, 1) },
   { key: 'Shift-F8', run: view => stepIssue(view, -1) },
-  // Only inside a list, so Tab still leaves the editor everywhere else.
-  { key: 'Tab', run: view => onListLine(view) && indentMore(view) },
-  { key: 'Shift-Tab', run: view => onListLine(view) && indentLess(view) },
-])
+  { key: 'Mod-Shift-x', run: (view) => {
+    const spec = toggleTask(view.state)
+    if (spec)
+      view.dispatch(spec)
+    return Boolean(spec)
+  } },
+  { key: 'Mod-Alt-=', run: (view) => {
+    view.dispatch(shiftHeading(view.state, -1))
+    return true
+  } },
+  { key: 'Mod-Alt--', run: (view) => {
+    view.dispatch(shiftHeading(view.state, 1))
+    return true
+  } },
+  { key: 'Enter', run: view => tableStep(view, 'row') },
+  // Only inside a list or a table, so Tab still leaves the editor elsewhere.
+  { key: 'Tab', run: view => tableStep(view, 'next') || (onListLine(view) && indentMore(view)) },
+  { key: 'Shift-Tab', run: view => tableStep(view, 'previous') || (onListLine(view) && indentLess(view)) },
+]
+
+const formatKeymap = keymap.of(editorKeymap)
 
 export interface SitePage {
   path: string
@@ -624,7 +790,7 @@ export interface SlashItem {
   label: string
   keys: string
   // A toolbar action, or `image` for the picture dialog the page owns.
-  kind: Format | 'h3' | 'table' | 'image'
+  kind: Format | 'h3' | 'table' | 'image' | 'task'
 }
 
 export const SLASH_ITEMS: SlashItem[] = [
@@ -632,6 +798,7 @@ export const SLASH_ITEMS: SlashItem[] = [
   { label: '三级标题', keys: 'h3 heading biaoti 标题', kind: 'h3' },
   { label: '列表', keys: 'list liebiao', kind: 'list' },
   { label: '编号列表', keys: 'ordered number bianhao', kind: 'ordered' },
+  { label: '待办清单', keys: 'task todo check daiban qingdan', kind: 'task' },
   { label: '引用', keys: 'quote yinyong', kind: 'quote' },
   { label: '代码块', keys: 'code fence daima', kind: 'fence' },
   { label: '提示框', keys: 'tip tishi callout', kind: 'tip' },
@@ -664,6 +831,8 @@ export function slashCompletion(onImage: () => void) {
               return onImage()
             if (item.kind === 'h3')
               return void prefix(view, '### ')
+            if (item.kind === 'task')
+              return void prefix(view, '- [ ] ')
             if (item.kind === 'table') {
               const at = view.state.selection.main.head
               const first = TABLE.indexOf('列 1')
@@ -811,6 +980,10 @@ export function mountEditor(
     markdown({ base: markdownLanguage }),
     EditorView.contentAttributes.of({ 'aria-label': 'Markdown 源码', 'aria-describedby': 'nb-edit-keys' }),
     EditorView.lineWrapping,
+    // Two trailing spaces are a hard line break in Markdown, and nobody can
+    // see them; the submit path strips the rest anyway.
+    highlightTrailingWhitespace(),
+    openLinkOnModClick(),
     liveStyling,
     issueField,
     hintField,
