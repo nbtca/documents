@@ -359,6 +359,9 @@ const theme = EditorView.theme({
     lineHeight: '1.75',
     padding: '34px 0 40vh',
     maxWidth: 'var(--nb-measure)',
+    // A flex item sizes to its widest unbreakable line, such as a long table
+    // row, and would push a phone screen sideways without this.
+    minWidth: '0',
     margin: '0 auto',
     caretColor: 'var(--vp-c-brand-1)',
   },
@@ -465,7 +468,7 @@ const theme = EditorView.theme({
   '.cm-nb-issue-fix': { color: 'var(--vp-c-text-1)' },
   '.cm-nb-issue-fix code': { fontFamily: 'var(--nb-mono)', fontSize: '0.92em' },
   '.cm-nb-issue-detail': { color: 'var(--vp-c-text-2)', fontSize: '12px' },
-  '.cm-nb-table': { fontFamily: 'var(--nb-mono)', fontSize: '0.88em', whiteSpace: 'pre', overflowWrap: 'normal' },
+  '.cm-nb-table': { fontFamily: 'var(--nb-mono)', fontSize: '0.88em' },
   '.cm-nb-code': {
     fontFamily: 'var(--nb-mono)',
     fontSize: '0.9em',

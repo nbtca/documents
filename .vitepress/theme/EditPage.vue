@@ -2266,7 +2266,7 @@ function insertOutline() {
   gap: 7px;
   align-items: baseline;
   margin-top: 4px;
-  color: var(--vp-c-text-3);
+  color: var(--vp-c-text-2);
 }
 
 .nb-edit-check-hint .nb-edit-check-action {
@@ -2353,7 +2353,7 @@ function insertOutline() {
 }
 
 .nb-edit-check-tools a {
-  color: var(--vp-c-text-3);
+  color: var(--vp-c-text-2);
 }
 
 .nb-edit-check-action {
@@ -2383,7 +2383,7 @@ function insertOutline() {
 .nb-edit-check-message small {
   display: block;
   white-space: pre-wrap;
-  color: var(--vp-c-text-3);
+  color: var(--vp-c-text-2);
 }
 
 .nb-edit-check-place,
@@ -2391,7 +2391,7 @@ function insertOutline() {
   flex: none;
   font-family: var(--nb-mono);
   font-size: 11px;
-  color: var(--vp-c-text-3);
+  color: var(--vp-c-text-2);
 }
 
 .nb-edit-check-rule {
@@ -2532,7 +2532,10 @@ function insertOutline() {
     padding: 0 4px 4px;
   }
 
-  .nb-edit-check-tools > * {
+  .nb-edit-check-tools > *,
+  .nb-edit-check-head .nb-edit-check-action,
+  .nb-edit-check-hint .nb-edit-check-action,
+  .nb-edit-why.is-note button {
     display: inline-flex;
     align-items: center;
     min-height: 32px;
