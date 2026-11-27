@@ -54,7 +54,7 @@ export const DESTINATIONS: Destination[] = [
     dir: 'concepts',
     hub: true,
     what: '解释一个站内反复出现的名词，一条一个词',
-    how: '第一段就是完整定义，不铺垫；查不到官方说法的地方写「待核实」，不编',
+    how: '第一段就是完整定义，不铺垫；查不到官方说法的地方写〔待核实〕，不编',
   },
   {
     id: 'repair',
@@ -130,7 +130,7 @@ export function frontmatterFor(
 }
 
 export function placeholderFor(destination: Destination): string {
-  return `以一行「# 标题」开头，然后写正文。${destination.how}。`
+  return `以一行“# 标题”开头，然后写正文。${destination.how}。`
 }
 
 export function checklistFor(destination: Destination, slug: string): string[] {
@@ -140,7 +140,7 @@ export function checklistFor(destination: Destination, slug: string): string[] {
     items.push(`确认文件名：\`${slug}\` 是自动生成的，网址是长期承诺，请改成一个稳定的名字`)
 
   if (destination.hub)
-    items.push(`「${destination.label}」没有边栏，请在 \`${destination.dir}/index.md\` 里链上这一页，否则它是孤岛`)
+    items.push(`“${destination.label}”没有边栏，请在 \`${destination.dir}/index.md\` 里链上这一页，否则它是孤岛`)
 
   return items
 }
