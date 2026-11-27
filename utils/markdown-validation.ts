@@ -7,9 +7,9 @@ export const MARKDOWNLINT_CONFIG = {
   MD049: false,
 } satisfies Configuration
 
-// The nearest config above a page wins. archived/.markdownlint.jsonc adds
-// these overrides because scanned records keep their original structure.
-const ARCHIVED_CONFIG = {
+// markdownlint-cli2 replaces the root config with the nearest one, so
+// archived/.markdownlint.jsonc repeats every root override.
+export const ARCHIVED_CONFIG = {
   ...MARKDOWNLINT_CONFIG,
   MD001: false,
   MD004: false,
