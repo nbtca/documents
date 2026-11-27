@@ -88,8 +88,50 @@ function create(): MarkdownIt {
 }
 
 let renderer: MarkdownIt | undefined
+let mapped: MarkdownIt | undefined
 
 export function renderMarkdown(source: string): string {
   renderer ??= create()
   return renderer.render(source)
+}
+
+const VOID = /^(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)$/i
+
+// Net tags an HTML block leaves open. A component whose body has blank lines
+// arrives as several blocks, and a marker between them would land in its slot.
+function htmlDepth(html: string): number {
+  let depth = 0
+  for (const [tag, close, name, selfClosing] of html.matchAll(/<(\/)?([a-z][\w-]*)\b[^>]*?(\/)?>/gi)) {
+    if (tag.startsWith('<!') || VOID.test(name) || selfClosing)
+      continue
+    depth += close ? -1 : 1
+  }
+  return depth
+}
+
+// The side preview scrolls with the editor by source line. A zero-size marker
+// before each top-level block carries the line, because containers and raw
+// HTML render markup that has nowhere to put an attribute.
+export function renderMarkdownWithLines(source: string, offset = 0): string {
+  if (!mapped) {
+    mapped = create()
+    mapped.core.ruler.push('source_line', (state) => {
+      const tokens: typeof state.tokens = []
+      let depth = 0
+      let html = 0
+      for (const token of state.tokens) {
+        if (depth === 0 && html === 0 && token.nesting >= 0 && token.map && token.block) {
+          const marker = new state.Token('html_block', '', 0)
+          marker.content = `<i class="nb-line" data-line="${token.map[0] + 1 + state.env.offset}"></i>\n`
+          tokens.push(marker)
+        }
+        if (depth === 0 && token.type === 'html_block')
+          html = Math.max(0, html + htmlDepth(token.content))
+        tokens.push(token)
+        depth += token.nesting
+      }
+      state.tokens = tokens
+    })
+  }
+  return mapped.render(source, { offset })
 }

@@ -232,6 +232,21 @@ export function revealMarkdownIssue(view: EditorView, problem: MarkdownIssue): v
   view.focus()
 }
 
+// Source line under a viewport y, with the fraction through that line, so the
+// preview can land between two of its blocks rather than jump block to block.
+export function lineAtY(view: EditorView, y: number): number {
+  const height = Math.max(0, y - view.documentTop)
+  const block = view.lineBlockAtHeight(height)
+  const line = view.state.doc.lineAt(block.from).number
+  return line + Math.min(1, Math.max(0, (height - block.top) / (block.height || 1)))
+}
+
+export function yForLine(view: EditorView, line: number): number {
+  const number = Math.min(Math.max(1, Math.floor(line)), view.state.doc.lines)
+  const block = view.lineBlockAt(view.state.doc.line(number).from)
+  return view.documentTop + block.top + (line - number) * block.height
+}
+
 function stepIssue(view: EditorView, direction: 1 | -1): boolean {
   const { state } = view
   const stops = state.field(issueField).issues.map(problem => ({ problem, at: issuePosition(state, problem) }))

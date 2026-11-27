@@ -1226,3 +1226,31 @@
   cursor: pointer;
   color: var(--vp-c-text-2);
 }
+
+/* The editor's preview pane is narrower than the viewport, so full-bleed
+   blocks fill the pane instead of the window, and wide figures, which size
+   themselves by viewport width, stay inside the pane's padding. */
+.nb-edit-preview .nb-figure.is-wide,
+.nb-edit-preview .nb-figure-grid.is-wide {
+  width: auto;
+  margin-left: 0;
+}
+
+.nb-edit-preview .nb-hero,
+.nb-edit-preview .nb-band {
+  margin-inline: -21px;
+  width: auto;
+}
+
+.nb-edit-preview .nb-hero {
+  margin-top: -34px;
+}
+
+.nb-edit-sheet.is-split .nb-edit-preview .nb-hero,
+.nb-edit-sheet.is-split .nb-edit-preview .nb-band {
+  margin-inline: -34px;
+}
+
+.nb-edit-preview .nb-line {
+  display: block;
+}

@@ -1,15 +1,17 @@
 <script setup lang="ts">
+import type { EditorView } from '@codemirror/view'
 import type { Component } from 'vue'
 import type { MarkdownIssue } from '../../utils/markdown-validation'
 import type { Me, PendingImage } from './editor/backend'
 import type { Format } from './editor/codemirror'
 import type { Destination } from './editor/destinations'
+import type { Preview } from './editor/preview'
 import {
   Bold,
   CircleAlert,
   CircleCheck,
   Code2,
-  Eye,
+  Columns2,
   FileDiff,
   Heading1,
   Heading2,
@@ -44,8 +46,9 @@ import {
   slugProblem,
 } from './editor/destinations'
 import { forget, keep, recall } from './editor/drafts'
+import { previewLineAtY, previewYForLine } from './editor/scroll-sync'
 
-type Stage = 'closed' | 'choosing' | 'loading' | 'editing' | 'previewing' | 'submitting' | 'failed'
+type Stage = 'closed' | 'choosing' | 'loading' | 'editing' | 'submitting' | 'failed'
 
 const { page } = useData()
 
@@ -68,7 +71,10 @@ const toolbar = ref<HTMLElement>()
 const toolbarStuck = ref(false)
 const saveOpen = ref(false)
 let editor: { destroy: () => void } | undefined
-let preview: { update: (md: string) => void, close: () => void } | undefined
+let preview: Preview | undefined
+let editorView: EditorView | undefined
+let sourceLineAt: ((view: EditorView, y: number) => number) | undefined
+let sourceYFor: ((view: EditorView, line: number) => number) | undefined
 let insertAt: ((snippet: string, caret?: number) => void) | undefined
 let showDiff: ((original: string | undefined) => void) | undefined
 let applyFormat: ((kind: Format) => void) | undefined
@@ -90,6 +96,16 @@ const pending = ref<{ file: File, alt: string, caption: string } | undefined>()
 const busy = ref(false)
 
 const restored = ref(false)
+
+// Below this width two columns leave each side narrower than a phone, so the
+// preview becomes a tab instead of a pane.
+const SPLIT = '(min-width: 1024px)'
+const wide = ref(false)
+const previewOpen = ref(true)
+const tab = ref<'source' | 'preview'>('source')
+const previewHost = ref<HTMLElement>()
+const showingPreview = computed(() => wide.value ? previewOpen.value : tab.value === 'preview')
+const showingSource = computed(() => wide.value || tab.value === 'source')
 
 watch(stage, (current) => {
   if (current === 'closed')
@@ -148,20 +164,6 @@ const contentBlocker = computed(() => {
     return '开头的 --- 信息块会在提交时自动生成，请从正文里删掉'
   if (destination.value && !titled.value)
     return '正文第一行写 # 标题，它同时是页面标题和边栏上的名字'
-  return ''
-})
-
-const checkSummary = computed(() => {
-  if (!changed.value)
-    return ''
-  if (checkingMarkdown.value)
-    return '正在检查 Markdown……'
-  if (checkProblem.value)
-    return 'Markdown 检查暂时不可用'
-  if (markdownIssues.value.length)
-    return `Markdown 有 ${markdownIssues.value.length} 处需要修正`
-  if (checkedMarkdown.value)
-    return 'Markdown 检查通过'
   return ''
 })
 
@@ -336,11 +338,14 @@ watch([() => stage.value, host], async ([current, element]) => {
   if (current !== 'editing' || !element || editor)
     return
   await nextTick()
-  const { format, mountEditor, revealMarkdownIssue, setDiff, setMarkdownIssues } = await import('./editor/codemirror')
+  const { format, lineAtY, mountEditor, revealMarkdownIssue, setDiff, setMarkdownIssues, yForLine } = await import('./editor/codemirror')
+  sourceLineAt = lineAtY
+  sourceYFor = yForLine
   const view = mountEditor(element, draft.value, value => (draft.value = value), () => {
     save()
   }, onFiles, destination.value && placeholderFor(destination.value))
   view.focus()
+  editorView = view
   showDiff = original => setDiff(view, original)
   applyFormat = kind => format(view, kind)
   replaceAll = (text) => {
@@ -363,9 +368,10 @@ function teardown() {
   editor = undefined
   showIssues = undefined
   revealIssue = undefined
+  editorView = undefined
   clearMarkdownCheck()
-  preview?.close()
-  preview = undefined
+  stopPreview()
+  tab.value = 'source'
 }
 
 const fixableIssues = computed(() => markdownIssues.value.filter(issue => issue.fixInfo))
@@ -390,8 +396,6 @@ async function autoFix(issues: MarkdownIssue[]): Promise<boolean> {
 }
 
 async function fixAndSave() {
-  if (stage.value === 'previewing')
-    backToEditing()
   if (!canFixAndSave.value || !await autoFix(markdownIssues.value))
     return
   await inspectMarkdown()
@@ -406,8 +410,8 @@ function save() {
 }
 
 async function jumpToIssue(issue: MarkdownIssue) {
-  if (stage.value === 'previewing')
-    backToEditing()
+  if (!showingSource.value)
+    await switchTab('source')
   await nextTick()
   revealIssue?.(issue)
 }
@@ -493,19 +497,121 @@ async function insertImage() {
   }
 }
 
-async function showPreview() {
-  if (stage.value === 'editing')
-    await inspectMarkdown()
-  const { openPreview } = await import('./editor/preview')
-  preview = await openPreview(draft.value, pendingUrls)
-  if (preview)
-    stage.value = 'previewing'
+let previewTimer: ReturnType<typeof setTimeout> | undefined
+let syncing: 'source' | 'preview' | undefined
+let syncTimer: ReturnType<typeof setTimeout> | undefined
+
+async function startPreview() {
+  const element = previewHost.value
+  if (preview || !element)
+    return
+  const { mountPreview } = await import('./editor/preview')
+  if (preview || previewHost.value !== element)
+    return
+  preview = await mountPreview(element, pendingUrls)
+  preview.update(draft.value)
+  requestAnimationFrame(syncFromSource)
 }
 
-function backToEditing() {
+function stopPreview() {
+  clearTimeout(previewTimer)
   preview?.close()
   preview = undefined
-  stage.value = 'editing'
+}
+
+// Rendering every keystroke would rebuild the Vue app and every Mermaid
+// diagram dozens of times a second while the writer is mid-word.
+watch(draft, () => {
+  clearTimeout(previewTimer)
+  previewTimer = setTimeout(() => {
+    preview?.update(draft.value)
+    requestAnimationFrame(syncFromSource)
+  }, 200)
+})
+
+watch([showingPreview, previewHost], async ([visible]) => {
+  if (!visible)
+    return stopPreview()
+  await nextTick()
+  await startPreview()
+})
+
+function lock(side: 'source' | 'preview') {
+  syncing = side
+  clearTimeout(syncTimer)
+  syncTimer = setTimeout(() => (syncing = undefined), 80)
+}
+
+// Top of the part of the sheet the writer can see, below the sticky toolbar.
+function readingTop(): number {
+  return (editSheet.value?.getBoundingClientRect().top ?? 0) + (toolbar.value?.offsetHeight ?? 0)
+}
+
+function syncFromSource() {
+  const view = editorView
+  const pane = previewHost.value
+  if (!view || !pane || !sourceLineAt || syncing === 'preview' || !wide.value)
+    return
+  lock('source')
+  const line = sourceLineAt(view, readingTop())
+  pane.scrollTop += previewYForLine(pane, line, view.state.doc.lines) - pane.getBoundingClientRect().top
+}
+
+function syncFromPreview() {
+  const view = editorView
+  const pane = previewHost.value
+  const sheet = editSheet.value
+  if (!view || !pane || !sheet || !sourceYFor || syncing === 'source' || !wide.value)
+    return
+  lock('preview')
+  const line = previewLineAtY(pane, pane.getBoundingClientRect().top, view.state.doc.lines)
+  sheet.scrollTop += sourceYFor(view, line) - readingTop()
+}
+
+async function switchTab(next: 'source' | 'preview') {
+  if (tab.value === next)
+    return
+  const view = editorView
+  const sheet = editSheet.value
+  const lines = view?.state.doc.lines ?? 1
+  const top = readingTop()
+  let line = 1
+  if (view && sourceLineAt && next === 'preview')
+    line = sourceLineAt(view, top)
+  else if (previewHost.value)
+    line = previewLineAtY(previewHost.value, top, lines)
+  tab.value = next
+  await nextTick()
+  await startPreview()
+  if (!sheet || !view)
+    return
+  if (next === 'preview' && previewHost.value)
+    sheet.scrollTop += previewYForLine(previewHost.value, line, lines) - top
+  else if (sourceYFor)
+    sheet.scrollTop += sourceYFor(view, line) - top
+}
+
+// A link in the draft would otherwise navigate the page under the editor.
+function onPreviewClick(event: MouseEvent) {
+  const link = (event.target as Element).closest('a')
+  const href = link?.getAttribute('href')
+  if (!link || !href || link.target === '_blank')
+    return
+  event.preventDefault()
+  if (href.startsWith('#'))
+    previewHost.value?.querySelector(`[id="${CSS.escape(decodeURIComponent(href.slice(1)))}"]`)?.scrollIntoView()
+  else
+    window.open(href, '_blank', 'noreferrer')
+}
+
+function togglePreview() {
+  if (!wide.value)
+    return void switchTab(tab.value === 'preview' ? 'source' : 'preview')
+  previewOpen.value = !previewOpen.value
+  try {
+    localStorage.setItem('nb-edit-preview', previewOpen.value ? 'on' : 'off')
+  }
+  catch {}
 }
 
 function onKey(event: KeyboardEvent) {
@@ -516,9 +622,6 @@ function onKey(event: KeyboardEvent) {
   }
   else if (pending.value) {
     pending.value = undefined
-  }
-  else if (stage.value === 'previewing') {
-    backToEditing()
   }
   else if (armed.value) {
     armed.value = false
@@ -547,20 +650,29 @@ const mod = ref('')
 onMounted(() => {
   mod.value = /mac|iphone|ipad/i.test(navigator.userAgent) ? '⌘' : 'Ctrl+'
 })
-// VitePress uses this variable to move its fixed navigation and sidebars below
-// anything mounted in the layout-top slot.
-watch(stage, async (current) => {
-  if (current !== 'previewing') {
-    document.documentElement.style.removeProperty('--vp-layout-top-height')
+// The preview pane sticks below the toolbar, whose height changes with the
+// window width and with the restored-draft notice.
+let toolbarSize: ResizeObserver | undefined
+watch(toolbar, (element) => {
+  toolbarSize?.disconnect()
+  if (!element)
     return
-  }
-  await nextTick()
-  const bar = document.querySelector<HTMLElement>('#nb-preview-top .nb-preview-bar')
-  if (bar)
-    document.documentElement.style.setProperty('--vp-layout-top-height', `${bar.offsetHeight}px`)
+  toolbarSize = new ResizeObserver(() => editSheet.value?.style.setProperty('--nb-toolbar-height', `${element.offsetHeight}px`))
+  toolbarSize.observe(element)
 })
+onBeforeUnmount(() => toolbarSize?.disconnect())
 
-onBeforeUnmount(() => document.documentElement.style.removeProperty('--vp-layout-top-height'))
+onMounted(() => {
+  const query = window.matchMedia(SPLIT)
+  const update = () => (wide.value = query.matches)
+  update()
+  query.addEventListener('change', update)
+  onBeforeUnmount(() => query.removeEventListener('change', update))
+  try {
+    previewOpen.value = localStorage.getItem('nb-edit-preview') !== 'off'
+  }
+  catch {}
+})
 
 function reset() {
   clearMarkdownCheck()
@@ -750,11 +862,11 @@ function insertOutline() {
         v-if="stage !== 'closed'"
         ref="editSheet"
         class="nb-edit-sheet"
-        :class="{ 'is-away': stage === 'previewing' }"
+        :class="{ 'is-split': wide && previewOpen }"
         role="dialog"
         aria-modal="true"
         aria-label="编辑页面"
-        @scroll.passive="updateToolbarStuck"
+        @scroll.passive="updateToolbarStuck(); syncFromSource()"
       >
         <div class="nb-edit-inner">
           <header class="nb-edit-head">
@@ -821,7 +933,7 @@ function insertOutline() {
               class="nb-edit-toolbar-shell"
               :class="{ 'is-stuck': toolbarStuck }"
             >
-              <div class="nb-edit-toolbar" role="toolbar" aria-label="编辑工具">
+              <div class="nb-edit-toolbar" :class="{ 'is-previewing': !showingSource }" role="toolbar" aria-label="编辑工具">
                 <span class="nb-edit-tools" role="toolbar" aria-label="格式">
                   <button
                     v-for="tool in TOOLS"
@@ -876,8 +988,15 @@ function insertOutline() {
                       </span>
                     </button>
                   </span>
-                  <button type="button" class="nb-edit-action" :disabled="stage === 'submitting'" @click="showPreview">
-                    <Eye :size="17" :stroke-width="1.8" aria-hidden="true" />
+                  <button
+                    v-if="wide"
+                    type="button"
+                    class="nb-edit-action"
+                    :class="{ 'is-on': previewOpen }"
+                    :aria-pressed="previewOpen"
+                    @click="togglePreview"
+                  >
+                    <Columns2 :size="17" :stroke-width="1.8" aria-hidden="true" />
                     预览
                   </button>
                   <button
@@ -906,6 +1025,27 @@ function insertOutline() {
                   </button>
                 </span>
               </div>
+              <div v-if="!wide" class="nb-edit-tabs" role="tablist" aria-label="编辑或预览">
+                <button
+                  type="button"
+                  role="tab"
+                  :aria-selected="tab === 'source'"
+                  :class="{ 'is-on': tab === 'source' }"
+                  @click="switchTab('source')"
+                >
+                  编辑
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  :aria-selected="tab === 'preview'"
+                  :class="{ 'is-on': tab === 'preview' }"
+                  @click="switchTab('preview')"
+                >
+                  预览
+                  <span v-if="markdownIssues.length" class="nb-edit-tab-count">{{ markdownIssues.length }}</span>
+                </button>
+              </div>
             </div>
 
             <p v-if="problem" class="nb-edit-why is-bad">
@@ -914,56 +1054,68 @@ function insertOutline() {
             <p v-else-if="changed && contentBlocker" class="nb-edit-why">
               {{ contentBlocker }}
             </p>
-            <div v-if="changed && stage !== 'submitting'" class="nb-edit-check" aria-live="polite">
-              <p v-if="checkingMarkdown" class="nb-edit-check-note">
-                正在检查 Markdown 格式……
-              </p>
-              <div v-else-if="checkProblem" class="nb-edit-check-problem">
-                <CircleAlert :size="17" :stroke-width="1.8" aria-hidden="true" />
-                <span>Markdown 检查暂时不可用，仍可预览和保存。</span>
-                <small>{{ checkProblem }}</small>
-              </div>
-              <template v-else-if="markdownIssues.length">
-                <p class="nb-edit-check-head">
-                  <CircleAlert :size="17" :stroke-width="1.8" aria-hidden="true" />
-                  修正下面 {{ markdownIssues.length }} 处问题后才能提交
-                  <button v-if="fixableIssues.length" type="button" class="nb-edit-check-action" @click="autoFix(fixableIssues)">
-                    自动修复其中 {{ fixableIssues.length }} 处
-                  </button>
-                </p>
-                <p v-if="markdownIssues.length > 3 && issueGroups.length < markdownIssues.length" class="nb-edit-check-note">
-                  其中{{ issueGroups.map(group => `${group.message} ${group.count} 处`).join('，') }}。
-                </p>
-                <ol class="nb-edit-check-list">
-                  <li v-for="issue in markdownIssues" :key="`${issue.line}:${issue.column}:${issue.rule}`">
-                    <button type="button" :title="issue.detail || issue.message" @click="jumpToIssue(issue)">
-                      <span class="nb-edit-check-place">第 {{ issue.line }} 行</span>
-                      <span class="nb-edit-check-rule">{{ issue.rule }}</span>
-                      <span class="nb-edit-check-message">
-                        <span>{{ issue.message }}</span>
-                        <span v-if="issue.fix" class="nb-edit-check-fix">
-                          <template v-for="(part, index) in codeParts(issue.fix)" :key="index">
-                            <code v-if="part.code">{{ part.text }}</code><template v-else>{{ part.text }}</template>
-                          </template>
-                        </span>
-                        <small v-if="issue.detail && issue.detail !== issue.message">{{ issue.detail }}</small>
-                      </span>
-                    </button>
-                    <span v-if="issue.fixInfo || issue.information" class="nb-edit-check-tools">
-                      <button v-if="issue.fixInfo" type="button" class="nb-edit-check-action" @click="autoFix([issue])">
-                        自动修复
+            <div class="nb-edit-panes">
+              <div v-show="showingSource" class="nb-edit-source">
+                <div v-if="changed && stage !== 'submitting'" class="nb-edit-check" aria-live="polite">
+                  <p v-if="checkingMarkdown" class="nb-edit-check-note">
+                    正在检查 Markdown 格式……
+                  </p>
+                  <div v-else-if="checkProblem" class="nb-edit-check-problem">
+                    <CircleAlert :size="17" :stroke-width="1.8" aria-hidden="true" />
+                    <span>Markdown 检查暂时不可用，仍可预览和保存。</span>
+                    <small>{{ checkProblem }}</small>
+                  </div>
+                  <template v-else-if="markdownIssues.length">
+                    <p class="nb-edit-check-head">
+                      <CircleAlert :size="17" :stroke-width="1.8" aria-hidden="true" />
+                      修正下面 {{ markdownIssues.length }} 处问题后才能提交
+                      <button v-if="fixableIssues.length" type="button" class="nb-edit-check-action" @click="autoFix(fixableIssues)">
+                        自动修复其中 {{ fixableIssues.length }} 处
                       </button>
-                      <a v-if="issue.information" :href="issue.information" target="_blank" rel="noreferrer">规则说明</a>
-                    </span>
-                  </li>
-                </ol>
-              </template>
-              <p v-else-if="checkedMarkdown" class="nb-edit-check-pass">
-                <CircleCheck :size="17" :stroke-width="1.8" aria-hidden="true" />
-                Markdown 检查通过
-              </p>
+                    </p>
+                    <p v-if="markdownIssues.length > 3 && issueGroups.length < markdownIssues.length" class="nb-edit-check-note">
+                      其中{{ issueGroups.map(group => `${group.message} ${group.count} 处`).join('，') }}。
+                    </p>
+                    <ol class="nb-edit-check-list">
+                      <li v-for="issue in markdownIssues" :key="`${issue.line}:${issue.column}:${issue.rule}`">
+                        <button type="button" :title="issue.detail || issue.message" @click="jumpToIssue(issue)">
+                          <span class="nb-edit-check-place">第 {{ issue.line }} 行</span>
+                          <span class="nb-edit-check-rule">{{ issue.rule }}</span>
+                          <span class="nb-edit-check-message">
+                            <span>{{ issue.message }}</span>
+                            <span v-if="issue.fix" class="nb-edit-check-fix">
+                              <template v-for="(part, index) in codeParts(issue.fix)" :key="index">
+                                <code v-if="part.code">{{ part.text }}</code><template v-else>{{ part.text }}</template>
+                              </template>
+                            </span>
+                            <small v-if="issue.detail && issue.detail !== issue.message">{{ issue.detail }}</small>
+                          </span>
+                        </button>
+                        <span v-if="issue.fixInfo || issue.information" class="nb-edit-check-tools">
+                          <button v-if="issue.fixInfo" type="button" class="nb-edit-check-action" @click="autoFix([issue])">
+                            自动修复
+                          </button>
+                          <a v-if="issue.information" :href="issue.information" target="_blank" rel="noreferrer">规则说明</a>
+                        </span>
+                      </li>
+                    </ol>
+                  </template>
+                  <p v-else-if="checkedMarkdown" class="nb-edit-check-pass">
+                    <CircleCheck :size="17" :stroke-width="1.8" aria-hidden="true" />
+                    Markdown 检查通过
+                  </p>
+                </div>
+                <div ref="host" class="nb-edit-area" :class="{ 'is-busy': stage === 'submitting' }" />
+              </div>
+              <div
+                v-if="showingPreview"
+                ref="previewHost"
+                class="vp-doc nb-edit-preview"
+                aria-label="预览"
+                @scroll.passive="syncFromPreview"
+                @click="onPreviewClick"
+              />
             </div>
-            <div ref="host" class="nb-edit-area" :class="{ 'is-busy': stage === 'submitting' }" />
             <input ref="picker" type="file" :accept="accepts" hidden @change="onPicked">
           </template>
 
@@ -1068,28 +1220,6 @@ function insertOutline() {
           </div>
         </div>
       </div>
-
-      <Teleport v-if="stage === 'previewing'" to="#nb-preview-top">
-        <div class="nb-preview-bar">
-          <span class="nb-preview-mode">
-            <Eye :size="18" :stroke-width="1.8" aria-hidden="true" />
-            预览模式
-          </span>
-          <span
-            v-if="checkSummary"
-            class="nb-preview-check"
-            :class="{ 'is-bad': markdownIssues.length, 'is-good': checkedMarkdown && !markdownIssues.length && !checkProblem }"
-          >
-            {{ checkSummary }}
-          </span>
-          <button type="button" class="nb-edit-ghost" @click="backToEditing">
-            继续编辑
-          </button>
-          <button type="button" class="nb-edit-submit" :disabled="!(canOpenSave || canFixAndSave)" @click="save">
-            {{ canFixAndSave ? '修复并' : '' }}{{ localMode ? '保存' : '提交' }}
-          </button>
-        </div>
-      </Teleport>
     </Teleport>
   </div>
 </template>
@@ -1211,9 +1341,84 @@ function insertOutline() {
   color: var(--vp-c-text-1);
 }
 
+.nb-edit-panes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .nb-edit-area {
   flex: none;
   min-height: calc(100vh - 10rem);
+}
+
+.nb-edit-preview {
+  min-width: 0;
+  padding: 34px 21px 40vh;
+}
+
+/* The sheet scrolls the source; the preview scrolls on its own so the two can
+   be kept level with each other. */
+.nb-edit-sheet.is-split .nb-edit-inner {
+  max-width: none;
+}
+
+.nb-edit-sheet.is-split .nb-edit-panes {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+}
+
+.nb-edit-sheet.is-split .nb-edit-source {
+  min-width: 0;
+  border-right: 1px solid var(--vp-c-divider);
+}
+
+.nb-edit-sheet.is-split .nb-edit-preview {
+  position: sticky;
+  top: var(--nb-toolbar-height, 56px);
+  height: calc(100vh - var(--nb-toolbar-height, 56px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-inline: 34px;
+}
+
+.nb-edit-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 8px 6px;
+}
+
+.nb-edit-tabs button {
+  flex: 1;
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  border-radius: 4px;
+  font-size: 14px;
+  color: var(--vp-c-text-2);
+}
+
+.nb-edit-tabs button.is-on {
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1);
+  font-weight: 600;
+}
+
+.nb-edit-tab-count {
+  min-width: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--vp-c-danger-soft);
+  color: var(--vp-c-danger-1);
+  font-size: 11px;
+  line-height: 18px;
+}
+
+/* Formatting buttons act on the source, which a phone cannot see while it
+   shows the preview. */
+.nb-edit-toolbar.is-previewing .nb-edit-tools {
+  display: none;
 }
 
 .nb-edit-area.is-busy {
@@ -1384,17 +1589,6 @@ function insertOutline() {
   border-color: var(--vp-c-brand-1);
 }
 
-.nb-preview-bar {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 13px;
-  align-items: center;
-  width: 100%;
-  padding: 14px 21px;
-  background: var(--vp-c-bg-soft);
-  box-shadow: 0 6px 18px rgb(0 0 0 / 10%);
-}
-
 .nb-edit-modal {
   position: fixed;
   inset: 0;
@@ -1468,34 +1662,6 @@ function insertOutline() {
 }
 
 .nb-edit-dialog-status.is-bad {
-  color: var(--vp-c-danger-1);
-}
-
-.nb-preview-mode {
-  display: inline-flex;
-  flex: 1;
-  gap: 7px;
-  align-items: center;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--vp-c-brand-1);
-}
-
-.nb-preview-check {
-  flex: none;
-  padding: 3px 8px;
-  border-radius: 999px;
-  background: var(--vp-c-bg);
-  font-size: 12px;
-  color: var(--vp-c-text-3);
-  white-space: nowrap;
-}
-
-.nb-preview-check.is-good {
-  color: var(--vp-c-success-1);
-}
-
-.nb-preview-check.is-bad {
   color: var(--vp-c-danger-1);
 }
 
@@ -1878,14 +2044,6 @@ function insertOutline() {
     padding: 13px 8px 0;
   }
 
-  .nb-preview-mode {
-    font-size: 14px;
-  }
-
-  .nb-preview-check {
-    display: none;
-  }
-
   .nb-edit-toolbar {
     flex-wrap: wrap;
     column-gap: 3px;
@@ -1956,6 +2114,32 @@ function insertOutline() {
 
   .nb-edit-restored-action-label {
     display: none;
+  }
+
+  .nb-edit-check-list li {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .nb-edit-check-list li > button {
+    flex-wrap: wrap;
+    row-gap: 2px;
+  }
+
+  .nb-edit-check-message {
+    flex-basis: 100%;
+  }
+
+  .nb-edit-check-tools {
+    gap: 4px;
+    padding: 0 4px 4px;
+  }
+
+  .nb-edit-check-tools > * {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 0 6px;
   }
 
   .nb-edit-action {
