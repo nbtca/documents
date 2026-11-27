@@ -20,6 +20,51 @@ const ARCHIVED_CONFIG = {
 export interface MarkdownValidationOptions {
   archived?: boolean
   mermaid?: boolean
+  // Routes that exist on the site, such as /repair/ or /about/join.
+  pages?: readonly string[]
+}
+
+function fencedLines(fences: Fence[]): Set<number> {
+  const fenced = new Set<number>()
+  for (const fence of fences) {
+    for (let line = fence.line; line <= fence.line + fence.content.length + (fence.closed ? 1 : 0); line++)
+      fenced.add(line)
+  }
+  return fenced
+}
+
+const LINK = /\]\((\/[^\s)#?]*)/g
+// MD045 catches an empty description; a camera filename passes it and still
+// tells a screen reader nothing.
+const FILENAME_ALT = /!\[([^\]]*)\]\(|\balt="([^"]*)"/g
+const LOOKS_LIKE_FILE = /^(?:(?:IMG|DSC|PXL|VID|Screenshot|截屏|屏幕截图|微信图片)[\w\s\-.()]*|[\w-]+\.(?:png|jpe?g|webp|gif|heic))$/i
+
+function inspectAlt(source: string, fences: Fence[]): MarkdownIssue[] {
+  const fenced = fencedLines(fences)
+  return source.split('\n').flatMap((text, index) => fenced.has(index + 1)
+    ? []
+    : [...text.matchAll(FILENAME_ALT)].flatMap((match) => {
+        const alt = (match[1] ?? match[2]).trim()
+        return alt && LOOKS_LIKE_FILE.test(alt) ? [issue(index + 1, match.index + 1, 'ALT', alt)] : []
+      }))
+}
+
+// markdownlint has no idea which pages exist, so a mistyped site path only
+// shows up after review as a 404. Same normalising as the build's router:
+// trailing slash, .md and .html all point at one page.
+function inspectLinks(source: string, fences: Fence[], pages: readonly string[]): MarkdownIssue[] {
+  const known = new Set(pages.map(route => route.replace(/\/$/, '') || '/'))
+  const fenced = fencedLines(fences)
+  return source.split('\n').flatMap((text, index) => {
+    if (fenced.has(index + 1))
+      return []
+    return [...text.replace(/`[^`]*`/g, match => ' '.repeat(match.length)).matchAll(LINK)].flatMap((match) => {
+      const route = decodeURI(match[1]).replace(/(?:\/index)?(?:\.md|\.html)?\/?$/, '') || '/'
+      if (known.has(route) || /\.\w+$/.test(route))
+        return []
+      return [issue(index + 1, match.index + 3, 'LINK', match[1])]
+    })
+  })
 }
 
 export interface MarkdownIssue {
@@ -126,11 +171,7 @@ function inspectFences(source: string): { blocks: Fence[], issues: MarkdownIssue
 }
 
 function inspectContainers(source: string, fences: Fence[]): MarkdownIssue[] {
-  const fenced = new Set<number>()
-  for (const fence of fences) {
-    for (let line = fence.line; line <= fence.line + fence.content.length + (fence.closed ? 1 : 0); line++)
-      fenced.add(line)
-  }
+  const fenced = fencedLines(fences)
 
   const issues: MarkdownIssue[] = []
   const open: Array<{ length: number, line: number }> = []
@@ -284,6 +325,8 @@ async function inspectMermaid(blocks: MermaidBlock[]): Promise<MarkdownIssue[]> 
 export async function lintMarkdown(source: string, options: MarkdownValidationOptions = {}): Promise<MarkdownIssue[]> {
   const { blocks, issues: fenceIssues } = inspectFences(source)
   const containerIssues = inspectContainers(source, blocks)
+  const linkIssues = options.pages ? inspectLinks(source, blocks, options.pages) : []
+  const altIssues = inspectAlt(source, blocks)
 
   const { lint } = await import('markdownlint/promise')
   const results = await lint({
@@ -304,6 +347,8 @@ export async function lintMarkdown(source: string, options: MarkdownValidationOp
       .map(markdownlintIssue),
     ...fenceIssues,
     ...containerIssues,
+    ...linkIssues,
+    ...altIssues,
     ...await inspectMermaid(mermaid),
   ].sort((left, right) => left.line - right.line || left.column - right.column || left.rule.localeCompare(right.rule))
 }
