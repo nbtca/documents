@@ -84,10 +84,10 @@ describe('markdown validation', () => {
     expect(issues).toEqual([])
   })
 
-  it('links each markdownlint rule to its official documentation', async () => {
+  it('links each rule to its entry in the Markdown guide', async () => {
     const [problem] = await lintMarkdown('#Title\n', { mermaid: false })
 
-    expect(problem.information).toMatch(/\/doc\/md018\.md$/)
+    expect(problem.information).toBe('/tutorial/markdown#md018')
   })
 
   it('applies the fixes markdownlint offers', async () => {
@@ -104,5 +104,20 @@ describe('markdown validation', () => {
 
     expect(issues.some(problem => problem.rule === 'MD040' && !problem.fixInfo)).toBe(true)
     expect(await fixMarkdown(source, issues)).toBe(source)
+  })
+
+  it('explains markdownlint details in Chinese', async () => {
+    const issues = await lintMarkdown('# A\n\n### B\n\n| a | b |\n| - | - |\n| 1 |\n', { mermaid: false })
+
+    expect(issues.map(problem => problem.detail)).toEqual([
+      '应该写成 h2，现在是 h3',
+      '表头有 2 列，这一行有 1 列',
+    ])
+  })
+
+  it('points at the Mermaid source instead of parser tokens', async () => {
+    const [problem] = await lintMarkdown('# T\n\n```mermaid\ngraph TD\nA-->[\n```\n')
+
+    expect(problem.detail).toBe('在 [ 附近出错')
   })
 })

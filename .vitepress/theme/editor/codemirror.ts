@@ -1,4 +1,4 @@
-import type { Extension, Range } from '@codemirror/state'
+import type { Extension, Range, TransactionSpec } from '@codemirror/state'
 import type { DecorationSet, ViewUpdate } from '@codemirror/view'
 import type { MarkdownIssue } from '../../../utils/markdown-validation'
 import { defaultKeymap, history, historyKeymap, indentLess, indentMore } from '@codemirror/commands'
@@ -6,6 +6,7 @@ import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
 import { syntaxTree } from '@codemirror/language'
 import { Compartment, EditorSelection, EditorState, RangeSet, StateEffect, StateField } from '@codemirror/state'
 import { Decoration, EditorView, keymap, placeholder, ViewPlugin, WidgetType } from '@codemirror/view'
+import { codeParts } from '../../../utils/markdown-rules'
 
 const HEADING = /^ATXHeading([1-6])$/
 const MARK_CLASS: Record<string, string> = {
@@ -131,7 +132,11 @@ class IssueMessage extends WidgetType {
       if (issue.fix) {
         const fix = document.createElement('div')
         fix.className = 'cm-nb-issue-fix'
-        fix.textContent = issue.fix
+        for (const part of codeParts(issue.fix)) {
+          const node = document.createElement(part.code ? 'code' : 'span')
+          node.textContent = part.text
+          fix.append(node)
+        }
         message.append(fix)
       }
       if (issue.detail && issue.detail !== issue.message) {
@@ -146,7 +151,7 @@ class IssueMessage extends WidgetType {
   }
 }
 
-function issueDecorations(state: EditorState, issues: MarkdownIssue[]): DecorationSet {
+function issueDecorations(state: EditorState, issues: MarkdownIssue[], quiet?: number): DecorationSet {
   const ranges: Range<Decoration>[] = []
   const byLine = new Map<number, MarkdownIssue[]>()
   for (const problem of issues) {
@@ -164,6 +169,8 @@ function issueDecorations(state: EditorState, issues: MarkdownIssue[]): Decorati
       ranges.push(Decoration.mark({ class: 'cm-nb-issue-text' }).range(line.to - 1, line.to))
   }
   for (const [number, messages] of byLine) {
+    if (number === quiet)
+      continue
     ranges.push(Decoration.widget({
       widget: new IssueMessage(messages),
       block: true,
@@ -174,31 +181,68 @@ function issueDecorations(state: EditorState, issues: MarkdownIssue[]): Decorati
 }
 
 const setIssues = StateEffect.define<MarkdownIssue[]>()
+const showLine = StateEffect.define<null>()
 
-const issueField = StateField.define<DecorationSet>({
-  create: () => Decoration.none,
-  update(decorations, transaction) {
+interface IssueState {
+  issues: MarkdownIssue[]
+  quiet?: number
+  decorations: DecorationSet
+}
+
+const cursorLine = (state: EditorState) => state.doc.lineAt(state.selection.main.head).number
+
+// Results land while the writer may still be typing; a block widget under
+// that line would push the text they are looking at down the screen.
+const issueField = StateField.define<IssueState>({
+  create: () => ({ issues: [], decorations: Decoration.none }),
+  update(value, transaction) {
+    const { state } = transaction
     for (const effect of transaction.effects) {
-      if (effect.is(setIssues))
-        return issueDecorations(transaction.state, effect.value)
+      if (effect.is(setIssues)) {
+        const quiet = cursorLine(state)
+        return { issues: effect.value, quiet, decorations: issueDecorations(state, effect.value, quiet) }
+      }
+      if (effect.is(showLine))
+        return { ...value, quiet: undefined, decorations: issueDecorations(state, value.issues) }
     }
-    return decorations.map(transaction.changes)
+    if (transaction.docChanged)
+      return { ...value, decorations: value.decorations.map(transaction.changes) }
+    if (value.quiet !== undefined && transaction.selection && cursorLine(state) !== value.quiet)
+      return { ...value, quiet: undefined, decorations: issueDecorations(state, value.issues) }
+    return value
   },
-  provide: field => EditorView.decorations.from(field),
+  provide: field => EditorView.decorations.from(field, value => value.decorations),
 })
 
 export function setMarkdownIssues(view: EditorView, issues: MarkdownIssue[]): void {
   view.dispatch({ effects: setIssues.of(issues) })
 }
 
+function issuePosition(state: EditorState, problem: MarkdownIssue): number {
+  const line = state.doc.line(Math.min(Math.max(1, problem.line), state.doc.lines))
+  return Math.min(line.to, line.from + Math.max(0, problem.column - 1))
+}
+
 export function revealMarkdownIssue(view: EditorView, problem: MarkdownIssue): void {
-  const line = view.state.doc.line(Math.min(Math.max(1, problem.line), view.state.doc.lines))
-  const position = Math.min(line.to, line.from + Math.max(0, problem.column - 1))
+  const position = issuePosition(view.state, problem)
   view.dispatch({
     selection: { anchor: position },
-    effects: EditorView.scrollIntoView(position, { y: 'center' }),
+    effects: [showLine.of(null), EditorView.scrollIntoView(position, { y: 'center' })],
   })
   view.focus()
+}
+
+function stepIssue(view: EditorView, direction: 1 | -1): boolean {
+  const { state } = view
+  const stops = state.field(issueField).issues.map(problem => ({ problem, at: issuePosition(state, problem) }))
+  if (!stops.length)
+    return false
+  const head = state.selection.main.head
+  const next = direction === 1
+    ? stops.find(stop => stop.at > head) ?? stops[0]
+    : stops.findLast(stop => stop.at < head) ?? stops.at(-1)!
+  revealMarkdownIssue(view, next.problem)
+  return true
 }
 
 const liveStyling = ViewPlugin.fromClass(
@@ -268,6 +312,7 @@ const theme = EditorView.theme({
   },
   '.cm-nb-issue-message + .cm-nb-issue-message': { marginTop: '4px' },
   '.cm-nb-issue-fix': { color: 'var(--vp-c-text-1)' },
+  '.cm-nb-issue-fix code': { fontFamily: 'var(--nb-mono)', fontSize: '0.92em' },
   '.cm-nb-issue-detail': { color: 'var(--vp-c-text-2)', fontSize: '12px' },
   '.cm-nb-code': {
     fontFamily: 'var(--nb-mono)',
@@ -278,7 +323,7 @@ const theme = EditorView.theme({
   },
 })
 
-export type Format = 'h1' | 'h2' | 'bold' | 'italic' | 'code' | 'link' | 'list' | 'ordered' | 'quote'
+export type Format = 'h1' | 'h2' | 'bold' | 'italic' | 'code' | 'link' | 'list' | 'ordered' | 'quote' | 'fence' | 'tip'
 
 const WRAP: Partial<Record<Format, [string, string]>> = {
   bold: ['**', '加粗'],
@@ -292,6 +337,11 @@ const PREFIX: Partial<Record<Format, string>> = {
   list: '- ',
   ordered: '1. ',
   quote: '> ',
+}
+
+const BLOCK: Record<'fence' | 'tip', [string, string, string]> = {
+  fence: ['```text', '代码', '```'],
+  tip: ['::: tip', '提示内容', ':::'],
 }
 
 const LINE_MARK = /^(\s*)(#{1,6} |[-*+] |\d+\. |> )?/
@@ -328,6 +378,27 @@ function link(view: EditorView): boolean {
   return true
 }
 
+// Blank lines around the block satisfy MD031 and keep containers unambiguous.
+export function insertBlock(state: EditorState, kind: 'fence' | 'tip'): TransactionSpec {
+  const [open, filler, close] = BLOCK[kind]
+  return state.changeByRange((range) => {
+    const { doc } = state
+    const first = doc.lineAt(range.from)
+    const last = doc.lineAt(range.to)
+    const blank = (n: number) => n < 1 || n > doc.lines || !doc.line(n).text.trim()
+    const after = range.empty && !blank(first.number)
+    const from = after ? last.to : first.from
+    const body = range.empty ? filler : doc.sliceString(first.from, last.to)
+    const head = `${after ? '\n\n' : blank(first.number - 1) ? '' : '\n'}${open}\n`
+    const tail = blank(last.number + 1) ? '' : '\n'
+    const at = from + head.length
+    return {
+      changes: { from, to: last.to, insert: `${head}${body}\n${close}${tail}` },
+      range: EditorSelection.range(at, at + body.length),
+    }
+  })
+}
+
 function prefix(view: EditorView, mark: string): boolean {
   const { state } = view
   const lines = new Set<number>()
@@ -349,7 +420,11 @@ function prefix(view: EditorView, mark: string): boolean {
 
 export function format(view: EditorView, kind: Format): boolean {
   const wrapper = WRAP[kind]
-  const done = wrapper ? wrap(view, ...wrapper) : kind === 'link' ? link(view) : prefix(view, PREFIX[kind]!)
+  const done = wrapper
+    ? wrap(view, ...wrapper)
+    : kind === 'fence' || kind === 'tip'
+      ? (view.dispatch(insertBlock(view.state, kind)), true)
+      : kind === 'link' ? link(view) : prefix(view, PREFIX[kind]!)
   view.focus()
   return done
 }
@@ -364,12 +439,27 @@ const formatKeymap = keymap.of([
   { key: 'Mod-Shift-8', run: view => format(view, 'list') },
   { key: 'Mod-Shift-7', run: view => format(view, 'ordered') },
   { key: 'Mod-Shift-.', run: view => format(view, 'quote') },
+  { key: 'F8', run: view => stepIssue(view, 1) },
+  { key: 'Shift-F8', run: view => stepIssue(view, -1) },
   // Only inside a list, so Tab still leaves the editor everywhere else.
   { key: 'Tab', run: view => onListLine(view) && indentMore(view) },
   { key: 'Shift-Tab', run: view => onListLine(view) && indentLess(view) },
 ])
 
 const URL_ONLY = /^https?:\/\/\S+$/
+
+// Text copied from chat apps and word processors carries characters that
+// markdownlint flags (MD010, MD018) but that look like ordinary spaces.
+export function cleanPaste(text: string): string {
+  return text
+    .replace(/\r\n?/g, '\n')
+    .replace(/[\u00A0\u2007\u202F]/g, ' ')
+    .replace(/[\u200B-\u200D\uFEFF]/g, '')
+    .replace(/^(#{1,6})\u3000+/gm, '$1 ')
+    .replace(/^\u3000+/gm, '')
+    .replace(/^(\s*(?:[-*+]|\d+\.))\t+/gm, '$1 ')
+    .replace(/\t/g, '  ')
+}
 
 function files(handle: (files: File[]) => void) {
   return EditorView.domEventHandlers({
@@ -429,6 +519,7 @@ export function mountEditor(
     placeholder(hint ?? ''),
     formatKeymap,
     files(onFiles),
+    EditorView.clipboardInputFilter.of(cleanPaste),
     keymap.of([
       ...['Mod-s', 'Mod-Enter'].map(key => ({
         key,

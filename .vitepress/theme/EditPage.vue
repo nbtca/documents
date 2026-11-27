@@ -15,16 +15,19 @@ import {
   Heading2,
   ImagePlus,
   Italic,
+  Lightbulb,
   Link,
   List,
   ListOrdered,
   Quote,
   RotateCcw,
+  SquareCode,
   Trash2,
 } from '@lucide/vue'
 import { useData } from 'vitepress'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { extractH1, splitFrontmatter } from '../../utils/markdown'
+import { codeParts } from '../../utils/markdown-rules'
 import { fixMarkdown, lintMarkdown } from '../../utils/markdown-validation'
 import { reviewNoteFor, transcribedFrom } from './editor/archive'
 import { isSignedIn, signIn, signOut } from './editor/auth'
@@ -184,6 +187,9 @@ const blocker = computed(() => {
 
 const canSubmit = computed(() => !blocker.value && !slugIssue.value)
 const canOpenSave = computed(() => !contentBlocker.value && !syntaxBlocker.value && !slugIssue.value)
+const onlyFixable = computed(() => checkedMarkdown.value && markdownIssues.value.length > 0
+  && markdownIssues.value.every(issue => issue.fixInfo))
+const canFixAndSave = computed(() => !contentBlocker.value && !slugIssue.value && onlyFixable.value)
 
 const armedLead = computed(() => {
   return leaving.value ? '退出登录会放弃这些修改。' : '现在退出会放弃这些修改。'
@@ -332,7 +338,7 @@ watch([() => stage.value, host], async ([current, element]) => {
   await nextTick()
   const { format, mountEditor, revealMarkdownIssue, setDiff, setMarkdownIssues } = await import('./editor/codemirror')
   const view = mountEditor(element, draft.value, value => (draft.value = value), () => {
-    openSave()
+    save()
   }, onFiles, destination.value && placeholderFor(destination.value))
   view.focus()
   showDiff = original => setDiff(view, original)
@@ -364,11 +370,39 @@ function teardown() {
 
 const fixableIssues = computed(() => markdownIssues.value.filter(issue => issue.fixInfo))
 
-async function autoFix(issues: MarkdownIssue[]) {
+const issueGroups = computed(() => {
+  const groups = new Map<string, { message: string, count: number }>()
+  for (const issue of markdownIssues.value) {
+    const group = groups.get(issue.rule) ?? { message: issue.message, count: 0 }
+    group.count++
+    groups.set(issue.rule, group)
+  }
+  return [...groups.values()].sort((left, right) => right.count - left.count)
+})
+
+async function autoFix(issues: MarkdownIssue[]): Promise<boolean> {
   const source = draft.value
   const fixed = await fixMarkdown(source, issues)
-  if (fixed !== source && draft.value === source)
-    replaceAll?.(fixed)
+  if (fixed === source || draft.value !== source)
+    return false
+  replaceAll?.(fixed)
+  return true
+}
+
+async function fixAndSave() {
+  if (stage.value === 'previewing')
+    backToEditing()
+  if (!canFixAndSave.value || !await autoFix(markdownIssues.value))
+    return
+  await inspectMarkdown()
+  openSave()
+}
+
+function save() {
+  if (canFixAndSave.value)
+    void fixAndSave()
+  else
+    openSave()
 }
 
 async function jumpToIssue(issue: MarkdownIssue) {
@@ -684,6 +718,8 @@ const TOOLS: { kind: Format, icon: Component, name: string, key?: string }[] = [
   { kind: 'list', icon: List, name: '列表', key: '⇧8' },
   { kind: 'ordered', icon: ListOrdered, name: '编号列表', key: '⇧7' },
   { kind: 'quote', icon: Quote, name: '引用', key: '⇧.' },
+  { kind: 'fence', icon: SquareCode, name: '代码块' },
+  { kind: 'tip', icon: Lightbulb, name: '提示框' },
 ]
 
 function insertOutline() {
@@ -862,10 +898,11 @@ function insertOutline() {
                   <button
                     type="button"
                     class="nb-edit-submit"
-                    :disabled="!canOpenSave || stage === 'submitting'"
-                    @click="openSave"
+                    :disabled="!(canOpenSave || canFixAndSave) || stage === 'submitting'"
+                    :title="canFixAndSave ? `先自动修复 ${markdownIssues.length} 处格式问题` : undefined"
+                    @click="save"
                   >
-                    {{ localMode ? '保存' : '提交' }}
+                    {{ canFixAndSave ? '修复并' : '' }}{{ localMode ? '保存' : '提交' }}
                   </button>
                 </span>
               </div>
@@ -894,6 +931,9 @@ function insertOutline() {
                     自动修复其中 {{ fixableIssues.length }} 处
                   </button>
                 </p>
+                <p v-if="markdownIssues.length > 3 && issueGroups.length < markdownIssues.length" class="nb-edit-check-note">
+                  其中{{ issueGroups.map(group => `${group.message} ${group.count} 处`).join('，') }}。
+                </p>
                 <ol class="nb-edit-check-list">
                   <li v-for="issue in markdownIssues" :key="`${issue.line}:${issue.column}:${issue.rule}`">
                     <button type="button" :title="issue.detail || issue.message" @click="jumpToIssue(issue)">
@@ -901,7 +941,11 @@ function insertOutline() {
                       <span class="nb-edit-check-rule">{{ issue.rule }}</span>
                       <span class="nb-edit-check-message">
                         <span>{{ issue.message }}</span>
-                        <span v-if="issue.fix" class="nb-edit-check-fix">{{ issue.fix }}</span>
+                        <span v-if="issue.fix" class="nb-edit-check-fix">
+                          <template v-for="(part, index) in codeParts(issue.fix)" :key="index">
+                            <code v-if="part.code">{{ part.text }}</code><template v-else>{{ part.text }}</template>
+                          </template>
+                        </span>
                         <small v-if="issue.detail && issue.detail !== issue.message">{{ issue.detail }}</small>
                       </span>
                     </button>
@@ -909,7 +953,7 @@ function insertOutline() {
                       <button v-if="issue.fixInfo" type="button" class="nb-edit-check-action" @click="autoFix([issue])">
                         自动修复
                       </button>
-                      <a v-if="issue.information" :href="issue.information" target="_blank" rel="noreferrer">规则说明（英文）</a>
+                      <a v-if="issue.information" :href="issue.information" target="_blank" rel="noreferrer">规则说明</a>
                     </span>
                   </li>
                 </ol>
@@ -1041,8 +1085,8 @@ function insertOutline() {
           <button type="button" class="nb-edit-ghost" @click="backToEditing">
             继续编辑
           </button>
-          <button type="button" class="nb-edit-submit" :disabled="!canOpenSave" @click="openSave">
-            {{ localMode ? '保存' : '提交' }}
+          <button type="button" class="nb-edit-submit" :disabled="!(canOpenSave || canFixAndSave)" @click="save">
+            {{ canFixAndSave ? '修复并' : '' }}{{ localMode ? '保存' : '提交' }}
           </button>
         </div>
       </Teleport>
@@ -1787,6 +1831,11 @@ function insertOutline() {
 .nb-edit-check-fix {
   display: block;
   color: var(--vp-c-text-1);
+}
+
+.nb-edit-check-fix code {
+  font-family: var(--nb-mono);
+  font-size: 0.92em;
 }
 
 .nb-edit-check-message small {
